@@ -39,14 +39,30 @@
     return `${window.location.origin}${window.location.pathname}#${postId}`;
   }
 
-  // Share the direct image URL so LinkedIn/Facebook render it as an image post.
+  // LinkedIn previews are best when sharing the page URL with OG tags.
   function getLinkedInShareUrl(post) {
-    return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(post.image)}`;
+    return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getPostUrl(post.id))}`;
+  }
+
+  function getQuoteNumber(post) {
+    return post.imageNumber || (post.title.match(/(\d+)/)?.[1] || "");
+  }
+
+  function createQuoteMessage(post) {
+    const quoteNumber = getQuoteNumber(post);
+    return [
+      `Quote ${quoteNumber}`,
+      "A small thought. A deeper meaning.",
+      "",
+      "If this resonates, share it with someone who needs it today.",
+      "",
+      "#DailyQuote #WorldPeace  #Education #LifelongLearning #Wisdom #SelfGrowth #InnerPeace"
+    ].join("\n");
   }
 
   // X shares the post URL; the preview image comes from twitter:card meta tags on posts.html.
   function getXShareUrl(post) {
-    const text = `${post.title}\n\nReally Real Education — Jalte Diye Foundation`;
+    const text = createQuoteMessage(post);
     return `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(getPostUrl(post.id))}`;
   }
 
@@ -108,6 +124,18 @@
       });
   }
 
+  function onLinkedInShare(post) {
+    const caption = `${createQuoteMessage(post)}\n\n${getPostUrl(post.id)}`;
+    copyTextToClipboard(caption)
+      .then(() => {
+        alert("Caption copied. Paste it in LinkedIn after the preview loads.");
+        window.open(getLinkedInShareUrl(post), "_blank", "noopener,noreferrer");
+      })
+      .catch(() => {
+        window.open(getLinkedInShareUrl(post), "_blank", "noopener,noreferrer");
+      });
+  }
+
   function renderPosts(posts) {
     if (!posts.length) {
       feedContainer.innerHTML = '<article class="post-card"><p>No posts yet. The daily automation will add one shortly.</p></article>';
@@ -119,7 +147,6 @@
 
     feedContainer.innerHTML = posts
       .map((post) => {
-        const linkedInUrl = getLinkedInShareUrl(post);
         const xUrl = getXShareUrl(post);
         const facebookUrl = getFacebookShareUrl(post);
         return `
@@ -129,7 +156,7 @@
               <h2 class="post-title"><strong>Daily Quote</strong></h2>
               <p>${escapeHtml(post.excerpt)}</p>
               <div class="post-actions">
-                <a class="btn" href="${linkedInUrl}" target="_blank" rel="noopener noreferrer">Share on LinkedIn</a>
+                <button class="btn linkedin-share" type="button" data-post-id="${escapeHtml(post.id)}">Share on LinkedIn</button>
                 <a class="btn secondary share-btn" href="${xUrl}" target="_blank" rel="noopener noreferrer">Share on X</a>
                 <a class="btn secondary share-btn" href="${facebookUrl}" target="_blank" rel="noopener noreferrer">Share on Facebook</a>
                 <button class="btn secondary share-btn manual-share" type="button" data-platform="Instagram" data-post-id="${escapeHtml(post.id)}">Share on Instagram</button>
@@ -152,6 +179,18 @@
           return;
         }
         onManualShare(platform, post);
+      });
+    });
+
+    const linkedInButtons = feedContainer.querySelectorAll(".linkedin-share");
+    linkedInButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const postId = button.getAttribute("data-post-id") || "";
+        const post = postById[postId];
+        if (!post) {
+          return;
+        }
+        onLinkedInShare(post);
       });
     });
   }
