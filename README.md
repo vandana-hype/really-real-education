@@ -110,3 +110,17 @@ AI-generated visuals are provided for free public use, with the intention of spr
 ### Final Thought
 
 “Real education is not about information. It is about transformation.”
+
+## LinkedIn Automation Config
+
+The daily GitHub Action publishes the latest quote image to LinkedIn using `scripts/post-to-linkedin.js`.
+
+Environment variables used:
+
+- `LINKEDIN_ACCESS_TOKEN`: LinkedIn API access token (required)
+- `LINKEDIN_ORGANIZATION_ID`: LinkedIn organization ID (required)
+- `LINKEDIN_INCLUDE_POST_URL`: Include post permalink in caption (`true` or `false`)
+
+Default behavior in this repository is image-only posting (no permalink in caption):
+
+- Workflow sets `LINKEDIN_INCLUDE_POST_URL` to `false` in `.github/workflows/daily-posts.yml`

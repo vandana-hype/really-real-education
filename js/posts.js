@@ -45,11 +45,6 @@
     return post.permalink || getPostUrl(post.id);
   }
 
-  // LinkedIn previews are best when sharing the page URL with OG tags.
-  function getLinkedInShareUrl(post) {
-    return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getResolvedPostUrl(post))}`;
-  }
-
   function getQuoteNumber(post) {
     return post.imageNumber || (post.title.match(/(\d+)/)?.[1] || "");
   }
@@ -66,22 +61,9 @@
     ].join("\n");
   }
 
-  // X shares the post URL; the preview image comes from twitter:card meta tags on posts.html.
-  function getXShareUrl(post) {
-    const text = createQuoteMessage(post);
-    return `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(getResolvedPostUrl(post))}`;
-  }
-
-  // Facebook sharing works more reliably with a page URL that has OG tags than a raw image URL.
-  function getFacebookShareUrl(post) {
-    return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getResolvedPostUrl(post))}`;
-  }
-
-  // Instagram and YouTube: copy image URL first so it's easy to attach, then the caption.
+  // Caption used when a platform composer opens after image sharing/download.
   function createCaption(post) {
-    const postUrl = getPostUrl(post.id);
-    const resolvedPostUrl = getResolvedPostUrl(post);
-    return `${post.image}\n\n${post.title}\n${post.excerpt}\n\nReally Real Education — Jalte Diye Foundation\n${resolvedPostUrl}`;
+    return `${post.title}\n${post.excerpt}\n\n${createQuoteMessage(post)}\n\nReally Real Education — Jalte Diye Foundation`;
   }
 
   // Update Open Graph and Twitter Card meta tags so the page preview shows today's image
@@ -136,48 +118,66 @@
 
     await navigator.share({
       files: [imageFile],
-      text: `${createQuoteMessage(post)}\n\n${getResolvedPostUrl(post)}`
+      text: createCaption(post)
     });
     return true;
+  }
+
+  async function downloadPostImage(post) {
+    const response = await fetch(post.image);
+    if (!response.ok) {
+      throw new Error("Image download failed");
+    }
+
+    const imageBlob = await response.blob();
+    const quoteNumber = String(getQuoteNumber(post) || "image");
+    const extension = imageBlob.type === "image/png" ? "png" : "jpg";
+    const filename = `quote-${quoteNumber}.${extension}`;
+    const objectUrl = URL.createObjectURL(imageBlob);
+
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+  }
+
+  function openPlatformComposer(platform) {
+    const urls = {
+      LinkedIn: "https://www.linkedin.com/feed/",
+      X: "https://x.com/compose/post",
+      Facebook: "https://www.facebook.com/",
+      Instagram: "https://www.instagram.com/",
+      YouTube: "https://studio.youtube.com/"
+    };
+
+    const url = urls[platform] || "https://www.linkedin.com/feed/";
+    window.open(url, "_blank", "noopener,noreferrer");
   }
 
   async function onManualShare(platform, post) {
     const caption = createCaption(post);
 
-    if (platform === "Instagram" || platform === "YouTube") {
-      try {
-        const shared = await tryNativeImageShare(post);
-        if (shared) {
-          return;
-        }
-      } catch {
-        // Fall back to copy-and-open flow below when native share is unavailable.
+    try {
+      const shared = await tryNativeImageShare(post);
+      if (shared) {
+        return;
       }
+    } catch {
+      // Fall back to download-and-open flow below when native share is unavailable.
     }
 
-    copyTextToClipboard(caption)
+    Promise.all([downloadPostImage(post), copyTextToClipboard(caption)])
       .then(() => {
-        alert(`Caption copied. Paste it on ${platform}.`);
-        if (platform === "Instagram") {
-          window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
-          return;
-        }
-        window.open("https://studio.youtube.com/", "_blank", "noopener,noreferrer");
+        alert(`Image downloaded and caption copied. Upload the image in ${platform} and paste the caption.`);
+        openPlatformComposer(platform);
       })
       .catch(() => {
-        alert(`Copy failed. Please copy manually and post on ${platform}.`);
-      });
-  }
-
-  function onLinkedInShare(post) {
-    const caption = `${createQuoteMessage(post)}\n\n${getResolvedPostUrl(post)}`;
-    copyTextToClipboard(caption)
-      .then(() => {
-        alert("Caption copied. Paste it in LinkedIn after the preview loads.");
-        window.open(getLinkedInShareUrl(post), "_blank", "noopener,noreferrer");
-      })
-      .catch(() => {
-        window.open(getLinkedInShareUrl(post), "_blank", "noopener,noreferrer");
+        alert(`Could not prepare image/caption automatically. Please save the image and post it manually on ${platform}.`);
+        openPlatformComposer(platform);
       });
   }
 
@@ -192,8 +192,6 @@
 
     feedContainer.innerHTML = posts
       .map((post) => {
-        const xUrl = getXShareUrl(post);
-        const facebookUrl = getFacebookShareUrl(post);
         return `
           <article class="post-card" id="${escapeHtml(post.id)}">
             <img class="post-image" src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" loading="lazy">
@@ -203,9 +201,9 @@
               <p class="card-meta">Last updated: ${escapeHtml(formatDate(post.date))}</p>
               <p>${escapeHtml(post.excerpt)}</p>
               <div class="post-actions">
-                <button class="btn linkedin-share" type="button" data-post-id="${escapeHtml(post.id)}">Share on LinkedIn</button>
-                <a class="btn secondary share-btn" href="${xUrl}" target="_blank" rel="noopener noreferrer">Share on X</a>
-                <a class="btn secondary share-btn" href="${facebookUrl}" target="_blank" rel="noopener noreferrer">Share on Facebook</a>
+                <button class="btn secondary share-btn manual-share" type="button" data-platform="LinkedIn" data-post-id="${escapeHtml(post.id)}">Share on LinkedIn</button>
+                <button class="btn secondary share-btn manual-share" type="button" data-platform="X" data-post-id="${escapeHtml(post.id)}">Share on X</button>
+                <button class="btn secondary share-btn manual-share" type="button" data-platform="Facebook" data-post-id="${escapeHtml(post.id)}">Share on Facebook</button>
                 <button class="btn secondary share-btn manual-share" type="button" data-platform="Instagram" data-post-id="${escapeHtml(post.id)}">Share on Instagram</button>
                 <button class="btn secondary share-btn manual-share" type="button" data-platform="YouTube" data-post-id="${escapeHtml(post.id)}">Share on YouTube</button>
               </div>
@@ -226,18 +224,6 @@
           return;
         }
         onManualShare(platform, post);
-      });
-    });
-
-    const linkedInButtons = feedContainer.querySelectorAll(".linkedin-share");
-    linkedInButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const postId = button.getAttribute("data-post-id") || "";
-        const post = postById[postId];
-        if (!post) {
-          return;
-        }
-        onLinkedInShare(post);
       });
     });
   }

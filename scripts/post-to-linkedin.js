@@ -37,17 +37,22 @@ function isAlreadyPosted(state, post) {
 function buildShareText(post) {
   const quoteNumber = post.imageNumber || (post.title.match(/(\d+)/)?.[1] || "");
   const postUrl = post.permalink || `https://reallyrealeducation.org/posts/${post.id}.html`;
+  const includePostUrl = String(process.env.LINKEDIN_INCLUDE_POST_URL || "").toLowerCase() === "true";
 
-  return [
+  const lines = [
     `Quote ${quoteNumber}`,
     "A small thought. A deeper meaning.",
     "",
     "If this resonates, share it with someone who needs it today.",
     "",
-    "#DailyQuote #WorldPeace  #Education #LifelongLearning #Wisdom #SelfGrowth #InnerPeace",
-    "",
-    postUrl
-  ].join("\n");
+    "#DailyQuote #WorldPeace  #Education #LifelongLearning #Wisdom #SelfGrowth #InnerPeace"
+  ];
+
+  if (includePostUrl) {
+    lines.push("", postUrl);
+  }
+
+  return lines.join("\n");
 }
 
 async function registerImageUpload(token, authorUrn) {
