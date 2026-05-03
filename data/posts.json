@@ -1,5 +1,14 @@
 [
   {
+    "id": "post-2026-05-03",
+    "title": "Daily Quote 123",
+    "date": "2026-05-03",
+    "excerpt": "Daily learning quote post #123.",
+    "image": "https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_123.jpg",
+    "imageNumber": 123,
+    "permalink": "https://reallyrealeducation.org/posts/post-2026-05-03.html"
+  },
+  {
     "id": "post-2026-05-02",
     "title": "Daily Quote 122",
     "date": "2026-05-02",
