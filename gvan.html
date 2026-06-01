@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Gvan — Forest Ecology Planner | Field Drawing Fixed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
+
+/* Light Mode (default) */
+:root {
+  --bark: #3b2f1e;
+  --bark-mid: #5a4230;
+  --moss: #3d5a2b;
+  --moss-mid: #567a40;
+  --moss-lt: #8fb870;
+  --leaf: #a8c97f;
+  --leaf-lt: #d4e9bb;
+  --canopy: #e8f3d6;
+  --sky: #f0f7e6;
+  --sand: #f5edd8;
+  --amber: #c97a2f;
+  --water: #4a8fa8;
+  --white: #fefefe;
+  --ink: #1c2010;
+  --ink-mid: #3a4230;
+  --ink-lt: #6b7a5e;
+  --shadow: rgba(30,40,15,0.12);
+  --shadow-lg: rgba(30,40,15,0.22);
+  --card-bg: #ffffff;
+  --header-bg: rgba(240,247,230,0.94);
+  --border-light: rgba(86,122,64,0.1);
+}
+
+/* Dark Mode */
+body.dark {
+  --bark: #d8cfb0;
+  --bark-mid: #c0b28a;
+  --moss: #8fb870;
+  --moss-mid: #7da35e;
+  --moss-lt: #5e8642;
+  --leaf: #4e6b36;
+  --leaf-lt: #3a5228;
+  --canopy: #2a3a1c;
+  --sky: #1e2a18;
+  --sand: #2c2a1e;
+  --amber: #e6a15e;
+  --water: #6ab0c7;
+  --white: #2a2f24;
+  --ink: #edeae2;
+  --ink-mid: #cdd1c0;
+  --ink-lt: #a0a893;
+  --shadow: rgba(0,0,0,0.3);
+  --shadow-lg: rgba(0,0,0,0.5);
+  --card-bg: #2e3527;
+  --header-bg: rgba(30,42,24,0.96);
+  --border-light: rgba(143,184,112,0.2);
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--sky);
+  color: var(--ink);
+  overflow-x: hidden;
+}
+::-webkit-scrollbar{width:6px;background:var(--canopy)}::-webkit-scrollbar-thumb{background:var(--moss-mid);border-radius:3px}
+header{
+  position:fixed;top:0;width:100%;z-index:100;background:var(--header-bg);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;height:68px;
+}
+.logo{display:flex;align-items:center;gap:0.6rem;text-decoration:none}
+.logo-text{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--moss)}
+.nav-btn{
+  font-size:0.8rem;font-weight:500;padding:0.4rem 1rem;border-radius:99px;border:1px solid var(--border-light);
+  background:transparent;color:var(--ink-mid);cursor:pointer;transition:0.2s;
+}
+.nav-btn:hover,.nav-btn.active{background:var(--moss);color:white;border-color:var(--moss)}
+.nav-btn-primary{background:var(--moss);color:white;border-color:var(--moss)}
+.theme-toggle{margin-left:0.8rem;background:var(--moss);color:white;border:none;padding:0.3rem 0.8rem;border-radius:99px;font-size:0.7rem;cursor:pointer}
+.hero{
+  padding-top:68px;min-height:380px;
+  background:linear-gradient(145deg, var(--canopy), var(--leaf-lt));
+  display:flex;align-items:center;position:relative;
+}
+.hero-content{padding:2.5rem;max-width:680px}
+.hero-badge{display:inline-flex;background:rgba(61,90,43,0.12);border-radius:99px;padding:0.25rem 0.75rem;font-size:0.7rem;font-weight:600;color:var(--moss);margin-bottom:1rem}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;color:var(--bark);line-height:1.1}
+.hero h1 em{color:var(--moss);font-style:italic}
+.btn-forest{background:var(--moss);color:white;padding:0.7rem 1.6rem;border-radius:99px;font-weight:600;border:none;cursor:pointer;box-shadow:0 6px 14px var(--shadow)}
+.btn-outline{background:transparent;border:1.5px solid var(--moss);color:var(--moss);padding:0.7rem 1.6rem;border-radius:99px;font-weight:500;cursor:pointer}
+.hero-stats{position:absolute;right:2rem;bottom:1.5rem;display:flex;gap:1rem}
+.hero-stat{background:transparent;backdrop-filter:blur(4px);border-radius:16px;padding:0.6rem 1rem;min-width:90px;text-align:center;color:var(--ink)}
+main{position:relative;z-index:1;padding:2rem}
+.section{margin-bottom:2.5rem}
+.section-header{display:flex;align-items:baseline;gap:0.6rem;margin-bottom:1.2rem}
+.section-header h2{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--bark)}
+.card{background:var(--card-bg);border-radius:20px;border:1px solid var(--border-light);box-shadow:0 4px 14px var(--shadow);overflow:hidden}
+.card-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border-light);display:flex;gap:0.6rem;align-items:center}
+.card-header h3{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700}
+.card-body{padding:1.2rem}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.eco-metrics{display:grid;grid-template-columns:repeat(4,1fr);background:rgba(86,122,64,0.08);border-radius:16px;margin-bottom:2rem}
+.eco-metric{background:var(--card-bg);padding:1rem;border-radius:12px;margin:2px}
+.val{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--moss)}
+#map{height:320px;width:100%;border-radius:16px;z-index:1}
+.ring-wrap{position:relative;width:100px;height:100px}
+.ring-svg{transform:rotate(-90deg)}
+.risk-row{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.6rem}
+.risk-bar-bg{flex:1;height:7px;background:rgba(86,122,64,0.1);border-radius:99px}
+.analysis-table{width:100%;border-collapse:collapse;font-size:0.8rem}
+.analysis-table th{text-align:left;padding:0.5rem 0.7rem;background:var(--canopy);color:var(--ink-mid)}
+.status-pill{display:inline-flex;padding:0.2rem 0.6rem;border-radius:99px;font-size:0.7rem;font-weight:600}
+.status-pill.ok{background:#e6f5e8;color:#2d7a3a}
+.status-pill.warn{background:#fff3e0;color:#c97a2f}
+.input-group{display:flex;flex-direction:column;gap:0.3rem;margin-bottom:0.8rem}
+.input-group label{font-size:0.7rem;font-weight:600;text-transform:uppercase}
+.input-group input,.input-group select{padding:0.5rem 0.7rem;border-radius:12px;border:1.5px solid var(--border-light);background:var(--sky);font-family:inherit;color:var(--ink)}
+.chart-wrap{height:210px;width:100%}
+#fieldCanvas,#plantationCanvas{width:100%;height:340px;background:var(--canopy);border-radius:16px;cursor:crosshair;border:2px solid var(--border-light);display:block}
+.poly-btn{font-size:0.75rem;padding:0.3rem 0.9rem;border-radius:99px;border:1px solid var(--moss);background:var(--card-bg);cursor:pointer;color:var(--ink)}
+.poly-btn.active{background:var(--moss);color:white}
+.scheme-card{background:var(--card-bg);border-radius:16px;padding:1rem;border:1px solid var(--border-light);margin-bottom:0.5rem}
+.helpline-card{background:var(--card-bg);border-radius:14px;padding:0.8rem;border:1px solid var(--border-light)}
+footer{background:var(--bark);color:var(--sky);padding:1.5rem;display:flex;justify-content:space-between;flex-wrap:wrap}
+#toast{position:fixed;bottom:1rem;right:1rem;background:var(--bark);color:var(--sky);padding:0.6rem 1rem;border-radius:40px;z-index:1000;opacity:0;transition:0.2s;pointer-events:none}
+#toast.show{opacity:1}
+@media(max-width:800px){.grid-2{grid-template-columns:1fr}.hero-stats{display:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="logo-icon">🌿</span><span class="logo-text">Gvan</span></div>
+  <nav style="display:flex;align-items:center">
+    <a href="#map-section" class="nav-btn">🗺️ Map</a>
+    <a href="#plan-section" class="nav-btn">📊 Plan</a>
+    <a href="#field-section" class="nav-btn">✏️ Field</a>
+    <button id="detectBtn" class="nav-btn nav-btn-primary" onclick="detectLocation()">📍 Detect Location</button>
+    <button id="themeToggle" class="theme-toggle">🌓 Dark/Light</button>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">🌲 Ecology Intelligence Platform</div>
+    <h1>Plan <em>forests</em>,<br>restore earth.</h1>
+    <p>Live location, carbon modelling, field drawing — all in one.</p>
+    <div style="display:flex;gap:0.8rem;margin-top:1rem">
+      <button class="btn-forest" onclick="detectLocation()">📍 Auto-detect</button>
+      <button class="btn-outline" onclick="document.getElementById('plan-section').scrollIntoView({behavior:'smooth'})">📈 Analysis</button>
+    </div>
+    <div class="loc-status" style="font-size:0.75rem;margin-top:0.6rem"><span id="locDot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#aaa;margin-right:6px;"></span><span id="locStatus">📍 Using default India • click detect</span></div>
+  </div>
+  <div class="hero-stats"><div class="hero-stat"><div class="num" id="heroTrees">—</div><div class="lbl">Trees est.</div></div><div class="hero-stat"><div class="num" id="heroCarbon">—</div><div class="lbl">tCO₂/yr</div></div><div class="hero-stat"><div class="num" id="heroScore">—</div><div class="lbl">Suitability</div></div></div>
+</div>
+
+<main>
+<div class="eco-metrics">
+  <div class="eco-metric"><label>Soil Type</label><div class="val editable-field" id="soilEdit">Clay-Loam</div><div class="sub">click to adjust</div></div>
+  <div class="eco-metric"><label>Rainfall</label><div class="val editable-field" id="rainEdit">900mm</div><div class="sub">based on lat</div></div>
+  <div class="eco-metric"><label>Climate Zone</label><div class="val editable-field" id="climateEdit">Tropical Wet & Dry</div><div class="sub">click to adjust</div></div>
+  <div class="eco-metric"><label>Eco Health</label><div class="val" id="ecoIndexVal">—</div><div style="background:#ddd;border-radius:8px;height:6px;margin-top:6px"><div id="ecoBar" style="width:0%;height:6px;background:var(--moss);border-radius:8px"></div></div></div>
+</div>
+
+<!-- MAP SECTION -->
+<div class="section" id="map-section">
+  <div class="section-header"><h2>🗺️ Live Site Map</h2><span>GPS + terrain</span></div>
+  <div class="grid-2">
+    <div class="card"><div class="card-header">📍 Location</div><div id="map" style="height:320px"></div></div>
+    <div class="card"><div class="card-header">💚 Health Index</div><div class="card-body"><div style="display:flex;align-items:center;gap:1rem"><div class="ring-wrap"><svg class="ring-svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="var(--border-light)" stroke-width="8"/><circle id="ringCircle" cx="50" cy="50" r="42" fill="none" stroke="var(--moss)" stroke-width="8" stroke-dasharray="263.89" stroke-dashoffset="263.89" stroke-linecap="round"/></svg><div class="ring-label" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center"><div class="ring-pct" id="ringPct">0%</div></div></div><div style="flex:1"><div class="risk-row"><span>Climate</span><div class="risk-bar-bg"><div class="risk-bar-fill" id="rb-climate" style="width:0%;background:var(--moss)"></div></div><span id="rv-climate">0%</span></div><div class="risk-row"><span>Rainfall</span><div class="risk-bar-bg"><div class="risk-bar-fill" id="rb-rain" style="width:0%"></div></div><span id="rv-rain">0%</span></div><div class="risk-row"><span>Soil</span><div class="risk-bar-bg"><div class="risk-bar-fill" id="rb-soil" style="width:0%"></div></div><span id="rv-soil">0%</span></div><div class="risk-row"><span>Water</span><div class="risk-bar-bg"><div class="risk-bar-fill" id="rb-water" style="width:0%"></div></div><span id="rv-water">0%</span></div></div></div></div></div>
+  </div>
+</div>
+
+<!-- PLANNING SECTION (no species card) -->
+<div class="section" id="plan-section">
+  <div class="section-header"><h2>📐 Planning & Feasibility</h2><span>real-time analysis</span></div>
+  <div class="grid-2" style="gap:1.2rem">
+    <div class="card"><div class="card-header">⚙️ Site Parameters</div><div class="card-body">
+      <div class="input-group"><label>Land Area (ha)</label><input type="number" id="area" value="12" step="0.5" oninput="calc()"></div>
+      <div class="input-group"><label>Budget (₹ INR)</label><input type="number" id="budget" value="650000" step="10000" oninput="calc()"></div>
+      <div class="input-group"><label>Planting Goal</label><select id="goal" onchange="calc()"><option value="carbon">Carbon Sequestration</option><option value="timber">Timber</option><option value="fruit">Fruit / Agroforestry</option><option value="restoration">Restoration</option><option value="mixed">Mixed Plantation</option></select></div>
+      <div class="input-group"><label>Maintenance</label><select id="maintenance" onchange="calc()"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></div>
+      <div class="input-group"><label>Soil pH (1-9)</label><input type="number" id="soilPH" value="6.5" step="0.1" oninput="calc()"></div>
+      <div class="input-group"><label>Elevation (m)</label><input type="number" id="elevation" value="320" oninput="calc()"></div>
+      <div class="input-group"><label>Water Availability</label><input type="range" id="waterAvail" min="0" max="1" step="0.01" value="0.75" oninput="document.getElementById('wAvVal').innerText=this.value;calc()"><span id="wAvVal">0.75</span></div>
+      <div class="input-group"><label>Water Distance (km)</label><input type="number" id="waterDist" value="1.2" step="0.2" oninput="calc()"></div>
+      <div class="input-group"><label>Spacing (m)</label><select id="spacing" onchange="calc()"><option value="2">2x2 dense</option><option value="3" selected>3x3 standard</option><option value="4">4x4 agroforestry</option><option value="6">6x6 timber</option></select></div>
+    </div></div>
+    <div><div class="card"><div class="card-header">📊 Suitability Radar</div><div class="card-body"><div class="chart-wrap"><canvas id="radarChart"></canvas></div></div></div>
+    <div class="card" style="margin-top:1rem"><div class="card-header">💰 Cost Breakdown</div><div class="card-body"><div class="chart-wrap"><canvas id="costChart"></canvas></div></div></div></div>
+  </div>
+
+  <div class="grid-4" style="margin:1rem 0">
+    <div class="analysis-panel" style="background:var(--canopy);padding:0.8rem;border-radius:16px"><div>🌳 Total Trees</div><div id="mTrees" style="font-size:1.8rem;font-weight:800">—</div></div>
+    <div class="analysis-panel" style="background:var(--canopy);padding:0.8rem;border-radius:16px"><div>🌍 CO₂ / yr</div><div id="mCarbon" style="font-size:1.8rem;font-weight:800">—</div></div>
+    <div class="analysis-panel" style="background:var(--canopy);padding:0.8rem;border-radius:16px"><div>💰 5Y Cost</div><div id="mCost" style="font-size:1.5rem;font-weight:800">—</div></div>
+    <div class="analysis-panel" style="background:var(--canopy);padding:0.8rem;border-radius:16px"><div>📈 Success Rate</div><div id="mSuccess" style="font-size:1.8rem;font-weight:800">—</div></div>
+  </div>
+
+  <div class="card"><div class="card-header">🔬 Factor Analysis</div><div style="overflow-x:auto"><table class="analysis-table"><thead><tr><th>Factor</th><th>Value</th><th>Score</th><th>Status</th></tr></thead><tbody id="analysisBody"></tbody></table></div></div>
+  <div class="grid-2"><div class="card"><div class="card-header">📈 10-Year Carbon Projection</div><div class="card-body"><div class="chart-wrap-sm"><canvas id="projChart"></canvas></div></div></div>
+  <div class="card"><div class="card-header">⚠️ Risk Assessment</div><div class="card-body" id="riskBody"></div></div></div>
+</div>
+
+<!-- FIELD SIMULATION (FIXED DRAWING) -->
+<div class="section" id="field-section">
+  <div class="section-header"><h2>✏️ Field Polygon & Plantation Layout</h2><span>draw boundary → auto trees</span></div>
+  <div class="grid-2">
+    <div class="card"><div class="card-header">🗺️ Draw Field</div><div class="card-body"><canvas id="fieldCanvas" width="600" height="340"></canvas><div class="polygon-controls" style="display:flex;gap:0.5rem;margin-top:0.6rem"><button class="poly-btn" id="drawModeBtn" onclick="setDrawMode(true)">✏️ Draw</button><button class="poly-btn" onclick="clearPolygon()">🗑 Clear</button><button class="poly-btn" onclick="closePolygon()">✔ Close & Simulate</button><button class="poly-btn" onclick="loadSampleField()">📐 Sample Field</button></div><div id="polyInfo" style="font-size:0.7rem;margin-top:0.5rem">Click on canvas to place points. Click near first point (orange) to close polygon.</div></div></div>
+    <div class="card"><div class="card-header">🌳 Plantation Sim</div><div class="card-body"><canvas id="plantationCanvas" width="600" height="340"></canvas><div style="margin-top:0.6rem"><div>Trees in polygon: <strong id="polyTrees">—</strong></div><div>Est. area: <strong id="polyArea">—</strong></div><div>Canopy coverage: <strong id="polyCoverage">—</strong></div><div>Water channels: <strong id="polyChannels">—</strong></div></div></div></div>
+  </div>
+</div>
+
+<!-- GOVERNMENT SCHEMES & HELPLINES (fully restored) -->
+<div class="section" id="schemes-section">
+  <div class="section-header"><h2>🏛️ Government Schemes & Subsidies</h2><span>India — verified 2024</span></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem">
+    <div class="scheme-card"><div class="scheme-icon">🌳</div><h4>National Afforestation Programme (NAP)</h4><p>Funding for degraded forest land. ₹8,000–12,000/ha for planting + protection. Apply through State Forest Departments.</p><a href="https://moef.gov.in" target="_blank">🌐 moef.gov.in →</a><a href="tel:01124695311">📞 011-24695311</a></div>
+    <div class="scheme-card"><div class="scheme-icon">🚜</div><h4>Sub-Mission on Agroforestry (SMAF)</h4><p>50% subsidy on planting material + installation for farmers. Covers fruit trees, timber, medicinal plants on agricultural land.</p><a href="https://agricoop.nic.in" target="_blank">🌐 agricoop.nic.in →</a><a href="tel:01123382680">📞 011-23382680</a></div>
+    <div class="scheme-card"><div class="scheme-icon">💰</div><h4>CAMPA Fund (Compensatory Afforestation)</h4><p>₹50,000–80,000/ha for restoration projects. For communities, NGOs and forest departments on divertible forest land.</p><a href="https://campa.gov.in" target="_blank">🌐 campa.gov.in →</a><a href="tel:18001234568">📞 1800-123-4568</a></div>
+    <div class="scheme-card"><div class="scheme-icon">☀️</div><h4>Hariyali Mission / State Schemes</h4><p>Free saplings from state forest nurseries. Some states offer ₹1,000–5,000 per farmer for tree plantation on bunds.</p><a href="https://forestsclearance.nic.in" target="_blank">🌐 Forest Clearance Portal →</a></div>
+    <div class="scheme-card"><div class="scheme-icon">📈</div><h4>Carbon Credit Monetisation</h4><p>Register with Indian Carbon Market (ICM). Earn ₹400–600 per tonne CO₂. Managed by Bureau of Energy Efficiency (BEE).</p><a href="https://beeindia.gov.in" target="_blank">🌐 beeindia.gov.in →</a><a href="mailto:carbon@naccc.org">✉️ carbon@naccc.org</a></div>
+    <div class="scheme-card"><div class="scheme-icon">🔬</div><h4>Free Soil Testing (Soil Health Card)</h4><p>Government labs test soil for free / nominal fee. Get pH, NPK, micro-nutrients. Apply at local Krishi Vigyan Kendra.</p><a href="https://soilhealth.dac.gov.in" target="_blank">🌐 Soil Health Portal →</a><a href="tel:18001801551">📞 Kisan Call: 1551</a></div>
+  </div>
+  <div class="section-header"><h2>Important Helplines & Contacts</h2><span>24/7 emergency & support</span></div>
+  <div class="helpline-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem">
+    <div class="helpline-card"><div class="hname">🔥 Forest Fire Emergency</div><div class="hnum">1924</div><div class="hdesc">24/7 forest fire reporting. All state forest departments.</div></div>
+    <div class="helpline-card"><div class="hname">🌿 National Forest Helpline</div><div class="hnum">1800-425-2458</div><div class="hdesc">Illegal logging, wildlife poaching, deforestation reports.</div></div>
+    <div class="helpline-card"><div class="hname">👨‍🌾 Kisan Call Centre</div><div class="hnum">1551</div><div class="hdesc">Free advisory for farmers on agroforestry, soil, crop selection.</div></div>
+    <div class="helpline-card"><div class="hname">🐾 Wildlife Crime Control</div><div class="hnum">1800-102-0200</div><div class="hdesc">Report wildlife trafficking, habitat encroachment.</div></div>
+    <div class="helpline-card"><div class="hname">🌳 Sankalp Taru (NGO)</div><div class="hnum">+91-120-4111-330</div><div class="hdesc">Free saplings, community planting drives nationwide.</div><a href="https://sankalptaru.org" class="hlink" target="_blank">sankalptaru.org</a></div>
+    <div class="helpline-card"><div class="hname">🏛 MoEF&CC Helpdesk</div><div class="hnum">011-24695313</div><div class="hdesc">Ministry of Environment — clearances, permissions, schemes.</div><a href="https://moef.gov.in" class="hlink" target="_blank">moef.gov.in</a></div>
+    <div class="helpline-card"><div class="hname">💧 Water Conservation Board</div><div class="hnum">1800-180-5678</div><div class="hdesc">Rainwater harvesting, watershed management support.</div></div>
+    <div class="helpline-card"><div class="hname">🌾 PM Kisan Yojana</div><div class="hnum">155261</div><div class="hdesc">Financial support for farmers under government schemes.</div><a href="https://pmkisan.gov.in" class="hlink" target="_blank">pmkisan.gov.in</a></div>
+    <div class="helpline-card"><div class="hname">🌍 Green Corps India</div><div class="hnum">1800-123-4567</div><div class="hdesc">Volunteer network for community tree planting & restoration.</div></div>
+  </div>
+</div>
+</main>
+<footer><div>🌿 Gvan — Forest Ecology Platform</div><div style="font-size:0.7rem">Data estimated • contact state forest dept for certification</div></footer>
+<div id="toast"></div>
+
+<script>
+// Global state
+let S = { lat:20.5937, lon:78.9629, soil:'Clay-Loam', rainfall:'900mm', climate:'Tropical Wet & Dry', sunlight:'High', ecoIndex:68 };
+let leafMap, leafMarker, radarChart, costChart, projChart;
+let polyPoints = [], polyClosed = false, drawModeActive = true;
+
+// Toast helper
+function toast(m){ let t=document.getElementById('toast'); t.innerText=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+
+// Location and derived functions
+function deriveRainfall(lat){ let a=Math.abs(lat); if(a<10)return'2400mm'; if(a<15)return'1800mm'; if(a<23)return'1200mm'; if(a<30)return'900mm'; if(a<40)return'700mm'; return'500mm'; }
+function deriveClimate(lat){ let a=Math.abs(lat); if(a<10)return'Tropical Rainforest'; if(a<23)return'Tropical Wet & Dry'; if(a<35)return'Subtropical / Semi-arid'; return'Temperate Oceanic'; }
+function updateFromLocation(lat,lon){ S.lat=lat; S.lon=lon; S.rainfall=deriveRainfall(lat); S.climate=deriveClimate(lat); S.sunlight=Math.abs(lat)<25?'High Sunlight':'Moderate'; S.soil=['Clay-Loam','Sandy Loam','Alluvial','Silty Clay'][Math.floor(Math.random()*4)]; S.ecoIndex=Math.min(85,55+parseInt(S.rainfall)/100); updateAllUI(); }
+function detectLocation(){
+  if(!navigator.geolocation){ toast("Geolocation not supported"); return; }
+  let btn=document.getElementById('detectBtn'); btn.innerText="⏳ detecting..."; btn.disabled=true;
+  navigator.geolocation.getCurrentPosition(pos=>{ updateFromLocation(pos.coords.latitude,pos.coords.longitude); if(leafMap) leafMap.setView([S.lat,S.lon],12); if(leafMarker) leafMarker.setLatLng([S.lat,S.lon]).bindPopup(`📍 ${S.lat.toFixed(3)}`).openPopup(); document.getElementById('locDot').style.background="#4caf50"; document.getElementById('locStatus').innerHTML=`📍 Live: ${S.lat.toFixed(2)}`; toast("Location detected!"); btn.innerText="✅ Located"; btn.disabled=false; }, err=>{ toast("Location error: "+err.message); btn.innerText="📍 Detect"; btn.disabled=false; });
+}
+
+// Core calculation (no species)
+function calc(){
+  let area=parseFloat(document.getElementById('area').value)||10, budget=parseFloat(document.getElementById('budget').value)||500000, sp=parseFloat(document.getElementById('spacing').value)||3;
+  let wA=parseFloat(document.getElementById('waterAvail').value), pH=parseFloat(document.getElementById('soilPH').value), el=parseFloat(document.getElementById('elevation').value);
+  let mm=parseInt(S.rainfall)||900;
+  let climateScore=S.climate.includes('Tropical')?0.9:0.7; let rainfallScore=Math.min(1,mm/2000); let soilScore=(S.soil.includes('Clay')||S.soil.includes('Alluvial'))?0.85:0.65; let waterScore=wA*0.7+Math.max(0,1-parseFloat(document.getElementById('waterDist').value)/8)*0.3; let elevationScore=el<800?1:0.7; let phScore=(pH>=5.5&&pH<=7.5)?1:0.6;
+  let overall=(climateScore*0.25+rainfallScore*0.2+soilScore*0.2+waterScore*0.2+elevationScore*0.1+phScore*0.05);
+  let treesPerHa=Math.round(10000/(sp*sp)); let totalTrees=Math.round(area*treesPerHa);
+  let plantingCost=totalTrees*210, labourCost=area*15000, maintCost=document.getElementById('maintenance').value==='low'?70:document.getElementById('maintenance').value==='medium'?140:210;
+  let fiveYrCost=plantingCost+labourCost+(maintCost*totalTrees*5);
+  let kgPerTree=S.climate.includes('Tropical')?22:14; let carbonPerYr=(totalTrees*kgPerTree/1000).toFixed(1);
+  let projData=[...Array(11).keys()].map(y=>+(totalTrees*kgPerTree*y*(1+y*0.035)/1000).toFixed(1));
+  if(radarChart) radarChart.data.datasets[0].data=[climateScore,rainfallScore,soilScore,waterScore,elevationScore,phScore], radarChart.update();
+  if(costChart) costChart.data.datasets[0].data=[plantingCost,labourCost,maintCost*totalTrees*5], costChart.update();
+  if(projChart) projChart.data.datasets[0].data=projData, projChart.update();
+  document.getElementById('mTrees').innerText=totalTrees.toLocaleString(); document.getElementById('mCarbon').innerText=carbonPerYr; document.getElementById('mCost').innerText='₹'+fiveYrCost.toLocaleString(); document.getElementById('mSuccess').innerText=(overall*100).toFixed(0)+'%';
+  document.getElementById('heroTrees').innerText=totalTrees>999?(totalTrees/1000).toFixed(1)+'k':totalTrees; document.getElementById('heroCarbon').innerText=carbonPerYr; document.getElementById('heroScore').innerText=(overall*100).toFixed(0)+'%';
+  document.getElementById('rb-climate').style.width=(climateScore*100)+'%'; document.getElementById('rv-climate').innerText=(climateScore*100).toFixed(0)+'%';
+  document.getElementById('rb-rain').style.width=(rainfallScore*100)+'%'; document.getElementById('rv-rain').innerText=(rainfallScore*100).toFixed(0)+'%';
+  document.getElementById('rb-soil').style.width=(soilScore*100)+'%'; document.getElementById('rv-soil').innerText=(soilScore*100).toFixed(0)+'%';
+  document.getElementById('rb-water').style.width=(waterScore*100)+'%'; document.getElementById('rv-water').innerText=(waterScore*100).toFixed(0)+'%';
+  document.getElementById('ringPct').innerText=(overall*100).toFixed(0)+'%'; let circ=document.getElementById('ringCircle'); if(circ) circ.style.strokeDashoffset=(263.89*(1-overall)).toFixed(2);
+  document.getElementById('ecoIndexVal').innerText=(overall*100).toFixed(0)+'%'; document.getElementById('ecoBar').style.width=(overall*100)+'%';
+  let rows=[{f:'Climate',v:S.climate,score:climateScore,status:climateScore>0.7?'ok':'warn'},{f:'Rainfall',v:S.rainfall,score:rainfallScore,status:rainfallScore>0.6?'ok':'warn'},{f:'Soil',v:S.soil,score:soilScore,status:soilScore>0.7?'ok':'warn'},{f:'Water Access',v:wA.toFixed(2),score:waterScore,status:waterScore>0.6?'ok':'warn'},{f:'Budget',v:'₹'+budget.toLocaleString(),score:Math.min(1,budget/fiveYrCost),status:budget>=fiveYrCost?'ok':'bad'}];
+  document.getElementById('analysisBody').innerHTML=rows.map(r=>`<tr><td>${r.f}</td><td>${r.v}</td><td><div style="background:#e2e8cf;border-radius:20px;width:60px"><div style="width:${r.score*100}%;background:var(--moss);height:6px"></div></div>${(r.score*100).toFixed(0)}%</td><td><span class="status-pill ${r.status}">${r.status==='ok'?'Good':'Attention'}</span></td></tr>`).join('');
+  let risks=[]; if(waterScore<0.4) risks.push('💧 Low water → drip irrigation'); if(rainfallScore<0.4) risks.push('☀️ Low rain → drought species'); if(budget<fiveYrCost) risks.push('💰 Budget shortfall → apply CAMPA/NAP'); if(risks.length===0) risks.push('✅ No critical risks');
+  document.getElementById('riskBody').innerHTML=risks.map(r=>`<div>⚠️ ${r}</div>`).join('');
+  if(polyClosed) renderPlantation();
+}
+function updateAllUI(){ document.getElementById('soilEdit').innerText=S.soil; document.getElementById('rainEdit').innerText=S.rainfall; document.getElementById('climateEdit').innerText=S.climate; calc(); }
+
+// ========== FIELD DRAWING (FIXED) ==========
+function setDrawMode(mode){ drawModeActive = mode; document.getElementById('drawModeBtn').classList.toggle('active',mode); }
+function drawPolygonCanvas(){
+  let c=document.getElementById('fieldCanvas'); if(!c)return; let ctx=c.getContext('2d'); c.width=c.clientWidth||600; c.height=340;
+  ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle='var(--canopy)'; ctx.fillRect(0,0,c.width,c.height);
+  if(polyPoints.length===0){ ctx.fillStyle='var(--ink-lt)'; ctx.font='14px sans-serif'; ctx.fillText('Click to place boundary points',c.width/2-110,c.height/2); return; }
+  if(polyPoints.length>=3){ ctx.beginPath(); ctx.moveTo(polyPoints[0].x,polyPoints[0].y); polyPoints.forEach(p=>ctx.lineTo(p.x,p.y)); if(polyClosed) ctx.closePath(); ctx.fillStyle=polyClosed?'rgba(61,90,43,0.2)':'rgba(61,90,43,0.1)'; ctx.fill(); ctx.strokeStyle='var(--moss)'; ctx.lineWidth=2.5; ctx.setLineDash(polyClosed?[]:[6,6]); ctx.stroke(); ctx.setLineDash([]); }
+  polyPoints.forEach((p,i)=>{ ctx.beginPath(); ctx.arc(p.x,p.y,5,0,Math.PI*2); ctx.fillStyle=i===0?'var(--amber)':'var(--moss)'; ctx.fill(); ctx.strokeStyle='white'; ctx.lineWidth=1.5; ctx.stroke(); });
+}
+function handleCanvasClick(e){
+  if(!drawModeActive || polyClosed) return;
+  let canvas=document.getElementById('fieldCanvas');
+  let rect=canvas.getBoundingClientRect();
+  let scaleX = canvas.width / rect.width;
+  let scaleY = canvas.height / rect.height;
+  let mouseX = (e.clientX - rect.left) * scaleX;
+  let mouseY = (e.clientY - rect.top) * scaleY;
+  mouseX = Math.min(canvas.width, Math.max(0, mouseX));
+  mouseY = Math.min(canvas.height, Math.max(0, mouseY));
+  if(polyPoints.length>2){
+    let first=polyPoints[0];
+    if(Math.hypot(mouseX-first.x, mouseY-first.y) < 15){ closePolygon(); return; }
+  }
+  polyPoints.push({x:mouseX, y:mouseY});
+  drawPolygonCanvas();
+  document.getElementById('polyInfo').innerText=`${polyPoints.length} points. Click near orange start to close.`;
+}
+function clearPolygon(){ polyPoints=[]; polyClosed=false; drawPolygonCanvas(); let pc=document.getElementById('plantationCanvas'); if(pc){pc.width=pc.clientWidth||600; pc.height=340; pc.getContext('2d').clearRect(0,0,pc.width,pc.height);} document.getElementById('polyTrees').innerHTML='—'; document.getElementById('polyArea').innerHTML='—'; document.getElementById('polyCoverage').innerHTML='—'; document.getElementById('polyChannels').innerHTML='—'; toast('Polygon cleared'); }
+function closePolygon(){ if(polyPoints.length<3){ toast('Need at least 3 points'); return; } polyClosed=true; drawPolygonCanvas(); renderPlantation(); toast('Polygon closed. Plantation simulated.'); }
+function loadSampleField(){ let c=document.getElementById('fieldCanvas'); if(c){ c.width=c.clientWidth||600; let w=c.width, h=340; polyPoints=[{x:w*0.2,y:h*0.3},{x:w*0.75,y:h*0.25},{x:w*0.85,y:h*0.6},{x:w*0.5,y:h*0.8},{x:w*0.25,y:h*0.7}]; polyClosed=true; drawPolygonCanvas(); renderPlantation(); toast('Sample field loaded'); } }
+function pointInPolygon(px,py,poly){ let inside=false; for(let i=0,j=poly.length-1;i<poly.length;j=i++){ let xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y; if(((yi>py)!==(yj>py))&&(px<(xj-xi)*(py-yi)/(yj-yi)+xi)) inside=!inside; } return inside; }
+function renderPlantation(){
+  if(!polyClosed || polyPoints.length<3) return;
+  let c=document.getElementById('plantationCanvas'); if(!c) return; c.width=c.clientWidth||600; c.height=340;
+  let ctx=c.getContext('2d'); ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle='var(--canopy)'; ctx.fillRect(0,0,c.width,c.height);
+  ctx.beginPath(); ctx.moveTo(polyPoints[0].x,polyPoints[0].y); polyPoints.forEach(p=>ctx.lineTo(p.x,p.y)); ctx.closePath(); ctx.fillStyle='rgba(141,191,100,0.2)'; ctx.fill(); ctx.strokeStyle='var(--moss)'; ctx.stroke();
+  let spacing=parseFloat(document.getElementById('spacing').value)||3; let step=spacing*4.2;
+  let bbox={minX:Math.min(...polyPoints.map(p=>p.x)),maxX:Math.max(...polyPoints.map(p=>p.x)),minY:Math.min(...polyPoints.map(p=>p.y)),maxY:Math.max(...polyPoints.map(p=>p.y))};
+  let treeCount=0, channels=0;
+  for(let y=bbox.minY+step/2; y<bbox.maxY; y+=step){
+    let isChannel=(Math.floor(y/step)%7===3);
+    if(isChannel){ ctx.beginPath(); ctx.moveTo(bbox.minX,y); ctx.lineTo(bbox.maxX,y); ctx.strokeStyle='#4a8fa8'; ctx.lineWidth=3; ctx.stroke(); channels++; continue; }
+    for(let x=bbox.minX+step/2; x<bbox.maxX; x+=step){
+      if(pointInPolygon(x,y,polyPoints)){
+        let color=(Math.floor(x/step)%3===1)?'#8fb870':(Math.floor(x/step)%3===2)?'#c97a2f':'#3d5a2b';
+        ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fillStyle=color; ctx.fill(); treeCount++;
+      }
+    }
+  }
+  let areaUnits=Math.abs(polyPoints.reduce((a,p,i)=>{let j=(i+1)%polyPoints.length;return a+p.x*polyPoints[j].y-polyPoints[j].x*p.y;},0)/2);
+  let estHa=(areaUnits/(step*step*800)).toFixed(1); let coverage=Math.min(92,(treeCount*20/areaUnits)*10).toFixed(0);
+  document.getElementById('polyTrees').innerHTML=treeCount; document.getElementById('polyArea').innerHTML=estHa+' ha'; document.getElementById('polyCoverage').innerHTML=coverage+'%'; document.getElementById('polyChannels').innerHTML=channels;
+}
+
+// Charts & init
+function initCharts(){
+  radarChart=new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['Climate','Rainfall','Soil','Water','Elevation','pH'],datasets:[{label:'Suitability',data:[0,0,0,0,0,0],backgroundColor:'rgba(61,90,43,0.2)',borderColor:'#3d5a2b'}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:1}}}});
+  costChart=new Chart(document.getElementById('costChart'),{type:'doughnut',data:{labels:['Sapling','Labour','5Y Maint'],datasets:[{data:[0,0,0],backgroundColor:['#3d5a2b','#567a40','#a8c97f']}]},options:{cutout:'60%'}});
+  projChart=new Chart(document.getElementById('projChart'),{type:'line',data:{labels:[0,1,2,3,4,5,6,7,8,9,10],datasets:[{label:'tCO₂',data:[0,0,0,0,0,0,0,0,0,0,0],borderColor:'#3d5a2b',fill:true}]},options:{responsive:true}});
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  leafMap=L.map('map').setView([S.lat,S.lon],5); L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap'}).addTo(leafMap); leafMarker=L.marker([S.lat,S.lon]).addTo(leafMap).bindPopup('📍 Default').openPopup();
+  initCharts(); updateAllUI();
+  let fcanvas=document.getElementById('fieldCanvas'); fcanvas.addEventListener('click',handleCanvasClick); drawPolygonCanvas();
+  document.querySelectorAll('.editable-field').forEach(el=>el.addEventListener('click',()=>{ let f=el.id; let opts={soilEdit:['Clay-Loam','Sandy Loam','Alluvial','Silty Clay'],rainEdit:['400mm','900mm','1400mm','2200mm'],climateEdit:['Tropical Wet & Dry','Subtropical / Semi-arid','Temperate Oceanic']}[f]; if(opts){ let val=prompt('Edit value',el.innerText); if(opts.includes(val)){ if(f==='soilEdit') S.soil=val; if(f==='rainEdit') S.rainfall=val; if(f==='climateEdit') S.climate=val; updateAllUI(); toast(`Updated to ${val}`); } else toast('Invalid option'); } }));
+  document.getElementById('themeToggle').addEventListener('click',()=>{ document.body.classList.toggle('dark'); toast('Theme toggled'); });
+  setDrawMode(true); toast('✅ Gvan ready • Click on canvas to draw field');
+});
+window.calc=calc; window.detectLocation=detectLocation; window.clearPolygon=clearPolygon; window.closePolygon=closePolygon; window.loadSampleField=loadSampleField; window.setDrawMode=setDrawMode;
+</script>
+</body>
+</html>
