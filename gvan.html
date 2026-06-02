@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -142,7 +141,63 @@ footer{background:var(--bark);color:var(--sky);padding:1.5rem;display:flex;justi
     <a href="#map-section" class="nav-btn">🗺️ Map</a>
     <a href="#plan-section" class="nav-btn">📊 Plan</a>
     <a href="#field-section" class="nav-btn">✏️ Field</a>
-    <button id="detectBtn" class="nav-btn nav-btn-primary" onclick="detectLocation()">📍 Detect Location</button>
+    <select id="citySelect" class="nav-btn" onchange="selectCity()" style="padding:0.4rem 0.8rem;border-radius:99px;border:1px solid var(--border-light);background:var(--sky);color:var(--ink);font-family:inherit;cursor:pointer">
+  <option value="">🏙️ Select City</option>
+  <optgroup label="Maharashtra">
+    <option value="19.076,72.877">Mumbai</option>
+    <option value="18.52,73.856">Pune</option>
+    <option value="21.145,79.088">Nagpur</option>
+  </optgroup>
+  <optgroup label="Karnataka">
+    <option value="12.971,77.594">Bengaluru</option>
+    <option value="12.295,76.639">Mysuru</option>
+    <option value="15.365,75.124">Hubballi</option>
+  </optgroup>
+  <optgroup label="Uttar Pradesh">
+    <option value="26.846,80.946">Lucknow</option>
+    <option value="27.177,78.008">Agra</option>
+    <option value="25.317,83.005">Varanasi</option>
+  </optgroup>
+  <optgroup label="Rajasthan">
+    <option value="26.912,75.787">Jaipur</option>
+    <option value="26.292,73.016">Jodhpur</option>
+    <option value="24.585,73.712">Udaipur</option>
+  </optgroup>
+  <optgroup label="Punjab">
+    <option value="31.634,74.872">Amritsar</option>
+    <option value="30.9,75.857">Ludhiana</option>
+  </optgroup>
+  <optgroup label="Tamil Nadu">
+    <option value="13.083,80.27">Chennai</option>
+    <option value="11.017,76.955">Coimbatore</option>
+    <option value="9.919,78.119">Madurai</option>
+  </optgroup>
+  <optgroup label="Gujarat">
+    <option value="23.022,72.571">Ahmedabad</option>
+    <option value="21.17,72.831">Surat</option>
+    <option value="22.307,73.181">Vadodara</option>
+  </optgroup>
+  <optgroup label="West Bengal">
+    <option value="22.572,88.364">Kolkata</option>
+    <option value="26.717,88.432">Siliguri</option>
+  </optgroup>
+  <optgroup label="Madhya Pradesh">
+    <option value="23.259,77.413">Bhopal</option>
+    <option value="22.719,75.857">Indore</option>
+  </optgroup>
+  <optgroup label="Andhra Pradesh">
+    <option value="17.686,83.218">Visakhapatnam</option>
+    <option value="16.506,80.648">Vijayawada</option>
+  </optgroup>
+  <optgroup label="Telangana">
+    <option value="17.385,78.487">Hyderabad</option>
+  </optgroup>
+  <optgroup label="Kerala">
+    <option value="8.524,76.936">Thiruvananthapuram</option>
+    <option value="10.85,76.271">Thrissur</option>
+  </optgroup>
+</select>
+<button id="detectBtn" class="nav-btn nav-btn-primary" onclick="detectLocation()">📍 Detect</button>
     <button id="themeToggle" class="theme-toggle">🌓 Dark/Light</button>
   </nav>
 </header>
@@ -207,6 +262,12 @@ footer{background:var(--bark);color:var(--sky);padding:1.5rem;display:flex;justi
   <div class="card"><div class="card-header">🔬 Factor Analysis</div><div style="overflow-x:auto"><table class="analysis-table"><thead><tr><th>Factor</th><th>Value</th><th>Score</th><th>Status</th></tr></thead><tbody id="analysisBody"></tbody></table></div></div>
   <div class="grid-2"><div class="card"><div class="card-header">📈 10-Year Carbon Projection</div><div class="card-body"><div class="chart-wrap-sm"><canvas id="projChart"></canvas></div></div></div>
   <div class="card"><div class="card-header">⚠️ Risk Assessment</div><div class="card-body" id="riskBody"></div></div></div>
+  <div class="card" style="margin-top:1.2rem">
+  <div class="card-header">🌱 Plant Recommendations</div>
+  <div class="card-body" id="plantRecBody">
+    <p style="color:var(--ink-lt);font-size:0.85rem">Run analysis to see recommendations.</p>
+  </div>
+</div>
 </div>
 
 <!-- FIELD SIMULATION (FIXED DRAWING) -->
@@ -264,6 +325,118 @@ function detectLocation(){
   let btn=document.getElementById('detectBtn'); btn.innerText="⏳ detecting..."; btn.disabled=true;
   navigator.geolocation.getCurrentPosition(pos=>{ updateFromLocation(pos.coords.latitude,pos.coords.longitude); if(leafMap) leafMap.setView([S.lat,S.lon],12); if(leafMarker) leafMarker.setLatLng([S.lat,S.lon]).bindPopup(`📍 ${S.lat.toFixed(3)}`).openPopup(); document.getElementById('locDot').style.background="#4caf50"; document.getElementById('locStatus').innerHTML=`📍 Live: ${S.lat.toFixed(2)}`; toast("Location detected!"); btn.innerText="✅ Located"; btn.disabled=false; }, err=>{ toast("Location error: "+err.message); btn.innerText="📍 Detect"; btn.disabled=false; });
 }
+  function getPlantRecommendations(soil, climate, goal) {
+  const all = {
+    carbon: {
+      'Tropical': [
+        {icon:'🌳',name:'Teak',note:'High carbon, 20yr cycle'},
+        {icon:'🌿',name:'Bamboo',note:'Fast growth, 50t CO₂/ha/yr'},
+        {icon:'🌲',name:'Neem',note:'Drought-resistant, rich carbon'},
+        {icon:'🌴',name:'Arjuna',note:'Riparian, high biomass'},
+        {icon:'🌱',name:'Subabul',note:'Nitrogen-fixing, fast'},
+      ],
+      'Subtropical': [
+        {icon:'🌳',name:'Eucalyptus',note:'Very fast biomass'},
+        {icon:'🌲',name:'Sheesham',note:'Hardwood, long rotation'},
+        {icon:'🌿',name:'Bamboo',note:'Perennial carbon sink'},
+        {icon:'🌱',name:'Acacia',note:'Hardy, nitrogen-fixing'},
+      ],
+      'Temperate': [
+        {icon:'🌲',name:'Deodar Cedar',note:'High altitude, dense wood'},
+        {icon:'🌳',name:'Oak',note:'Long-lived carbon store'},
+        {icon:'🌿',name:'Poplar',note:'Fast rotation, pulpwood'},
+      ]
+    },
+    timber: {
+      'Tropical': [
+        {icon:'🪵',name:'Teak',note:'Premium hardwood, ₹8,000/cft'},
+        {icon:'🪵',name:'Rosewood',note:'Very high value timber'},
+        {icon:'🌲',name:'Mahogany',note:'Export quality wood'},
+        {icon:'🌳',name:'Gamhar',note:'Fast growing, good timber'},
+      ],
+      'Subtropical': [
+        {icon:'🪵',name:'Sheesham',note:'Furniture-grade hardwood'},
+        {icon:'🌲',name:'Poplar',note:'10yr rotation, paper/ply'},
+        {icon:'🪵',name:'Eucalyptus',note:'Pulpwood, low rotation'},
+      ],
+      'Temperate': [
+        {icon:'🌲',name:'Deodar',note:'Premium mountain timber'},
+        {icon:'🪵',name:'Walnut',note:'High-value furniture wood'},
+        {icon:'🌳',name:'Silver Fir',note:'Construction timber'},
+      ]
+    },
+    fruit: {
+      'Tropical': [
+        {icon:'🥭',name:'Mango',note:'₹30–60/kg, 200yr lifespan'},
+        {icon:'🍌',name:'Banana',note:'12-month yield, intercrop'},
+        {icon:'🥥',name:'Coconut',note:'50yr productive life'},
+        {icon:'🫒',name:'Jackfruit',note:'High nutrition, local demand'},
+        {icon:'🍋',name:'Lemon/Citrus',note:'3yr first yield'},
+      ],
+      'Subtropical': [
+        {icon:'🍊',name:'Orange/Mosambi',note:'Export demand, ₹20–40/kg'},
+        {icon:'🍇',name:'Guava',note:'Hardy, 2yr to yield'},
+        {icon:'🫐',name:'Pomegranate',note:'Dry climate, ₹40–80/kg'},
+        {icon:'🌾',name:'Amla',note:'Medicinal, high demand'},
+      ],
+      'Temperate': [
+        {icon:'🍎',name:'Apple',note:'High altitude, premium price'},
+        {icon:'🍑',name:'Peach/Plum',note:'800m+ elevation'},
+        {icon:'🍒',name:'Cherry',note:'Cold requirement met'},
+        {icon:'🌰',name:'Walnut',note:'Dual use: nut + timber'},
+      ]
+    },
+    restoration: {
+      'Tropical': [
+        {icon:'🌿',name:'Neem',note:'Soil improvement, pest control'},
+        {icon:'🌱',name:'Pongamia',note:'Biofuel + nitrogen fixing'},
+        {icon:'🌾',name:'Vetiver',note:'Erosion control, deep roots'},
+        {icon:'🌳',name:'Mahua',note:'Tribal livelihood tree'},
+        {icon:'🍀',name:'Sesbania',note:'Green manure, fast nitrogen'},
+      ],
+      'Subtropical': [
+        {icon:'🌱',name:'Acacia',note:'Pioneer species, arid soils'},
+        {icon:'🌿',name:'Prosopis alba',note:'Windbreak + fodder'},
+        {icon:'🌾',name:'Vetiver',note:'Watershed restoration'},
+        {icon:'🌳',name:'Pipal/Banyan',note:'Keystone ecosystem trees'},
+      ],
+      'Temperate': [
+        {icon:'🌲',name:'Alder',note:'Riverbank stabilization'},
+        {icon:'🌿',name:'Wild Rose',note:'Hedgerow + wildlife'},
+        {icon:'🌾',name:'Native grasses',note:'Ground cover, erosion stop'},
+      ]
+    },
+    mixed: {
+      'Tropical': [
+        {icon:'🌳',name:'Teak',note:'Timber layer'},
+        {icon:'🥭',name:'Mango',note:'Fruit layer'},
+        {icon:'🌿',name:'Bamboo',note:'Carbon + utility'},
+        {icon:'🌱',name:'Subabul',note:'Nitrogen fixing undergrowth'},
+        {icon:'🌾',name:'Vetiver',note:'Ground cover'},
+      ],
+      'Subtropical': [
+        {icon:'🪵',name:'Poplar',note:'Fast timber'},
+        {icon:'🍇',name:'Guava',note:'Fruit intercrop'},
+        {icon:'🌱',name:'Acacia',note:'Soil improvement'},
+        {icon:'🌿',name:'Lemongrass',note:'Ground layer, income'},
+      ],
+      'Temperate': [
+        {icon:'🌲',name:'Deodar',note:'Canopy timber'},
+        {icon:'🍎',name:'Apple',note:'Fruit mid-layer'},
+        {icon:'🌰',name:'Walnut',note:'Nut + wood'},
+        {icon:'🌾',name:'Native shrubs',note:'Ground cover'},
+      ]
+    }
+  };
+  let zone = 'Tropical';
+  if(climate.includes('Subtropical') || climate.includes('Semi-arid')) zone = 'Subtropical';
+  else if(climate.includes('Temperate') || climate.includes('Oceanic')) zone = 'Temperate';
+  let goalKey = goal || 'mixed';
+  let list = (all[goalKey] && all[goalKey][zone]) ? all[goalKey][zone] : all['mixed']['Tropical'];
+  if(soil.includes('Sandy')) list = list.map(p=>({...p, note: p.note+' · sandy-tolerant'}));
+  if(soil.includes('Clay')) list = list.map(p=>({...p, note: p.note+' · clay-adapted'}));
+  return list;
+}
 
 // Core calculation (no species)
 function calc(){
@@ -292,6 +465,18 @@ function calc(){
   document.getElementById('analysisBody').innerHTML=rows.map(r=>`<tr><td>${r.f}</td><td>${r.v}</td><td><div style="background:#e2e8cf;border-radius:20px;width:60px"><div style="width:${r.score*100}%;background:var(--moss);height:6px"></div></div>${(r.score*100).toFixed(0)}%</td><td><span class="status-pill ${r.status}">${r.status==='ok'?'Good':'Attention'}</span></td></tr>`).join('');
   let risks=[]; if(waterScore<0.4) risks.push('💧 Low water → drip irrigation'); if(rainfallScore<0.4) risks.push('☀️ Low rain → drought species'); if(budget<fiveYrCost) risks.push('💰 Budget shortfall → apply CAMPA/NAP'); if(risks.length===0) risks.push('✅ No critical risks');
   document.getElementById('riskBody').innerHTML=risks.map(r=>`<div>⚠️ ${r}</div>`).join('');
+  let goal = document.getElementById('goal').value;
+let plantData = getPlantRecommendations(S.soil, S.climate, goal);
+document.getElementById('plantRecBody').innerHTML = `
+  <p style="font-size:0.78rem;color:var(--ink-lt);margin-bottom:0.8rem">Based on <strong>${S.soil}</strong> soil · <strong>${S.climate}</strong> climate · Goal: <strong>${document.getElementById('goal').options[document.getElementById('goal').selectedIndex].text}</strong></p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:0.6rem">
+    ${plantData.map(p=>`
+      <div style="background:var(--canopy);border-radius:12px;padding:0.6rem 0.8rem;border:1px solid var(--border-light)">
+        <div style="font-size:1.1rem">${p.icon}</div>
+        <div style="font-weight:600;font-size:0.85rem">${p.name}</div>
+        <div style="font-size:0.72rem;color:var(--ink-lt)">${p.note}</div>
+      </div>`).join('')}
+  </div>`;
   if(polyClosed) renderPlantation();
 }
 function updateAllUI(){ document.getElementById('soilEdit').innerText=S.soil; document.getElementById('rainEdit').innerText=S.rainfall; document.getElementById('climateEdit').innerText=S.climate; calc(); }
@@ -365,6 +550,19 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('themeToggle').addEventListener('click',()=>{ document.body.classList.toggle('dark'); toast('Theme toggled'); });
   setDrawMode(true); toast('✅ Gvan ready • Click on canvas to draw field');
 });
+  function selectCity(){
+  let val = document.getElementById('citySelect').value;
+  if(!val) return;
+  let [lat,lon] = val.split(',').map(Number);
+  let cityName = document.getElementById('citySelect').options[document.getElementById('citySelect').selectedIndex].text;
+  updateFromLocation(lat, lon);
+  if(leafMap) leafMap.setView([lat,lon],11);
+  if(leafMarker) leafMarker.setLatLng([lat,lon]).bindPopup(`📍 ${cityName}`).openPopup();
+  document.getElementById('locDot').style.background="#4caf50";
+  document.getElementById('locStatus').innerHTML=`📍 ${cityName}`;
+  toast(`📍 Location set to ${cityName}`);
+}
+window.selectCity = selectCity;
 window.calc=calc; window.detectLocation=detectLocation; window.clearPolygon=clearPolygon; window.closePolygon=closePolygon; window.loadSampleField=loadSampleField; window.setDrawMode=setDrawMode;
 </script>
 </body>
