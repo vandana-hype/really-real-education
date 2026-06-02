@@ -283,6 +283,23 @@
         padding: 1rem;
         border-radius: 12px;
         margin: 2px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .eco-metric select {
+        width: 100%;
+        margin-top: 4px;
+        padding: 0.35rem 0.5rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-light);
+        background: var(--sky);
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--moss);
+        outline: none;
+        cursor: pointer;
       }
       .val {
         font-family: "Playfair Display", serif;
@@ -433,6 +450,9 @@
         .hero-stats {
           display: none;
         }
+        .eco-metrics {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
   </head>
@@ -511,8 +531,13 @@
       <div class="eco-metrics">
         <div class="eco-metric">
           <label>Soil Type</label>
-          <div class="val editable-field" id="soilEdit">Clay-Loam</div>
-          <div class="sub">click to adjust</div>
+          <select id="soilSelector" onchange="S.soil = this.value; calc();">
+            <option value="Clay-Loam">Clay-Loam</option>
+            <option value="Sandy Loam">Sandy Loam</option>
+            <option value="Alluvial">Alluvial</option>
+            <option value="Silty Clay">Silty Clay</option>
+          </select>
+          <div class="sub" style="margin-top: 4px;">click to adjust</div>
         </div>
         <div class="eco-metric">
           <label>Rainfall</label>
@@ -521,10 +546,13 @@
         </div>
         <div class="eco-metric">
           <label>Climate Zone</label>
-          <div class="val editable-field" id="climateEdit">
-            Tropical Wet & Dry
-          </div>
-          <div class="sub">click to adjust</div>
+          <select id="climateSelector" onchange="S.climate = this.value; calc();">
+            <option value="Tropical Wet & Dry">Tropical Wet & Dry</option>
+            <option value="Tropical Rainforest">Tropical Rainforest</option>
+            <option value="Subtropical / Semi-arid">Subtropical / Semi-arid</option>
+            <option value="Temperate Oceanic">Temperate Oceanic</option>
+          </select>
+          <div class="sub" style="margin-top: 4px;">click to adjust</div>
         </div>
         <div class="eco-metric">
           <label>Eco Health</label>
@@ -550,7 +578,6 @@
         </div>
       </div>
 
-      <!-- MAP SECTION -->
       <div class="section" id="map-section">
         <div class="section-header">
           <h2>🗺️ Live Site Map</h2>
@@ -653,7 +680,6 @@
         </div>
       </div>
 
-      <!-- PLANNING SECTION (no species card) -->
       <div class="section" id="plan-section">
         <div class="section-header">
           <h2>📐 Planning & Feasibility</h2>
@@ -677,7 +703,6 @@
                   <select
                     id="area-unit"
                     onchange="
-                      calcUnitChange();
                       calc();
                     "
                   >
@@ -687,7 +712,6 @@
                   </select>
                 </div>
               </div>
-              <!-- <div class="input-group"><label>Land Area (ha)</label><input type="number" id="area" value="12" step="0.5" oninput="calc()"></div> -->
               <div class="input-group">
                 <label>Budget (₹ INR)</label
                 ><input
@@ -868,7 +892,6 @@
         </div>
       </div>
 
-      <!-- FIELD SIMULATION (FIXED DRAWING) -->
       <div class="section" id="field-section">
         <div class="section-header">
           <h2>✏️ Field Polygon & Plantation Layout</h2>
@@ -918,7 +941,6 @@
         </div>
       </div>
 
-      <!-- GOVERNMENT SCHEMES & HELPLINES (fully restored) -->
       <div class="section" id="schemes-section">
         <div class="section-header">
           <h2>🏛️ Government Schemes & Subsidies</h2>
@@ -1166,12 +1188,12 @@
             document.getElementById("locStatus").innerHTML =
               `📍 Live: ${S.lat.toFixed(2)}`;
             toast("Location detected!");
-            btn.innerText = "✅ Located";
+            btn.innerText = "📍 Detect Location";
             btn.disabled = false;
           },
           (err) => {
             toast("Location error: " + err.message);
-            btn.innerText = "📍 Detect";
+            btn.innerText = "📍 Detect Location";
             btn.disabled = false;
           },
         );
@@ -1335,10 +1357,11 @@
           .join("");
         if (polyClosed) renderPlantation();
       }
+      
       function updateAllUI() {
-        document.getElementById("soilEdit").innerText = S.soil;
-        document.getElementById("rainEdit").innerText = S.rainfall;
-        document.getElementById("climateEdit").innerText = S.climate;
+        if (document.getElementById("soilSelector")) document.getElementById("soilSelector").value = S.soil;
+        if (document.getElementById("climateSelector")) document.getElementById("climateSelector").value = S.climate;
+        if (document.getElementById("rainEdit")) document.getElementById("rainEdit").innerText = S.rainfall;
         calc();
       }
 
@@ -1612,30 +1635,6 @@
         let fcanvas = document.getElementById("fieldCanvas");
         fcanvas.addEventListener("click", handleCanvasClick);
         drawPolygonCanvas();
-        document.querySelectorAll(".editable-field").forEach((el) =>
-          el.addEventListener("click", () => {
-            let f = el.id;
-            let opts = {
-              soilEdit: ["Clay-Loam", "Sandy Loam", "Alluvial", "Silty Clay"],
-              rainEdit: ["400mm", "900mm", "1400mm", "2200mm"],
-              climateEdit: [
-                "Tropical Wet & Dry",
-                "Subtropical / Semi-arid",
-                "Temperate Oceanic",
-              ],
-            }[f];
-            if (opts) {
-              let val = prompt("Edit value", el.innerText);
-              if (opts.includes(val)) {
-                if (f === "soilEdit") S.soil = val;
-                if (f === "rainEdit") S.rainfall = val;
-                if (f === "climateEdit") S.climate = val;
-                updateAllUI();
-                toast(`Updated to ${val}`);
-              } else toast("Invalid option");
-            }
-          }),
-        );
         document.getElementById("themeToggle").addEventListener("click", () => {
           document.body.classList.toggle("dark");
           toast("Theme toggled");
