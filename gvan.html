@@ -144,18 +144,12 @@
   <div class="hero-stats"><div class="hero-stat"><div class="num" id="heroTrees">—</div><div class="lbl">Trees est.</div></div><div class="hero-stat"><div class="num" id="heroCarbon">—</div><div class="lbl">tCO₂/yr</div></div><div class="hero-stat"><div class="num" id="heroScore">—</div><div class="lbl">Success</div></div></div>
 </div>
 <main>
-  <div class="eco-metrics">
-    <div class="eco-metric"><label>Soil Type</label><div class="val editable-field" id="soilEdit">Clay-Loam</div><div class="sub">click to adjust</div></div>
-    <div class="eco-metric"><label>Rainfall</label><div class="val editable-field" id="rainEdit">900mm</div><div class="sub">based on lat</div></div>
-    <div class="eco-metric"><label>Climate Zone</label><div class="val editable-field" id="climateEdit">Tropical Wet & Dry</div><div class="sub">click to adjust</div></div>
-    <div class="eco-metric"><label>Eco Health</label><div class="val" id="ecoIndexVal">—</div><div style="background:#ddd;border-radius:8px;height:6px;margin-top:6px"><div id="ecoBar" style="width:0%;height:6px;background:var(--moss);border-radius:8px"></div></div></div>
-  </div>
-
+  
   <div class="section" id="map-section">
     <div class="section-header"><h2>🗺️ Live Site Map</h2><span>Search or detect location</span></div>
     <div class="grid-2">
       <div class="card"><div class="card-header">📍 Location</div><div id="map" style="height:320px"></div></div>
-      <div class="card"><div class="card-header">💚 Health Index</div><div class="card-body"><div style="display:flex;align-items:center;gap:1rem"><div class="ring-wrap"><svg class="ring-svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="var(--border-light)" stroke-width="8"/><circle id="ringCircle" cx="50" cy="50" r="42" fill="none" stroke="var(--moss)" stroke-width="8" stroke-dasharray="263.89" stroke-dashoffset="263.89" stroke-linecap="round"/></svg><div class="ring-label" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center"><div class="ring-pct" id="ringPct">0%</div></div></div><div style="flex:1"><div class="risk-row"><span>Climate</span><div class="risk-bar-bg"><div class="risk-bar-fill" id="rb-climate" style="width:0%;background:var(--moss)"></div></div><span id="rv-climate">0%</span></div><div class="risk-row"><span>Rainfall</span><div class="risk-bar-bg"><div class="risk-bar-fill" id="rb-rain" style="width:0%"></div></div><span id="rv-rain">0%</span></div><div class="risk-row"><span>Soil</span><div class="risk-bar-bg"><div class="risk-bar-fill" id="rb-soil" style="width:0%"></div></div><span id="rv-soil">0%</span></div><div class="risk-row"><span>Water</span><div class="risk-bar-bg"><div class="risk-bar-fill" id="rb-water" style="width:0%"></div></div><span id="rv-water">0%</span></div></div></div></div></div>
+      
     </div>
   </div>
 
@@ -172,16 +166,11 @@
         <div class="input-group"><label>Water Availability (0 = very dry, 1 = abundant)</label><input type="range" id="waterAvail" min="0" max="1" step="0.01" value="0.75" oninput="document.getElementById('wAvVal').innerText=this.value;calc()"><span id="wAvVal">0.75</span></div>
         <div class="input-group"><label>Tree Spacing (m)</label><select id="spacing" onchange="calc()"><option value="2">2x2 dense</option><option value="3" selected>3x3 standard</option><option value="4">4x4 agroforestry</option><option value="6">6x6 timber</option></select></div>
       </div></div>
-      <div><div class="card"><div class="card-header">📊 Suitability Radar</div><div class="card-body"><div class="chart-wrap"><canvas id="radarChart"></canvas></div></div></div>
-      <div class="card" style="margin-top:1rem"><div class="card-header">💰 Cost Breakdown</div><div class="card-body"><div class="chart-wrap"><canvas id="costChart"></canvas></div></div></div></div>
+      
     </div>
-    <div class="grid-4" style="margin:1rem 0">
-      <div class="analysis-panel" style="background:var(--canopy);padding:0.8rem;border-radius:16px"><div>🌳 Total Trees</div><div id="mTrees" style="font-size:1.8rem;font-weight:800">—</div></div>
-      <div class="analysis-panel" style="background:var(--canopy);padding:0.8rem;border-radius:16px"><div>🌍 CO₂ / yr</div><div id="mCarbon" style="font-size:1.8rem;font-weight:800">—</div></div>
-      <div class="analysis-panel" style="background:var(--canopy);padding:0.8rem;border-radius:16px"><div>💰 5Y Cost</div><div id="mCost" style="font-size:1.5rem;font-weight:800">—</div></div>
-      <div class="analysis-panel" style="background:var(--canopy);padding:0.8rem;border-radius:16px"><div>📈 Success Rate</div><div id="mSuccess" style="font-size:1.8rem;font-weight:800">—</div></div>
+   <div style="margin:1rem 0">
+      <div style="background:var(--canopy);padding:0.8rem;border-radius:16px;display:inline-block"><div>📈 Success Rate</div><div id="mSuccess" style="font-size:1.8rem;font-weight:800">—</div></div>
     </div>
-
     <div id="miyawaki-planner-widget" style="font-family: 'DM Sans', sans-serif; background: #f0f7e6; padding: 20px; border-radius: 16px; border: 1px solid #cdd1c0; color: #1c2010; max-width: 800px; margin: 0 auto; margin-bottom: 2rem;">
       <h2 style="margin-top: 0; color: #3b2f1e; font-family: 'Playfair Display', serif;">🌿 Miyawaki Site Analyzer</h2>
       <p style="font-size: 0.85rem; color: #5a4230;">Coordinates update automatically from the top Detect/Search buttons.</p>
@@ -311,8 +300,7 @@
 
     <div class="card" style="margin:1rem 0"><div class="card-header">🌿 Smart Species Recommendation (pH‑optimised)</div><div class="card-body" id="speciesRecBody">Loading...</div></div>
     <div class="card" style="margin:1rem 0"><div class="card-header">🔬 Factor Analysis (including pH & management)</div><div style="overflow-x:auto"><table class="analysis-table"><thead><tr><th>Factor</th><th>Value</th><th>Score</th><th>Status</th></tr></thead><tbody id="analysisBody"></tbody> </table></div></div>
-    <div class="grid-2"><div class="card"><div class="card-header">📈 10-Year Carbon Projection</div><div class="card-body"><div class="chart-wrap-sm"><canvas id="projChart"></canvas></div></div></div>
-    <div class="card"><div class="card-header">💡 Suggestions & Local Contacts</div><div class="card-body" id="suggestionsBody"></div></div></div>
+    <div class="card"><div class="card-header">💡 Suggestions & Local Contacts</div><div class="card-body" id="suggestionsBody"></div></div>
   </div>
 
   <div class="section" id="field-section">
