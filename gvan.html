@@ -304,6 +304,518 @@
       <div class="analysis-panel" style="background:var(--canopy);padding:0.8rem;border-radius:16px"><div>📈 Success Rate</div><div id="mSuccess" style="font-size:1.8rem;font-weight:800">—</div></div>
     </div>
 
+
+    <div id="miyawaki-planner-widget" style="font-family: 'DM Sans', sans-serif; background: #f0f7e6; padding: 20px; border-radius: 16px; border: 1px solid #cdd1c0; color: #1c2010; max-width: 800px; margin: 0 auto;">
+  
+  <h2 style="margin-top: 0; color: #3b2f1e; font-family: 'Playfair Display', serif;">🌿 Miyawaki Site Analyzer</h2>
+  <p style="font-size: 0.85rem; color: #5a4230;">Enter coordinates, area, and soil pH to generate localized species, soil formulas, and budget.</p>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; background: #ffffff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+    <div>
+      <label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Latitude</label>
+      <input type="number" id="mw-lat" value="28.6139" step="any" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
+    </div>
+    <div>
+      <label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Longitude</label>
+      <input type="number" id="mw-lon" value="77.2090" step="any" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
+    </div>
+    <div>
+      <label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Area (sq m)</label>
+      <input type="number" id="mw-area" value="100" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
+    </div>
+    <div>
+      <label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Soil pH</label>
+      <input type="number" id="mw-ph" value="6.5" step="0.1" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
+    </div>
+    <div style="display: flex; align-items: flex-end; grid-column: 1 / -1;">
+      <button onclick="analyzeSite()" style="width: 100%; padding: 10px; background: #3d5a2b; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Analyze Site</button>
+    </div>
+  </div>
+
+  <div id="mw-loading" style="display: none; text-align: center; color: #3d5a2b; font-weight: bold;">Loading regional data...</div>
+
+  <div id="mw-results" style="display: none;">
+    
+    <div style="background: #ffffff; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #3d5a2b;">
+      <h3 style="margin: 0 0 10px 0; font-size: 1.1rem;">📍 Zone: <span id="mw-zone-name" style="color: #3d5a2b;"></span></h3>
+      <label style="font-size: 0.85rem; font-weight: bold;">Select your baseline soil type:</label>
+      <select id="mw-soil-select" onchange="calculateEnhancersAndBudget()" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc;"></select>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+      
+      <div style="background: #ffffff; padding: 15px; border-radius: 12px;">
+        <h3 style="margin: 0 0 10px 0; font-size: 1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">🌱 Recommended Species</h3>
+        <div id="mw-plants-list" style="font-size: 0.85rem; max-height: 280px; overflow-y: auto;"></div>
+      </div>
+
+      <div style="background: #ffffff; padding: 15px; border-radius: 12px;">
+        <h3 style="margin: 0 0 10px 0; font-size: 1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">💰 Material Required & Budget</h3>
+        <div id="mw-budget-list" style="font-size: 0.85rem;"></div>
+        
+        <div style="margin-top: 15px; background: #f0f7e6; padding: 10px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 0.75rem; text-transform: uppercase;">Total Estimated Project Cost</div>
+          <div id="mw-total-cost" style="font-size: 1.5rem; font-weight: bold; color: #3d5a2b; font-family: 'Playfair Display', serif;">₹0</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  let plantData = null;
+  let soilData = null;
+  let currentZoneId = null;
+
+  function getAgroZone(lat, lon) {
+    if (lat < 6.0 || lat > 38.0 || lon < 68.0 || lon > 98.0) return "north_central_arid_plains"; 
+    if (lon > 87.0 || (lat > 22.0 && lon > 84.0)) return "east_northeast_subtropical";
+    if (lat < 20.0) return (lon < 77.5) ? "western_ghats_coastal" : "south_deccan_plateau";
+    return "north_central_arid_plains";
+  }
+
+  async function analyzeSite() {
+    const lat = parseFloat(document.getElementById('mw-lat').value);
+    const lon = parseFloat(document.getElementById('mw-lon').value);
+    
+    document.getElementById('mw-loading').style.display = 'block';
+    document.getElementById('mw-results').style.display = 'none';
+
+    try {
+      if (!plantData || !soilData) {
+        const [pRes, sRes] = await Promise.all([
+          fetch('plant data.json'),
+          fetch('soil quaility and enhancers.json')
+        ]);
+        
+        if (!pRes.ok || !sRes.ok) throw new Error("Ensure JSON files are on a local server.");
+        
+        plantData = await pRes.json();
+        soilData = await sRes.json();
+      }
+
+      currentZoneId = getAgroZone(lat, lon);
+      populateUI();
+      
+    } catch (error) {
+      alert("Error loading data: " + error.message);
+      document.getElementById('mw-loading').style.display = 'none';
+    }
+  }
+
+  function populateUI() {
+    document.getElementById('mw-loading').style.display = 'none';
+    document.getElementById('mw-results').style.display = 'block';
+
+    const plantRegion = plantData.regions[currentZoneId];
+    const soilRegion = soilData.agro_zones[currentZoneId];
+
+    document.getElementById('mw-zone-name').innerText = plantRegion.display_name;
+
+    let plantsHtml = '';
+    const layers = ['canopy', 'tree', 'sub_tree', 'shrub'];
+    layers.forEach(layer => {
+      plantsHtml += `<div style="margin-bottom:8px;"><strong>${layer.toUpperCase()} (25%):</strong><br>`;
+      plantRegion.layers[layer].forEach(p => {
+        plantsHtml += `• ${p.common_name} <em>(${p.botanical_name})</em><br>`;
+      });
+      plantsHtml += `</div>`;
+    });
+    document.getElementById('mw-plants-list').innerHTML = plantsHtml;
+
+    const soilSelect = document.getElementById('mw-soil-select');
+    soilSelect.innerHTML = '';
+    soilRegion.dominant_soils.forEach((soil, index) => {
+      let opt = document.createElement('option');
+      opt.value = index; 
+      opt.innerHTML = soil.soil_name + " - " + soil.characteristics;
+      soilSelect.appendChild(opt);
+    });
+
+    calculateEnhancersAndBudget();
+  }
+
+  function calculateEnhancersAndBudget() {
+    const area = parseFloat(document.getElementById('mw-area').value) || 100;
+    const ph = parseFloat(document.getElementById('mw-ph').value) || 6.5;
+    const soilIndex = document.getElementById('mw-soil-select').value;
+    const soilRegion = soilData.agro_zones[currentZoneId];
+    const selectedSoil = soilRegion.dominant_soils[soilIndex];
+    const formula = selectedSoil.enhancer_formula_kg_per_sqm;
+
+    // Fixed Rates (INR)
+    const rates = { sapling: 45, excavation: 80, coco: 20, husk: 10, compost: 15, mulch: 15 };
+
+    // Core Miyawaki Math
+    const saplings = Math.round(area * 3.5);
+    const cocoKg = area * formula.water_retainer_cocopeat;
+    const huskKg = area * formula.perforator_rice_husk;
+    const compostKg = area * formula.organic_compost;
+
+    let costSaplings = saplings * rates.sapling;
+    let costExcavation = area * rates.excavation;
+    let costCoco = cocoKg * rates.coco;
+    let costHusk = huskKg * rates.husk;
+    let costCompost = compostKg * rates.compost;
+    let costMulch = area * rates.mulch;
+
+    // pH Amendment Logic
+    let phAmendmentName = "";
+    let costPh = 0;
+    let phAdviceHtml = "";
+
+    if (ph < 5.5) {
+      const limeKg = area * 0.25; // 0.25 kg of lime per sqm
+      costPh = limeKg * 8; // ₹8 per kg for agricultural lime
+      phAmendmentName = `Dolomitic Lime (${limeKg.toFixed(1)}kg)`;
+      phAdviceHtml = `<div style="background:#fde8e8; color:#c0392b; padding:8px; border-radius:6px; margin-bottom:8px;">⚠️ <strong>Acidic Soil (pH ${ph}):</strong> Added lime budget to prevent mineral toxicity and stunted roots.</div>`;
+    } else if (ph > 7.5) {
+      const sulphurKg = area * 0.20; // 0.20 kg of sulphur per sqm
+      costPh = sulphurKg * 15; // ₹15 per kg for agricultural sulphur
+      phAmendmentName = `Agri-Sulphur (${sulphurKg.toFixed(1)}kg)`;
+      phAdviceHtml = `<div style="background:#fff3e0; color:#c97a2f; padding:8px; border-radius:6px; margin-bottom:8px;">⚠️ <strong>Alkaline Soil (pH ${ph}):</strong> Added sulphur budget to prevent iron/phosphorus nutrient locking.</div>`;
+    } else {
+      phAdviceHtml = `<div style="background:#e6f5e8; color:#2d7a3a; padding:8px; border-radius:6px; margin-bottom:8px;">✅ <strong>Optimal pH (${ph}):</strong> No special pH amendments required.</div>`;
+    }
+    
+    const totalCost = costSaplings + costExcavation + costCoco + costHusk + costCompost + costMulch + costPh;
+
+    // Render Breakdown Table
+    let budgetHtml = `
+      ${phAdviceHtml}
+      <table style="width:100%; border-collapse: collapse; margin-bottom: 10px;">
+        <tr style="border-bottom: 1px solid #ddd;"><td style="padding:4px 0;"><strong>Saplings (x${saplings})</strong></td><td style="text-align:right">₹${costSaplings.toLocaleString()}</td></tr>
+        <tr style="border-bottom: 1px solid #ddd;"><td style="padding:4px 0;"><strong>1m Trench Excavation</strong></td><td style="text-align:right">₹${costExcavation.toLocaleString()}</td></tr>
+        <tr style="border-bottom: 1px solid #ddd;"><td style="padding:4px 0;"><strong>Cocopeat (${cocoKg}kg)</strong></td><td style="text-align:right">₹${costCoco.toLocaleString()}</td></tr>
+        <tr style="border-bottom: 1px solid #ddd;"><td style="padding:4px 0;"><strong>Rice Husk (${huskKg}kg)</strong></td><td style="text-align:right">₹${costHusk.toLocaleString()}</td></tr>
+        <tr style="border-bottom: 1px solid #ddd;"><td style="padding:4px 0;"><strong>Compost (${compostKg}kg)</strong></td><td style="text-align:right">₹${costCompost.toLocaleString()}</td></tr>
+        <tr style="border-bottom: 1px solid #ddd;"><td style="padding:4px 0;"><strong>Surface Mulch</strong></td><td style="text-align:right">₹${costMulch.toLocaleString()}</td></tr>
+    `;
+    
+    if (costPh > 0) {
+      budgetHtml += `<tr style="border-bottom: 1px solid #ddd;"><td style="padding:4px 0; color:#c0392b;"><strong>pH Correction:<br><span style="font-size:0.75rem;font-weight:normal;">${phAmendmentName}</span></strong></td><td style="text-align:right; color:#c0392b;">₹${costPh.toLocaleString()}</td></tr>`;
+    }
+    
+    budgetHtml += `</table>
+      <div style="background:#f9f9f9; padding:8px; border-radius:6px; font-size:0.75rem; border: 1px solid #eee;">
+        <strong>Other Required Additives:</strong> ${selectedSoil.special_additives.join(', ')}
+      </div>
+    `;
+
+    document.getElementById('mw-budget-list').innerHTML = budgetHtml;
+    document.getElementById('mw-total-cost').innerText = '₹' + totalCost.toLocaleString();
+  }
+</script>
+
+<!-- Miyawaki Geometry & Fencing Module -->
+<!-- <div id="mw-geometry-widget" style="font-family: 'DM Sans', sans-serif; background: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #cdd1c0; color: #1c2010; max-width: 800px; margin: 20px auto; box-shadow: 0 4px 14px rgba(30,40,15,0.08);">
+  
+  <h3 style="margin-top: 0; color: #3b2f1e; font-family: 'Playfair Display', serif; border-bottom: 2px solid #f0f7e6; padding-bottom: 10px;">📐 Plot Geometry & Fencing</h3>
+  
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px;">
+    <div>
+      <label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Length (meters)</label>
+      <input type="number" id="mw-length" value="10" oninput="calculateGeometry()" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9;">
+    </div>
+    <div>
+      <label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Width (meters)</label>
+      <input type="number" id="mw-width" value="5" oninput="calculateGeometry()" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9;">
+    </div>
+  </div>
+
+  <div id="mw-geometry-warning" style="margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 0.85rem; display: none;"></div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+    <div style="background: #f0f7e6; padding: 15px; border-radius: 12px; text-align: center;">
+      <div style="font-size: 0.75rem; text-transform: uppercase; color: #5a4230;">Total Perimeter</div>
+      <div id="mw-perimeter" style="font-size: 1.5rem; font-weight: bold; color: #3d5a2b; font-family: 'Playfair Display', serif;">30 m</div>
+    </div>
+    <div style="background: #f0f7e6; padding: 15px; border-radius: 12px; text-align: center;">
+      <div style="font-size: 0.75rem; text-transform: uppercase; color: #5a4230;">Fencing Cost (Chainlink)</div>
+      <div id="mw-fencing-cost" style="font-size: 1.5rem; font-weight: bold; color: #3d5a2b; font-family: 'Playfair Display', serif;">₹4,500</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function calculateGeometry() {
+    const length = parseFloat(document.getElementById('mw-length').value) || 0;
+    const width = parseFloat(document.getElementById('mw-width').value) || 0;
+    
+    const area = length * width;
+    const perimeter = 2 * (length + width);
+    const fencingRatePerMeter = 150; // Average INR rate for 5ft high chain-link mesh
+    
+    document.getElementById('mw-perimeter').innerText = perimeter + ' m';
+    document.getElementById('mw-fencing-cost').innerText = '₹' + (perimeter * fencingRatePerMeter).toLocaleString();
+
+    const warningBox = document.getElementById('mw-geometry-warning');
+    warningBox.style.display = 'block';
+
+    if (width < 3 && length > 0) {
+      warningBox.style.background = '#fde8e8';
+      warningBox.style.color = '#c0392b';
+      warningBox.innerHTML = '⚠️ <strong>Width too narrow:</strong> A minimum width of 3 to 4 meters is required to form a protective canopy layer. Otherwise, lateral sunlight will dry the forest floor.';
+    } else if (area < 30 && area > 0) {
+      warningBox.style.background = '#fff3e0';
+      warningBox.style.color = '#c97a2f';
+      warningBox.innerHTML = '⚠️ <strong>Area too small:</strong> The Miyawaki method performs best with a minimum of 30 sq meters to establish a self-sustaining root network.';
+    } else if (area >= 30 && width >= 3) {
+      warningBox.style.background = '#e6f5e8';
+      warningBox.style.color = '#2d7a3a';
+      warningBox.innerHTML = '✅ <strong>Optimal Geometry:</strong> Your plot dimensions are perfect for establishing a dense, multi-layered microclimate.';
+    } else {
+      warningBox.style.display = 'none';
+    }
+    
+    // Automatically update the main analyzer area if present
+    const mainAreaInput = document.getElementById('mw-area');
+    if(mainAreaInput) { mainAreaInput.value = area; }
+  }
+  
+  // Initialize on load
+  setTimeout(calculateGeometry, 100);
+</script> -->
+
+
+<div id="mw-geometry-widget" style="font-family: 'DM Sans', sans-serif; background: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #cdd1c0; color: #1c2010; max-width: 800px; margin: 20px auto; box-shadow: 0 4px 14px rgba(30,40,15,0.08);">
+  
+  <h3 style="margin-top: 0; color: #3b2f1e; font-family: 'Playfair Display', serif; border-bottom: 2px solid #f0f7e6; padding-bottom: 10px;">📐 Plot Shape & Fencing Estimator</h3>
+  
+  <div style="display: flex; gap: 10px; margin: 15px 0;">
+    <button id="btn-mode-estimate" onclick="toggleGeometryMode('estimate')" style="flex: 1; padding: 8px; font-size: 0.8rem; font-weight: bold; border-radius: 6px; border: 1px solid #3d5a2b; background: #3d5a2b; color: white; cursor: pointer;">🔮 Estimate Perimeter</button>
+    <button id="btn-mode-manual" onclick="toggleGeometryMode('manual')" style="flex: 1; padding: 8px; font-size: 0.8rem; font-weight: bold; border-radius: 6px; border: 1px solid #3d5a2b; background: transparent; color: #3d5a2b; cursor: pointer;">✏️ Enter Exact Perimeter</button>
+  </div>
+  
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+    <div>
+      <label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Total Area (sq meters)</label>
+      <input type="number" id="mw-area-input" value="100" oninput="calculateIrregularGeometry()" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9;">
+    </div>
+    
+    <div id="mw-complexity-container">
+      <label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Land Shape Complexity</label>
+      <select id="mw-shape-complexity" onchange="calculateIrregularGeometry()" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9;">
+        <option value="1.12">Perfect Square / Circle (Most Efficient)</option>
+        <option value="1.25" selected>Standard Rectangle / Semi-Irregular</option>
+        <option value="1.50">Highly Irregular / Narrow Strip / Triangular</option>
+        <option value="1.80">Z-Shaped / Jagged Edges (Maximum Perimeter)</option>
+      </select>
+    </div>
+    
+    <div id="mw-manual-perimeter-container" style="display: none;">
+      <label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Known Perimeter (linear meters)</label>
+      <input type="number" id="mw-perimeter-input" value="45" oninput="calculateIrregularGeometry()" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9;">
+    </div>
+  </div>
+
+  <div id="mw-geometry-warning" style="margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 0.85rem; display: none;"></div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+    <div style="background: #f0f7e6; padding: 15px; border-radius: 12px; text-align: center;">
+      <div style="font-size: 0.75rem; text-transform: uppercase; color: #5a4230;">Fencing Boundary</div>
+      <div id="mw-perimeter" style="font-size: 1.5rem; font-weight: bold; color: #3d5a2b; font-family: 'Playfair Display', serif;">--</div>
+    </div>
+    <div style="background: #f0f7e6; padding: 15px; border-radius: 12px; text-align: center;">
+      <div style="font-size: 0.75rem; text-transform: uppercase; color: #5a4230;">Fencing Cost (Chainlink)</div>
+      <div id="mw-fencing-cost" style="font-size: 1.5rem; font-weight: bold; color: #3d5a2b; font-family: 'Playfair Display', serif;">--</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let geometryInputMode = 'estimate'; // tracks active input state
+
+  function toggleGeometryMode(mode) {
+    geometryInputMode = mode;
+    
+    const compContainer = document.getElementById('mw-complexity-container');
+    const manualContainer = document.getElementById('mw-manual-perimeter-container');
+    const btnEstimate = document.getElementById('btn-mode-estimate');
+    const btnManual = document.getElementById('btn-mode-manual');
+
+    if (mode === 'manual') {
+      compContainer.style.display = 'none';
+      manualContainer.style.display = 'block';
+      
+      // Update toggle buttons active styling
+      btnManual.style.background = '#3d5a2b';
+      btnManual.style.color = 'white';
+      btnEstimate.style.background = 'transparent';
+      btnEstimate.style.color = '#3d5a2b';
+    } else {
+      compContainer.style.display = 'block';
+      manualContainer.style.display = 'none';
+      
+      // Update toggle buttons active styling
+      btnEstimate.style.background = '#3d5a2b';
+      btnEstimate.style.color = 'white';
+      btnManual.style.background = 'transparent';
+      btnManual.style.color = '#3d5a2b';
+    }
+    calculateIrregularGeometry();
+  }
+
+  function calculateIrregularGeometry() {
+    const area = parseFloat(document.getElementById('mw-area-input').value) || 0;
+    let finalPerimeter = 0;
+
+    if (geometryInputMode === 'estimate') {
+      const complexityFactor = parseFloat(document.getElementById('mw-shape-complexity').value);
+      // P = 4 * sqrt(Area) * Complexity
+      finalPerimeter = Math.round(4 * Math.sqrt(area) * complexityFactor);
+    } else {
+      // Direct User Input Override
+      finalPerimeter = parseFloat(document.getElementById('mw-perimeter-input').value) || 0;
+    }
+    
+    const fencingRatePerMeter = 150; // Standard INR pricing per meter 
+    const totalFencingCost = finalPerimeter * fencingRatePerMeter;
+    
+    document.getElementById('mw-perimeter').innerText = finalPerimeter + ' m';
+    document.getElementById('mw-fencing-cost').innerText = '₹' + totalFencingCost.toLocaleString();
+
+    const warningBox = document.getElementById('mw-geometry-warning');
+    warningBox.style.display = 'block';
+
+    if (area < 30 && area > 0) {
+      warningBox.style.background = '#fff3e0';
+      warningBox.style.color = '#c97a2f';
+      warningBox.innerHTML = '⚠️ <strong>Area warning:</strong> Miyawaki patches require a minimum footprint of 30 sq meters to effectively bundle microclimate humidity layers and push high canopy growth layers.';
+    } else if (geometryInputMode === 'manual' && finalPerimeter > 0 && area > 0) {
+      // Check ratio validation to flag extremely narrow plots
+      const criticalRatio = finalPerimeter / Math.sqrt(area);
+      if (criticalRatio > 6.0) {
+        warningBox.style.background = '#fff3e0';
+        warningBox.style.color = '#c97a2f';
+        warningBox.innerHTML = '⚠️ <strong>High Edge Exposure Ratio:</strong> This perimeter layout is highly stretched or segmented. Broaden the forest shape dimensions to maximize interior space protection.';
+      } else {
+        warningBox.style.background = '#e6f5e8';
+        warningBox.style.color = '#2d7a3a';
+        warningBox.innerHTML = '✅ <strong>Manual Bounds Registered:</strong> Fencing cost calculated based on your custom plot boundaries.';
+      }
+    } else if (area >= 30) {
+      warningBox.style.background = '#e6f5e8';
+      warningBox.style.color = '#2d7a3a';
+      warningBox.innerHTML = '✅ <strong>Dimensions Validated:</strong> Structural properties checked for native high-density soil matrices.';
+    } else {
+      warningBox.style.display = 'none';
+    }
+    
+    // Propagate changes to parent application modules if existing on page
+    const mainAreaInput = document.getElementById('mw-area');
+    if (mainAreaInput) { 
+      mainAreaInput.value = area;
+      if (typeof calculateEnhancersAndBudget === "function") { calculateEnhancersAndBudget(); }
+      if (typeof simulateForestGrowth === "function") { simulateForestGrowth(); }
+    }
+  }
+
+  // Initialize on load
+  setTimeout(calculateIrregularGeometry, 100);
+</script>
+
+<!-- Miyawaki Impact & Maintenance Module -->
+<div id="mw-impact-widget" style="font-family: 'DM Sans', sans-serif; background: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #cdd1c0; color: #1c2010; max-width: 800px; margin: 20px auto; box-shadow: 0 4px 14px rgba(30,40,15,0.08);">
+  
+  <h3 style="margin-top: 0; color: #3b2f1e; font-family: 'Playfair Display', serif; border-bottom: 2px solid #f0f7e6; padding-bottom: 10px;">🌍 Long-term Impact & Maintenance</h3>
+  
+  <div style="margin-top: 20px;">
+    <label style="display: flex; justify-content: space-between; font-weight: bold; font-size: 0.85rem;">
+      <span>Forest Age: <span id="mw-year-label" style="color: #3d5a2b; font-size: 1.1rem;">Year 1</span></span>
+      <span style="color: #6b7a5e;">(Drag to simulate)</span>
+    </label>
+    <input type="range" id="mw-year-slider" min="1" max="10" value="1" oninput="simulateForestGrowth()" style="width: 100%; margin-top: 10px; cursor: pointer;">
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
+    
+    <!-- Maintenance Card -->
+    <div style="background: #fafafa; border-left: 4px solid #c97a2f; padding: 15px; border-radius: 8px;">
+      <h4 style="margin: 0 0 8px 0; font-size: 0.9rem; color: #5a4230;">🛠️ Required Maintenance</h4>
+      <ul id="mw-maintenance-tasks" style="margin: 0; padding-left: 18px; font-size: 0.8rem; line-height: 1.6; color: #3a4230;">
+        <li>Water 4L per sqm daily.</li>
+        <li>Manual weeding required (drop weeds as mulch).</li>
+        <li>Check and replace broken support sticks.</li>
+      </ul>
+    </div>
+
+    <!-- Ecology Card -->
+    <div style="background: #fafafa; border-left: 4px solid #3d5a2b; padding: 15px; border-radius: 8px;">
+      <h4 style="margin: 0 0 8px 0; font-size: 0.9rem; color: #5a4230;">🌳 Ecological Status</h4>
+      <ul id="mw-eco-status" style="margin: 0; padding-left: 18px; font-size: 0.8rem; line-height: 1.6; color: #3a4230;">
+        <li>Sapling height: ~1.5 to 2 meters.</li>
+        <li>Root network expanding.</li>
+        <li>High vulnerability to grazing animals.</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Environmental ROI -->
+  <div style="margin-top: 20px; background: #e8f3d6; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: #567a40;">Total CO₂ Sequestered</div>
+      <div style="font-size: 0.75rem; color: #6b7a5e;">Based on currently entered area</div>
+    </div>
+    <div id="mw-co2-output" style="font-size: 1.8rem; font-weight: 900; color: #1c2010; font-family: 'DM Mono', monospace;">0 kg</div>
+  </div>
+
+</div>
+
+<script>
+  function simulateForestGrowth() {
+    const year = parseInt(document.getElementById('mw-year-slider').value);
+    document.getElementById('mw-year-label').innerText = 'Year ' + year;
+
+    // Fetch area from main widget, default to 100 if not found
+    const areaInput = document.getElementById('mw-area');
+    const area = areaInput ? parseFloat(areaInput.value) || 100 : 100;
+    const saplings = Math.round(area * 3.5);
+
+    const taskList = document.getElementById('mw-maintenance-tasks');
+    const statusList = document.getElementById('mw-eco-status');
+    const co2Output = document.getElementById('mw-co2-output');
+
+    // CO2 Math: A growing tree sequesters roughly 15kg/year, compounding slightly as biomass increases.
+    // Early years have lower sequestration.
+    let co2PerTree = 0;
+    if (year === 1) co2PerTree = 2;
+    else if (year === 2) co2PerTree = 6;
+    else if (year === 3) co2PerTree = 15;
+    else co2PerTree = 15 + ((year - 3) * 18); // Mature growth
+    
+    const totalCO2 = saplings * co2PerTree;
+    
+    // Format CO2 text
+    if (totalCO2 > 1000) {
+      co2Output.innerText = (totalCO2 / 1000).toFixed(2) + ' Tons';
+    } else {
+      co2Output.innerText = totalCO2.toLocaleString() + ' kg';
+    }
+
+    // Dynamic Logic for Years
+    if (year === 1) {
+      taskList.innerHTML = `<li>Water 4L per sqm daily.</li><li>Manual weeding monthly (do not uproot, cut and drop as mulch).</li><li>Check support sticks.</li>`;
+      statusList.innerHTML = `<li>Average height: 1.5 - 2 meters.</li><li>Roots establishing in perforated soil.</li><li>Vulnerable to pests and grazing.</li>`;
+    } else if (year === 2) {
+      taskList.innerHTML = `<li>Watering reduced to 2L per sqm daily.</li><li>Bi-monthly check for invasive vines.</li><li>Remove support sticks if stems are thick.</li>`;
+      statusList.innerHTML = `<li>Average height: 3 - 4 meters.</li><li>Canopy is beginning to touch and merge.</li><li>Local birds and insects start nesting.</li>`;
+    } else if (year === 3) {
+      taskList.innerHTML = `<li><strong>Zero maintenance required.</strong></li><li>Stop watering (unless extreme drought).</li><li>Do not enter or walk inside the patch.</li>`;
+      statusList.innerHTML = `<li>Average height: 5+ meters.</li><li>Canopy is completely closed.</li><li>No sunlight reaches the floor (weeds die naturally).</li>`;
+    } else {
+      taskList.innerHTML = `<li><strong>100% Self-Sustaining.</strong></li><li>Monitor perimeter fencing.</li><li>Enjoy the local biodiversity.</li>`;
+      statusList.innerHTML = `<li>Distinct 4-tier canopy fully established.</li><li>Local ambient temperature drops by 2°C to 4°C.</li><li>Heavy leaf drop creates natural, permanent compost layer.</li>`;
+    }
+  }
+
+  // Initialize on load
+  setTimeout(simulateForestGrowth, 100);
+</script>
+
+
     <!-- Material & Water Requirement -->
     <div class="card" style="margin-bottom:1rem">
       <div class="card-header">🧾 Material & Water Requirement</div>
