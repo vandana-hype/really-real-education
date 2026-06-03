@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Gvan — Forest Ecology Planner | Miyawaki & Field Tools</title>
+  <title>Gvan — Forest Ecology Planner | Comprehensive Success Rate</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
     :root {
@@ -29,148 +30,35 @@
     body { font-family: 'DM Sans', sans-serif; background: var(--sky); color: var(--ink); overflow-x: hidden; }
     ::-webkit-scrollbar { width: 6px; background: var(--canopy); }
     ::-webkit-scrollbar-thumb { background: var(--moss-mid); border-radius: 3px; }
-    header {
-      position: fixed; top: 0; width: 100%; z-index: 100; background: var(--header-bg);
-      backdrop-filter: blur(16px); border-bottom: 1px solid var(--border-light);
-      display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 68px;
-      flex-wrap: wrap;
+    .site-header {
+      position: sticky; top: 0; z-index: 100; background: rgba(248, 249, 250, 0.8);
+      backdrop-filter: blur(10px); border-bottom: 1px solid rgba(31, 41, 51, 0.08); width: 100%;
     }
-   .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(248, 249, 250, 0.8);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(31, 41, 51, 0.08);
-    width: 100%;
-  }
-  .site-header-inner {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 18px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    width: 100%;
-  }
-  .brand {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    text-decoration: none;
-    flex-shrink: 0;
-  }
-  .brand-title {
-    font-family: 'Poppins', 'Segoe UI', sans-serif;
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #1f2933;
-  }
-  .brand-tagline {
-    font-size: 0.95rem;
-    color: #5b6572;
-    font-weight: 500;
-  }
-  .site-nav {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-  .hero-tools {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 0.8rem;
-  }
-  .site-nav a {
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-    font-weight: 500;
-    font-size: 0.95rem;
-    padding: 10px 18px;
-    border-radius: 999px;
-    border: 1px solid rgba(31, 41, 51, 0.12);
-    background: rgba(255, 255, 255, 0.7);
-    color: #1f2933;
-    text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  }
-  .site-nav a:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  }
-  .site-nav a[aria-current="page"] {
-    background: linear-gradient(135deg, rgba(102, 183, 160, 0.9), rgba(102, 125, 183, 0.9));
-    color: #ffffff;
-    border-color: transparent;
-  }
-  .location-search {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.7);
-    padding: 4px 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(31, 41, 51, 0.12);
-  }
-  .location-search input {
-    background: transparent;
-    border: none;
-    padding: 6px 4px;
-    font-size: 0.85rem;
-    font-family: 'Inter', sans-serif;
-    color: #1f2933;
-    outline: none;
-    width: 130px;
-  }
-  .location-search button {
-    background: linear-gradient(135deg, rgba(102, 183, 160, 0.9), rgba(102, 125, 183, 0.9));
-    color: white;
-    border: none;
-    border-radius: 999px;
-    padding: 4px 12px;
-    font-size: 0.8rem;
-    cursor: pointer;
-  }
-  .site-nav-detect {
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 500;
-    padding: 10px 18px;
-    border-radius: 999px;
-    border: 1px solid transparent;
-    background: linear-gradient(135deg, rgba(102, 183, 160, 0.9), rgba(102, 125, 183, 0.9));
-    color: #ffffff;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  }
-  .site-nav-detect:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  }
-  @media (max-width: 768px) {
-    .site-header-inner {
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 14px 16px;
-      gap: 12px;
-    }
-    .site-nav { justify-content: flex-start; width: 100%; gap: 8px; }
-    .site-nav a { padding: 8px 14px; }
-    .location-search input { width: 100px; }
-  }
-  @media (max-width: 480px) {
-    .site-nav a { font-size: 0.85rem; padding: 8px 12px; }
-  }
-    .hero { padding-top: 20px;min-height: 320px; background: linear-gradient(145deg, var(--canopy), var(--leaf-lt)); display: flex; align-items: center; position: relative; }
+    .site-header-inner { max-width: 1180px; margin: 0 auto; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; width: 100%; }
+    .brand { display: flex; flex-direction: column; gap: 4px; text-decoration: none; flex-shrink: 0; }
+    .brand-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: #1f2933; }
+    .brand-tagline { font-size: 0.95rem; color: #5b6572; font-weight: 500; }
+    .site-nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .hero-tools { display: flex; align-items: center; gap: 8px; margin-top: 0.8rem; }
+    .site-nav a { font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.95rem; padding: 10px 18px; border-radius: 999px; border: 1px solid rgba(31, 41, 51, 0.12); background: rgba(255, 255, 255, 0.7); color: #1f2933; text-decoration: none; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+    .site-nav a:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); }
+    .site-nav a[aria-current="page"] { background: linear-gradient(135deg, rgba(102, 183, 160, 0.9), rgba(102, 125, 183, 0.9)); color: #ffffff; border-color: transparent; }
+    .location-search { display: flex; gap: 0.5rem; align-items: center; background: rgba(255, 255, 255, 0.7); padding: 4px 14px; border-radius: 999px; border: 1px solid rgba(31, 41, 51, 0.12); }
+    .location-search input { background: transparent; border: none; padding: 6px 4px; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; color: #1f2933; outline: none; width: 130px; }
+    .location-search button { background: linear-gradient(135deg, rgba(102, 183, 160, 0.9), rgba(102, 125, 183, 0.9)); color: white; border: none; border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; cursor: pointer; }
+    .site-nav-detect { font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500; padding: 10px 18px; border-radius: 999px; border: 1px solid transparent; background: linear-gradient(135deg, rgba(102, 183, 160, 0.9), rgba(102, 125, 183, 0.9)); color: #ffffff; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+    .site-nav-detect:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); }
+    @media (max-width: 768px) { .site-header-inner { flex-direction: column; align-items: flex-start; padding: 14px 16px; gap: 12px; } .site-nav { justify-content: flex-start; width: 100%; gap: 8px; } .site-nav a { padding: 8px 14px; } .location-search input { width: 100px; } }
+    @media (max-width: 480px) { .site-nav a { font-size: 0.85rem; padding: 8px 12px; } }
+    .hero { padding-top: 20px;min-height: 380px; background: linear-gradient(145deg, var(--canopy), var(--leaf-lt)); display: flex; align-items: center; position: relative; }
     .hero-content { padding: 2.5rem; max-width: 680px; }
     .hero-badge { display: inline-flex; background: rgba(61,90,43,0.12); border-radius: 99px; padding: 0.25rem 0.75rem; font-size: 0.7rem; font-weight: 600; color: var(--moss); margin-bottom: 1rem; }
     .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem,5vw,3.5rem); font-weight: 900; color: var(--bark); line-height: 1.1; }
     .hero h1 em { color: var(--moss); font-style: italic; }
     .btn-forest { background: var(--moss); color: white; padding: 0.7rem 1.6rem; border-radius: 99px; font-weight: 600; border: none; cursor: pointer; box-shadow: 0 6px 14px var(--shadow); }
     .btn-outline { background: transparent; border: 1.5px solid var(--moss); color: var(--moss); padding: 0.7rem 1.6rem; border-radius: 99px; font-weight: 500; cursor: pointer; }
+    .hero-stats { position: absolute; right: 2rem; bottom: 1.5rem; display: flex; gap: 1rem; }
+    .hero-stat { background: transparent; backdrop-filter: blur(4px); border-radius: 16px; padding: 0.6rem 1rem; min-width: 90px; text-align: center; color: var(--ink); }
     main { position: relative; z-index: 1; padding: 2rem; }
     .section { margin-bottom: 2.5rem; }
     .section-header { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1.2rem; }
@@ -180,15 +68,42 @@
     .card-header h3 { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; }
     .card-body { padding: 1.2rem; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
-    #map { height: 420px; width: 100%; border-radius: 20px; z-index: 1; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    .eco-metrics { display: grid; grid-template-columns: repeat(4, 1fr); background: rgba(86,122,64,0.08); border-radius: 16px; margin-bottom: 2rem; }
+    .eco-metric { background: var(--card-bg); padding: 1rem; border-radius: 12px; margin: 2px; }
+    .val { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--moss); cursor: pointer; display: inline-block; }
+    .editable-field { cursor: pointer; }
+    .custom-dropdown { position: absolute; background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); z-index: 1000; max-height: 200px; overflow-y: auto; min-width: 150px; }
+    .custom-dropdown div { padding: 0.5rem 1rem; cursor: pointer; font-size: 0.8rem; color: var(--ink); transition: background 0.1s; }
+    .custom-dropdown div:hover { background: var(--canopy); }
+    #map { height: 320px; width: 100%; border-radius: 16px; z-index: 1; }
+    .ring-wrap { position: relative; width: 100px; height: 100px; }
+    .ring-svg { transform: rotate(-90deg); }
+    .risk-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.6rem; }
+    .risk-bar-bg { flex: 1; height: 7px; background: rgba(86,122,64,0.1); border-radius: 99px; }
+    .analysis-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .analysis-table th { text-align: left; padding: 0.5rem 0.7rem; background: var(--canopy); color: var(--ink-mid); }
+    .status-pill { display: inline-flex; padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.7rem; font-weight: 600; }
+    .status-pill.ok { background: #e6f5e8; color: #2d7a3a; }
+    .status-pill.warn { background: #fff3e0; color: #c97a2f; }
+    .status-pill.bad { background: #fde8e8; color: #c0392b; }
+    .input-group { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.8rem; }
+    .input-group label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
+    .input-group input, .input-group select { padding: 0.5rem 0.7rem; border-radius: 12px; border: 1.5px solid var(--border-light); background: var(--sky); font-family: inherit; color: var(--ink); }
+    .chart-wrap { height: 210px; width: 100%; }
     #fieldCanvas, #plantationCanvas { width: 100%; height: 340px; background: var(--canopy); border-radius: 16px; cursor: crosshair; border: 2px solid var(--border-light); display: block; }
     .poly-btn { font-size: 0.75rem; padding: 0.3rem 0.9rem; border-radius: 99px; border: 1px solid var(--moss); background: var(--card-bg); cursor: pointer; color: var(--ink); }
     .poly-btn.active { background: var(--moss); color: white; }
     .scheme-card, .helpline-card { background: var(--card-bg); border-radius: 16px; padding: 1rem; border: 1px solid var(--border-light); margin-bottom: 0.5rem; }
+    .species-rec-card { background: var(--card-bg); border-radius: 16px; padding: 0.8rem; margin-bottom: 0.6rem; border-left: 4px solid var(--moss); box-shadow: 0 1px 3px var(--shadow); }
+    .material-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
+    .material-item { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px dashed var(--border-light); padding: 0.4rem 0; }
+    .material-label { font-weight: 500; font-size: 0.8rem; }
+    .material-value { font-family: 'DM Mono', monospace; font-weight: 600; color: var(--moss); }
     footer { background: var(--bark); color: var(--sky); padding: 1.5rem; display: flex; justify-content: space-between; flex-wrap: wrap; }
     #toast { position: fixed; bottom: 1rem; right: 1rem; background: var(--bark); color: var(--sky); padding: 0.6rem 1rem; border-radius: 40px; z-index: 1000; opacity: 0; transition: 0.2s; pointer-events: none; }
     #toast.show { opacity: 1; }
-    @media (max-width:800px) { .grid-2 { grid-template-columns: 1fr; } header { flex-direction: column; height: auto; padding: 0.5rem; gap: 0.5rem; } }
+    @media (max-width:800px) { .grid-2 { grid-template-columns: 1fr; } .hero-stats { display: none; } header { flex-direction: column; height: auto; padding: 0.5rem; gap: 0.5rem; } .location-search { margin-left: 0; } .material-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -212,10 +127,10 @@
   <div class="hero-content">
     <div class="hero-badge">🌲 Ecology Intelligence Platform</div>
     <h1>Plan <em>forests</em>,<br>restore earth.</h1>
-    <p>Live location, Miyawaki calculator, field drawing — all in one.</p>
+    <p>Live location, smart species, field drawing — all in one.</p>
     <div style="display:flex;gap:0.8rem;margin-top:1rem">
       <button class="btn-forest" onclick="detectLocation()">📍 Auto-detect</button>
-      <button class="btn-outline" onclick="document.getElementById('field-section').scrollIntoView({behavior:'smooth'})">✏️ Draw Field</button>
+      <button class="btn-outline" onclick="document.getElementById('plan-section').scrollIntoView({behavior:'smooth'})">📈 Analysis</button>
     </div>
     <div class="hero-tools">
       <div class="location-search">
@@ -226,53 +141,180 @@
     </div>
     <div class="loc-status" style="font-size:0.75rem;margin-top:0.6rem"><span id="locDot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#aaa;margin-right:6px;"></span><span id="locStatus">📍 Using default India • click detect or search</span></div>
   </div>
+  <div class="hero-stats"><div class="hero-stat"><div class="num" id="heroTrees">—</div><div class="lbl">Trees est.</div></div><div class="hero-stat"><div class="num" id="heroCarbon">—</div><div class="lbl">tCO₂/yr</div></div><div class="hero-stat"><div class="num" id="heroScore">—</div><div class="lbl">Success</div></div></div>
 </div>
 <main>
-  <!-- Map section -->
+  <div class="eco-metrics">
+    <div class="eco-metric"><label>Soil Type</label><div class="val editable-field" id="soilEdit">Clay-Loam</div><div class="sub">click to adjust</div></div>
+    <div class="eco-metric"><label>Rainfall</label><div class="val editable-field" id="rainEdit">900mm</div><div class="sub">based on lat</div></div>
+    <div class="eco-metric"><label>Climate Zone</label><div class="val editable-field" id="climateEdit">Tropical Wet & Dry</div><div class="sub">click to adjust</div></div>
+    <div class="eco-metric"><label>Eco Health</label><div class="val" id="ecoIndexVal">—</div><div style="background:#ddd;border-radius:8px;height:6px;margin-top:6px"><div id="ecoBar" style="width:0%;height:6px;background:var(--moss);border-radius:8px"></div></div></div>
+  </div>
+
   <div class="section" id="map-section">
     <div class="section-header"><h2>🗺️ Live Site Map</h2><span>Search or detect location</span></div>
-    <div class="card"><div class="card-header">📍 Interactive Forest Map</div><div id="map" style="height:420px"></div></div>
+    <div class="grid-2">
+      <div class="card"><div class="card-header">📍 Location</div><div id="map" style="height:320px"></div></div>
+      <div class="card"><div class="card-header">💚 Health Index</div><div class="card-body"><div style="display:flex;align-items:center;gap:1rem"><div class="ring-wrap"><svg class="ring-svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="var(--border-light)" stroke-width="8"/><circle id="ringCircle" cx="50" cy="50" r="42" fill="none" stroke="var(--moss)" stroke-width="8" stroke-dasharray="263.89" stroke-dashoffset="263.89" stroke-linecap="round"/></svg><div class="ring-label" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center"><div class="ring-pct" id="ringPct">0%</div></div></div><div style="flex:1"><div class="risk-row"><span>Climate</span><div class="risk-bar-bg"><div class="risk-bar-fill" id="rb-climate" style="width:0%;background:var(--moss)"></div></div><span id="rv-climate">0%</span></div><div class="risk-row"><span>Rainfall</span><div class="risk-bar-bg"><div class="risk-bar-fill" id="rb-rain" style="width:0%"></div></div><span id="rv-rain">0%</span></div><div class="risk-row"><span>Soil</span><div class="risk-bar-bg"><div class="risk-bar-fill" id="rb-soil" style="width:0%"></div></div><span id="rv-soil">0%</span></div><div class="risk-row"><span>Water</span><div class="risk-bar-bg"><div class="risk-bar-fill" id="rb-water" style="width:0%"></div></div><span id="rv-water">0%</span></div></div></div></div></div>
+    </div>
   </div>
 
-  <!-- Miyawaki Site Analyzer Widget -->
-  <div id="miyawaki-planner-widget" style="font-family: 'DM Sans', sans-serif; background: #f0f7e6; padding: 20px; border-radius: 16px; border: 1px solid #cdd1c0; color: #1c2010; max-width: 800px; margin: 0 auto 2rem auto;">
-    <h2 style="margin-top: 0; color: #3b2f1e; font-family: 'Playfair Display', serif;">🌿 Miyawaki Site Analyzer</h2>
-    <p style="font-size: 0.85rem; color: #5a4230;">Enter coordinates, area, and soil pH to generate localized species, soil formulas, and budget.</p>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; background: #ffffff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-      <div><label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Latitude</label><input type="number" id="mw-lat" value="28.6139" step="any" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px;"></div>
-      <div><label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Longitude</label><input type="number" id="mw-lon" value="77.2090" step="any" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px;"></div>
-      <div><label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Area (sq m)</label><input type="number" id="mw-area" value="100" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px;"></div>
-      <div><label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Soil pH</label><input type="number" id="mw-ph" value="6.5" step="0.1" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px;"></div>
-      <div style="display: flex; align-items: flex-end; grid-column: 1 / -1;"><button onclick="analyzeSite()" style="width: 100%; padding: 10px; background: #3d5a2b; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Analyze Site</button></div>
+  <div class="section" id="plan-section">
+    <div class="section-header"><h2>📐 Planning & Feasibility</h2><span>real-time analysis</span></div>
+    <div class="grid-2" style="gap:1.2rem">
+      <div class="card"><div class="card-header">⚙️ Site Parameters</div><div class="card-body">
+        <div class="input-group"><label>Land Area</label><div style="display:flex;gap:5px"><input type="number" id="area" value="12" step="any" oninput="calc()"><select id="area-unit" onchange="calc()"><option value="ha">ha</option><option value="sqm">sq m</option><option value="acre">acre</option></select></div></div>
+        <div class="input-group"><label>Budget (₹ INR)</label><input type="number" id="budget" value="650000" step="10000" oninput="calc()"></div>
+        <div class="input-group"><label>Planting Goal</label><select id="goal" onchange="calc()"><option value="carbon">Carbon Sequestration</option><option value="timber">Timber</option><option value="fruit">Fruit / Agroforestry</option><option value="restoration">Restoration</option><option value="mixed">Mixed Plantation</option></select></div>
+        <div class="input-group"><label>Maintenance Level</label><select id="maintenance" onchange="calc()"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></div>
+        <div class="input-group"><label>Soil pH (1-9)</label><input type="number" id="soilPH" value="6.5" step="0.1" oninput="calc()"></div>
+        <div class="input-group"><label>Elevation (m)</label><input type="number" id="elevation" value="320" oninput="calc()"></div>
+        <div class="input-group"><label>Water Availability (0 = very dry, 1 = abundant)</label><input type="range" id="waterAvail" min="0" max="1" step="0.01" value="0.75" oninput="document.getElementById('wAvVal').innerText=this.value;calc()"><span id="wAvVal">0.75</span></div>
+        <div class="input-group"><label>Tree Spacing (m)</label><select id="spacing" onchange="calc()"><option value="2">2x2 dense</option><option value="3" selected>3x3 standard</option><option value="4">4x4 agroforestry</option><option value="6">6x6 timber</option></select></div>
+      </div></div>
+      <div><div class="card"><div class="card-header">📊 Suitability Radar</div><div class="card-body"><div class="chart-wrap"><canvas id="radarChart"></canvas></div></div></div>
+      <div class="card" style="margin-top:1rem"><div class="card-header">💰 Cost Breakdown</div><div class="card-body"><div class="chart-wrap"><canvas id="costChart"></canvas></div></div></div></div>
     </div>
-    <div id="mw-loading" style="display: none; text-align: center; color: #3d5a2b; font-weight: bold;">Loading regional data...</div>
-    <div id="mw-results" style="display: none;">
-      <div style="background: #ffffff; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #3d5a2b;"><h3 style="margin: 0 0 10px 0; font-size: 1.1rem;">📍 Zone: <span id="mw-zone-name" style="color: #3d5a2b;"></span></h3><label style="font-size: 0.85rem; font-weight: bold;">Select your baseline soil type:</label><select id="mw-soil-select" onchange="calculateEnhancersAndBudget()" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc;"></select></div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
-        <div style="background: #ffffff; padding: 15px; border-radius: 12px;"><h3 style="margin: 0 0 10px 0; font-size: 1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">🌱 Recommended Species</h3><div id="mw-plants-list" style="font-size: 0.85rem; max-height: 280px; overflow-y: auto;"></div></div>
-        <div style="background: #ffffff; padding: 15px; border-radius: 12px;"><h3 style="margin: 0 0 10px 0; font-size: 1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">💰 Material Required & Budget</h3><div id="mw-budget-list" style="font-size: 0.85rem;"></div><div style="margin-top: 15px; background: #f0f7e6; padding: 10px; border-radius: 8px; text-align: center;"><div style="font-size: 0.75rem; text-transform: uppercase;">Total Estimated Project Cost</div><div id="mw-total-cost" style="font-size: 1.5rem; font-weight: bold; color: #3d5a2b; font-family: 'Playfair Display', serif;">₹0</div></div></div>
+    <div class="grid-4" style="margin:1rem 0">
+      <div class="analysis-panel" style="background:var(--canopy);padding:0.8rem;border-radius:16px"><div>🌳 Total Trees</div><div id="mTrees" style="font-size:1.8rem;font-weight:800">—</div></div>
+      <div class="analysis-panel" style="background:var(--canopy);padding:0.8rem;border-radius:16px"><div>🌍 CO₂ / yr</div><div id="mCarbon" style="font-size:1.8rem;font-weight:800">—</div></div>
+      <div class="analysis-panel" style="background:var(--canopy);padding:0.8rem;border-radius:16px"><div>💰 5Y Cost</div><div id="mCost" style="font-size:1.5rem;font-weight:800">—</div></div>
+      <div class="analysis-panel" style="background:var(--canopy);padding:0.8rem;border-radius:16px"><div>📈 Success Rate</div><div id="mSuccess" style="font-size:1.8rem;font-weight:800">—</div></div>
+    </div>
+
+    <div id="miyawaki-planner-widget" style="font-family: 'DM Sans', sans-serif; background: #f0f7e6; padding: 20px; border-radius: 16px; border: 1px solid #cdd1c0; color: #1c2010; max-width: 800px; margin: 0 auto; margin-bottom: 2rem;">
+      <h2 style="margin-top: 0; color: #3b2f1e; font-family: 'Playfair Display', serif;">🌿 Miyawaki Site Analyzer</h2>
+      <p style="font-size: 0.85rem; color: #5a4230;">Coordinates update automatically from the top Detect/Search buttons.</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; background: #ffffff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+        <div><label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Latitude</label><input type="number" id="mw-lat" value="28.6139" step="any" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; background:#f9f9f9;" readonly></div>
+        <div><label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Longitude</label><input type="number" id="mw-lon" value="77.2090" step="any" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; background:#f9f9f9;" readonly></div>
+        <div><label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Area (sq m)</label><input type="number" id="mw-area" value="100" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px;"></div>
+        <div><label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Soil pH</label><input type="number" id="mw-ph" value="6.5" step="0.1" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px;"></div>
+        <div style="display: flex; align-items: flex-end; grid-column: 1 / -1;"><button onclick="analyzeSite()" style="width: 100%; padding: 10px; background: #3d5a2b; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Analyze Site</button></div>
+      </div>
+
+      <div id="mw-loading" style="display: none; text-align: center; color: #3d5a2b; font-weight: bold;">Loading regional data...</div>
+
+      <div id="mw-results" style="display: none;">
+        <div style="background: #ffffff; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #3d5a2b;">
+          <h3 style="margin: 0 0 10px 0; font-size: 1.1rem;">📍 Zone: <span id="mw-zone-name" style="color: #3d5a2b;"></span></h3>
+          <label style="font-size: 0.85rem; font-weight: bold;">Select your baseline soil type:</label>
+          <select id="mw-soil-select" onchange="calculateEnhancersAndBudget()" style="width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc;"></select>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+          <div style="background: #ffffff; padding: 15px; border-radius: 12px;">
+            <h3 style="margin: 0 0 10px 0; font-size: 1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">🌱 Recommended Species</h3>
+            <div id="mw-plants-list" style="font-size: 0.85rem; max-height: 280px; overflow-y: auto;"></div>
+          </div>
+          <div style="background: #ffffff; padding: 15px; border-radius: 12px;">
+            <h3 style="margin: 0 0 10px 0; font-size: 1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">💰 Material Required & Budget</h3>
+            <div id="mw-budget-list" style="font-size: 0.85rem;"></div>
+            <div style="margin-top: 15px; background: #f0f7e6; padding: 10px; border-radius: 8px; text-align: center;">
+              <div style="font-size: 0.75rem; text-transform: uppercase;">Total Estimated Project Cost</div>
+              <div id="mw-total-cost" style="font-size: 1.5rem; font-weight: bold; color: #3d5a2b; font-family: 'Playfair Display', serif;">₹0</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
+    <div id="mw-geometry-widget" style="font-family: 'DM Sans', sans-serif; background: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #cdd1c0; color: #1c2010; max-width: 800px; margin: 0 auto; margin-bottom: 2rem; box-shadow: 0 4px 14px rgba(30,40,15,0.08);">
+      <h3 style="margin-top: 0; color: #3b2f1e; font-family: 'Playfair Display', serif; border-bottom: 2px solid #f0f7e6; padding-bottom: 10px;">📐 Plot Shape & Fencing Estimator</h3>
+      <div style="display: flex; gap: 10px; margin: 15px 0;">
+        <button id="btn-mode-estimate" onclick="toggleGeometryMode('estimate')" style="flex: 1; padding: 8px; font-size: 0.8rem; font-weight: bold; border-radius: 6px; border: 1px solid #3d5a2b; background: #3d5a2b; color: white; cursor: pointer;">🔮 Estimate Perimeter</button>
+        <button id="btn-mode-manual" onclick="toggleGeometryMode('manual')" style="flex: 1; padding: 8px; font-size: 0.8rem; font-weight: bold; border-radius: 6px; border: 1px solid #3d5a2b; background: transparent; color: #3d5a2b; cursor: pointer;">✏️ Enter Exact Perimeter</button>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+        <div>
+          <label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Total Area (sq meters)</label>
+          <input type="number" id="mw-area-input" value="100" oninput="calculateIrregularGeometry()" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9;">
+        </div>
+        <div id="mw-complexity-container">
+          <label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Land Shape Complexity</label>
+          <select id="mw-shape-complexity" onchange="calculateIrregularGeometry()" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9;">
+            <option value="1.12">Perfect Square / Circle (Most Efficient)</option>
+            <option value="1.25" selected>Standard Rectangle / Semi-Irregular</option>
+            <option value="1.50">Highly Irregular / Narrow Strip / Triangular</option>
+            <option value="1.80">Z-Shaped / Jagged Edges (Maximum Perimeter)</option>
+          </select>
+        </div>
+        <div id="mw-manual-perimeter-container" style="display: none;">
+          <label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Known Perimeter (linear meters)</label>
+          <input type="number" id="mw-perimeter-input" value="45" oninput="calculateIrregularGeometry()" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9;">
+        </div>
+      </div>
+      <div id="mw-geometry-warning" style="margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 0.85rem; display: none;"></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+        <div style="background: #f0f7e6; padding: 15px; border-radius: 12px; text-align: center;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; color: #5a4230;">Fencing Boundary</div>
+          <div id="mw-perimeter" style="font-size: 1.5rem; font-weight: bold; color: #3d5a2b; font-family: 'Playfair Display', serif;">--</div>
+        </div>
+        <div style="background: #f0f7e6; padding: 15px; border-radius: 12px; text-align: center;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; color: #5a4230;">Fencing Cost (Chainlink)</div>
+          <div id="mw-fencing-cost" style="font-size: 1.5rem; font-weight: bold; color: #3d5a2b; font-family: 'Playfair Display', serif;">--</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="mw-impact-widget" style="font-family: 'DM Sans', sans-serif; background: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #cdd1c0; color: #1c2010; max-width: 800px; margin: 0 auto; margin-bottom: 2.5rem; box-shadow: 0 4px 14px rgba(30,40,15,0.08);">
+      <h3 style="margin-top: 0; color: #3b2f1e; font-family: 'Playfair Display', serif; border-bottom: 2px solid #f0f7e6; padding-bottom: 10px;">🌍 Long-term Impact & Maintenance</h3>
+      <div style="margin-top: 20px;">
+        <label style="display: flex; justify-content: space-between; font-weight: bold; font-size: 0.85rem;">
+          <span>Forest Age: <span id="mw-year-label" style="color: #3d5a2b; font-size: 1.1rem;">Year 1</span></span>
+          <span style="color: #6b7a5e;">(Drag to simulate)</span>
+        </label>
+        <input type="range" id="mw-year-slider" min="1" max="10" value="1" oninput="simulateForestGrowth()" style="width: 100%; margin-top: 10px; cursor: pointer;">
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
+        <div style="background: #fafafa; border-left: 4px solid #c97a2f; padding: 15px; border-radius: 8px;">
+          <h4 style="margin: 0 0 8px 0; font-size: 0.9rem; color: #5a4230;">🛠️ Required Maintenance</h4>
+          <ul id="mw-maintenance-tasks" style="margin: 0; padding-left: 18px; font-size: 0.8rem; line-height: 1.6; color: #3a4230;">
+            <li>Water 4L per sqm daily.</li>
+            <li>Manual weeding required (drop weeds as mulch).</li>
+            <li>Check and replace broken support sticks.</li>
+          </ul>
+        </div>
+        <div style="background: #fafafa; border-left: 4px solid #3d5a2b; padding: 15px; border-radius: 8px;">
+          <h4 style="margin: 0 0 8px 0; font-size: 0.9rem; color: #5a4230;">🌳 Ecological Status</h4>
+          <ul id="mw-eco-status" style="margin: 0; padding-left: 18px; font-size: 0.8rem; line-height: 1.6; color: #3a4230;">
+            <li>Sapling height: ~1.5 to 2 meters.</li>
+            <li>Root network expanding.</li>
+            <li>High vulnerability to grazing animals.</li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top: 20px; background: #e8f3d6; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: #567a40;">Total CO₂ Sequestered</div>
+          <div style="font-size: 0.75rem; color: #6b7a5e;">Based on currently entered area</div>
+        </div>
+        <div id="mw-co2-output" style="font-size: 1.8rem; font-weight: 900; color: #1c2010; font-family: 'DM Mono', monospace;">0 kg</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem">
+      <div class="card-header">🧾 Material & Water Requirement</div>
+      <div class="card-body">
+        <div class="material-grid" id="materialGrid">
+          <div class="material-item"><span class="material-label">🌱 Total Saplings (nursery)</span><span class="material-value" id="totalSaplings">—</span></div>
+          <div class="material-item"><span class="material-label">🪴 Organic Compost (m³)</span><span class="material-value" id="organicCompost">—</span></div>
+          <div class="material-item"><span class="material-label">🌾 Rice Husk Perforators (m³)</span><span class="material-value" id="riceHusk">—</span></div>
+          <div class="material-item"><span class="material-label">💧 Water Retainers (Coco Peat) (m³)</span><span class="material-value" id="cocoPeat">—</span></div>
+          <div class="material-item"><span class="material-label">🍂 Surface Mulch (m³)</span><span class="material-value" id="surfaceMulch">—</span></div>
+          <div class="material-item"><span class="material-label">💦 Irrigation Water per Month (litres)</span><span class="material-value" id="irrigationWater">—</span></div>
+          <div class="material-item" id="phAmendmentRow" style="display:none;"><span class="material-label">🧪 Soil Amendment (lime/sulphur)</span><span class="material-value" id="phAmendment">—</span></div>
+        </div>
+        <div style="font-size:0.7rem; margin-top:0.8rem; color:var(--ink-lt);">📐 Based on area in square metres: Saplings = area×3.5 (rounded), Compost = area×0.20, Rice Husk = area×0.10, Coco Peat = area×0.10, Mulch = area×0.08, Water = Saplings×4.5×30 litres. Soil amendment added when pH is outside 5.5–7.5.</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin:1rem 0"><div class="card-header">🌿 Smart Species Recommendation (pH‑optimised)</div><div class="card-body" id="speciesRecBody">Loading...</div></div>
+    <div class="card" style="margin:1rem 0"><div class="card-header">🔬 Factor Analysis (including pH & management)</div><div style="overflow-x:auto"><table class="analysis-table"><thead><tr><th>Factor</th><th>Value</th><th>Score</th><th>Status</th></tr></thead><tbody id="analysisBody"></tbody> </table></div></div>
+    <div class="grid-2"><div class="card"><div class="card-header">📈 10-Year Carbon Projection</div><div class="card-body"><div class="chart-wrap-sm"><canvas id="projChart"></canvas></div></div></div>
+    <div class="card"><div class="card-header">💡 Suggestions & Local Contacts</div><div class="card-body" id="suggestionsBody"></div></div></div>
   </div>
 
-  <!-- Plot Shape & Fencing Estimator -->
-  <div id="mw-geometry-widget" style="font-family: 'DM Sans', sans-serif; background: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #cdd1c0; color: #1c2010; max-width: 800px; margin: 0 auto 2rem auto; box-shadow: 0 4px 14px rgba(30,40,15,0.08);">
-    <h3 style="margin-top: 0; color: #3b2f1e; font-family: 'Playfair Display', serif; border-bottom: 2px solid #f0f7e6; padding-bottom: 10px;">📐 Plot Shape & Fencing Estimator</h3>
-    <div style="display: flex; gap: 10px; margin: 15px 0;"><button id="btn-mode-estimate" onclick="toggleGeometryMode('estimate')" style="flex: 1; padding: 8px; font-size: 0.8rem; font-weight: bold; border-radius: 6px; border: 1px solid #3d5a2b; background: #3d5a2b; color: white; cursor: pointer;">🔮 Estimate Perimeter</button><button id="btn-mode-manual" onclick="toggleGeometryMode('manual')" style="flex: 1; padding: 8px; font-size: 0.8rem; font-weight: bold; border-radius: 6px; border: 1px solid #3d5a2b; background: transparent; color: #3d5a2b; cursor: pointer;">✏️ Enter Exact Perimeter</button></div>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;"><div><label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Total Area (sq meters)</label><input type="number" id="mw-area-input" value="100" oninput="calculateIrregularGeometry()" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9;"></div><div id="mw-complexity-container"><label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Land Shape Complexity</label><select id="mw-shape-complexity" onchange="calculateIrregularGeometry()" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9;"><option value="1.12">Perfect Square / Circle (Most Efficient)</option><option value="1.25" selected>Standard Rectangle / Semi-Irregular</option><option value="1.50">Highly Irregular / Narrow Strip / Triangular</option><option value="1.80">Z-Shaped / Jagged Edges (Maximum Perimeter)</option></select></div><div id="mw-manual-perimeter-container" style="display: none;"><label style="display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px;">Known Perimeter (linear meters)</label><input type="number" id="mw-perimeter-input" value="45" oninput="calculateIrregularGeometry()" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9;"></div></div>
-    <div id="mw-geometry-warning" style="margin-top: 15px; padding: 10px; border-radius: 8px; font-size: 0.85rem; display: none;"></div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;"><div style="background: #f0f7e6; padding: 15px; border-radius: 12px; text-align: center;"><div style="font-size: 0.75rem; text-transform: uppercase; color: #5a4230;">Fencing Boundary</div><div id="mw-perimeter" style="font-size: 1.5rem; font-weight: bold; color: #3d5a2b; font-family: 'Playfair Display', serif;">--</div></div><div style="background: #f0f7e6; padding: 15px; border-radius: 12px; text-align: center;"><div style="font-size: 0.75rem; text-transform: uppercase; color: #5a4230;">Fencing Cost (Chainlink)</div><div id="mw-fencing-cost" style="font-size: 1.5rem; font-weight: bold; color: #3d5a2b; font-family: 'Playfair Display', serif;">--</div></div></div>
-  </div>
-
-  <!-- Long-term Impact & Maintenance -->
-  <div id="mw-impact-widget" style="font-family: 'DM Sans', sans-serif; background: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #cdd1c0; color: #1c2010; max-width: 800px; margin: 0 auto 2rem auto; box-shadow: 0 4px 14px rgba(30,40,15,0.08);">
-    <h3 style="margin-top: 0; color: #3b2f1e; font-family: 'Playfair Display', serif; border-bottom: 2px solid #f0f7e6; padding-bottom: 10px;">🌍 Long-term Impact & Maintenance</h3>
-    <div style="margin-top: 20px;"><label style="display: flex; justify-content: space-between; font-weight: bold; font-size: 0.85rem;"><span>Forest Age: <span id="mw-year-label" style="color: #3d5a2b; font-size: 1.1rem;">Year 1</span></span><span style="color: #6b7a5e;">(Drag to simulate)</span></label><input type="range" id="mw-year-slider" min="1" max="10" value="1" oninput="simulateForestGrowth()" style="width: 100%; margin-top: 10px; cursor: pointer;"></div>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;"><div style="background: #fafafa; border-left: 4px solid #c97a2f; padding: 15px; border-radius: 8px;"><h4 style="margin: 0 0 8px 0; font-size: 0.9rem; color: #5a4230;">🛠️ Required Maintenance</h4><ul id="mw-maintenance-tasks" style="margin: 0; padding-left: 18px; font-size: 0.8rem; line-height: 1.6; color: #3a4230;"><li>Water 4L per sqm daily.</li><li>Manual weeding required.</li><li>Check support sticks.</li></ul></div><div style="background: #fafafa; border-left: 4px solid #3d5a2b; padding: 15px; border-radius: 8px;"><h4 style="margin: 0 0 8px 0; font-size: 0.9rem; color: #5a4230;">🌳 Ecological Status</h4><ul id="mw-eco-status" style="margin: 0; padding-left: 18px; font-size: 0.8rem; line-height: 1.6; color: #3a4230;"><li>Sapling height: ~1.5-2m.</li><li>Root network expanding.</li><li>High vulnerability to grazing.</li></ul></div></div>
-    <div style="margin-top: 20px; background: #e8f3d6; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;"><div><div style="font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: #567a40;">Total CO₂ Sequestered</div><div style="font-size: 0.75rem; color: #6b7a5e;">Based on entered area</div></div><div id="mw-co2-output" style="font-size: 1.8rem; font-weight: 900; color: #1c2010; font-family: 'DM Mono', monospace;">0 kg</div></div>
-  </div>
-
-  <!-- Field Polygon & Plantation Layout -->
   <div class="section" id="field-section">
     <div class="section-header"><h2>✏️ Field Polygon & Plantation Layout</h2><span>draw boundary → auto trees</span></div>
     <div class="grid-2">
@@ -281,7 +323,6 @@
     </div>
   </div>
 
-  <!-- Government Schemes & Helplines -->
   <div class="section" id="schemes-section">
     <div class="section-header"><h2>🏛️ Government Schemes & Subsidies</h2><span>India — verified 2024</span></div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem">
@@ -306,79 +347,10 @@
     </div>
   </div>
 </main>
-<footer><div>🌿 Gvan — Forest Ecology Platform</div><div style="font-size:0.7rem">Miyawaki calculator & field tools | contact state forest dept for certification</div></footer>
+<footer><div>🌿 Gvan — Forest Ecology Platform</div><div style="font-size:0.7rem">Data estimated • contact state forest dept for certification</div></footer>
 <div id="toast"></div>
 
-<script>
-  function toast(m) { let t=document.getElementById("toast"); t.innerText=m; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2500); }
-  
-  let leafMap, leafMarker;
-  let polyPoints = [], polyClosed = false, drawModeActive = true;
-  
-  // Location & map
-  async function searchLocation() {
-    let q = document.getElementById("locationInput").value.trim();
-    if(!q) { toast("Enter location"); return; }
-    try {
-      let res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`);
-      let data = await res.json();
-      if(data.length===0) { toast("Not found"); return; }
-      let lat = parseFloat(data[0].lat), lon = parseFloat(data[0].lon);
-      if(leafMap) leafMap.setView([lat, lon], 14);
-      if(leafMarker) leafMarker.setLatLng([lat, lon]).bindPopup(`📍 ${data[0].display_name.substring(0,50)}`).openPopup();
-      document.getElementById("locDot").style.background = "#4caf50";
-      document.getElementById("locStatus").innerHTML = `📍 ${data[0].display_name.substring(0,40)}`;
-      toast(`Location set`);
-    } catch(e) { toast("Search failed"); }
-  }
-  function detectLocation() {
-    if(!navigator.geolocation) { toast("Geo not supported"); return; }
-    let btn=document.getElementById("detectBtn"); btn.innerText="⏳..."; btn.disabled=true;
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      let lat = pos.coords.latitude, lon = pos.coords.longitude;
-      if(leafMap) leafMap.setView([lat, lon], 16);
-      let name = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
-      try { let rev = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`); let d = await rev.json(); if(d.display_name) name = d.display_name.substring(0,60); } catch(e) {}
-      if(leafMarker) leafMarker.setLatLng([lat, lon]).bindPopup(`📍 ${name}`).openPopup();
-      document.getElementById("locDot").style.background = "#4caf50";
-      document.getElementById("locStatus").innerHTML = `📍 ${name}`;
-      toast("Location detected");
-      btn.innerText="✅ Located"; btn.disabled=false;
-    }, (err) => { toast("Location error"); btn.innerText="📍 Detect"; btn.disabled=false; });
-  }
-  
-  // Field drawing
-  function setDrawMode(mode) { drawModeActive=mode; document.getElementById("drawModeBtn").classList.toggle("active",mode); }
-  function drawPolygonCanvas() { let c=document.getElementById("fieldCanvas"); if(!c) return; let ctx=c.getContext("2d"); c.width=c.clientWidth||600; c.height=340; ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle="var(--canopy)"; ctx.fillRect(0,0,c.width,c.height); if(polyPoints.length===0){ ctx.fillStyle="var(--ink-lt)"; ctx.font="14px sans-serif"; ctx.fillText("Click to place points",c.width/2-100,c.height/2); return; } if(polyPoints.length>=3){ ctx.beginPath(); ctx.moveTo(polyPoints[0].x,polyPoints[0].y); polyPoints.forEach(p=>ctx.lineTo(p.x,p.y)); if(polyClosed) ctx.closePath(); ctx.fillStyle=polyClosed?"rgba(61,90,43,0.2)":"rgba(61,90,43,0.1)"; ctx.fill(); ctx.strokeStyle="var(--moss)"; ctx.lineWidth=2.5; ctx.setLineDash(polyClosed?[]:[6,6]); ctx.stroke(); ctx.setLineDash([]); } polyPoints.forEach((p,i)=>{ ctx.beginPath(); ctx.arc(p.x,p.y,5,0,Math.PI*2); ctx.fillStyle=i===0?"var(--amber)":"var(--moss)"; ctx.fill(); ctx.strokeStyle="white"; ctx.lineWidth=1.5; ctx.stroke(); }); }
-  function handleCanvasClick(e) { if(!drawModeActive||polyClosed) return; let canvas=document.getElementById("fieldCanvas"); let rect=canvas.getBoundingClientRect(); let scaleX=canvas.width/rect.width, scaleY=canvas.height/rect.height; let mx=(e.clientX-rect.left)*scaleX, my=(e.clientY-rect.top)*scaleY; mx=Math.min(canvas.width,Math.max(0,mx)); my=Math.min(canvas.height,Math.max(0,my)); if(polyPoints.length>2){ let first=polyPoints[0]; if(Math.hypot(mx-first.x,my-first.y)<15){ closePolygon(); return; } } polyPoints.push({x:mx,y:my}); drawPolygonCanvas(); document.getElementById("polyInfo").innerText=`${polyPoints.length} points. Click near orange start to close.`; }
-  function clearPolygon() { polyPoints=[]; polyClosed=false; drawPolygonCanvas(); let pc=document.getElementById("plantationCanvas"); if(pc){ pc.width=pc.clientWidth||600; pc.height=340; pc.getContext("2d").clearRect(0,0,pc.width,pc.height); } document.getElementById("polyTrees").innerHTML="—"; document.getElementById("polyArea").innerHTML="—"; document.getElementById("polyCoverage").innerHTML="—"; document.getElementById("polyChannels").innerHTML="—"; toast("Polygon cleared"); }
-  function closePolygon() { if(polyPoints.length<3){ toast("Need at least 3 points"); return; } polyClosed=true; drawPolygonCanvas(); renderPlantation(); toast("Polygon closed. Plantation simulated."); }
-  function loadSampleField() { let c=document.getElementById("fieldCanvas"); if(c){ c.width=c.clientWidth||600; let w=c.width, h=340; polyPoints=[{x:w*0.2,y:h*0.3},{x:w*0.75,y:h*0.25},{x:w*0.85,y:h*0.6},{x:w*0.5,y:h*0.8},{x:w*0.25,y:h*0.7}]; polyClosed=true; drawPolygonCanvas(); renderPlantation(); toast("Sample field loaded"); } }
-  function pointInPolygon(px,py,poly){ let inside=false; for(let i=0,j=poly.length-1;i<poly.length;j=i++){ let xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y; if(((yi>py)!==(yj>py))&&(px<(xj-xi)*(py-yi)/(yj-yi)+xi)) inside=!inside; } return inside; }
-  function renderPlantation() { if(!polyClosed||polyPoints.length<3) return; let c=document.getElementById("plantationCanvas"); if(!c) return; c.width=c.clientWidth||600; c.height=340; let ctx=c.getContext("2d"); ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle="var(--canopy)"; ctx.fillRect(0,0,c.width,c.height); ctx.beginPath(); ctx.moveTo(polyPoints[0].x,polyPoints[0].y); polyPoints.forEach(p=>ctx.lineTo(p.x,p.y)); ctx.closePath(); ctx.fillStyle="rgba(141,191,100,0.2)"; ctx.fill(); ctx.strokeStyle="var(--moss)"; ctx.stroke(); let spacing=3; let step=spacing*4.2; let bbox={minX:Math.min(...polyPoints.map(p=>p.x)),maxX:Math.max(...polyPoints.map(p=>p.x)),minY:Math.min(...polyPoints.map(p=>p.y)),maxY:Math.max(...polyPoints.map(p=>p.y))}; let treeCount=0, channels=0; for(let y=bbox.minY+step/2; y<bbox.maxY; y+=step){ let isChannel=Math.floor(y/step)%7===3; if(isChannel){ ctx.beginPath(); ctx.moveTo(bbox.minX,y); ctx.lineTo(bbox.maxX,y); ctx.strokeStyle="#4a8fa8"; ctx.lineWidth=3; ctx.stroke(); channels++; continue; } for(let x=bbox.minX+step/2; x<bbox.maxX; x+=step){ if(pointInPolygon(x,y,polyPoints)){ ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fillStyle=Math.floor(x/step)%3===1?"#8fb870":Math.floor(x/step)%3===2?"#c97a2f":"#3d5a2b"; ctx.fill(); treeCount++; } } } let areaUnits=Math.abs(polyPoints.reduce((a,p,i)=>{let j=(i+1)%polyPoints.length;return a+p.x*polyPoints[j].y-polyPoints[j].x*p.y;},0)/2); let estHa=(areaUnits/(step*step*800)).toFixed(1); let coverage=Math.min(92,(treeCount*20/areaUnits)*10).toFixed(0); document.getElementById("polyTrees").innerHTML=treeCount; document.getElementById("polyArea").innerHTML=estHa+" ha"; document.getElementById("polyCoverage").innerHTML=coverage+"%"; document.getElementById("polyChannels").innerHTML=channels; }
-  
-  // Initialize map
-  window.addEventListener("DOMContentLoaded",()=>{
-    leafMap = L.map("map").setView([28.6139, 77.2090], 5);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{attribution:"© OpenStreetMap"}).addTo(leafMap);
-    leafMarker = L.marker([28.6139, 77.2090]).addTo(leafMap).bindPopup("📍 New Delhi (default)").openPopup();
-    let fcanvas = document.getElementById("fieldCanvas"); fcanvas.addEventListener("click",handleCanvasClick); drawPolygonCanvas();
-    setDrawMode(true);
-    toast("✅ Ready. Use Miyawaki tools and draw your field.");
-  });
-  
-  // Miyawaki widget functions (demo)
-  let geometryInputMode = 'estimate';
-  function getAgroZone(lat, lon) { return "north_central_arid_plains"; }
-  async function analyzeSite() { toast("Miyawaki analyzer ready – demo data shown."); document.getElementById('mw-loading').style.display = 'none'; document.getElementById('mw-results').style.display = 'block'; document.getElementById('mw-zone-name').innerText = "Northern Plains"; document.getElementById('mw-plants-list').innerHTML = "<div>Teak, Neem, Bamboo, Karanj, Jamun</div>"; document.getElementById('mw-total-cost').innerText = "₹18,750"; }
-  function calculateEnhancersAndBudget() { document.getElementById('mw-total-cost').innerText = "₹18,750"; }
-  function toggleGeometryMode(mode) { geometryInputMode = mode; let comp = document.getElementById('mw-complexity-container'); let manual = document.getElementById('mw-manual-perimeter-container'); if(mode==='manual'){ comp.style.display='none'; manual.style.display='block'; } else { comp.style.display='block'; manual.style.display='none'; } calculateIrregularGeometry(); }
-  function calculateIrregularGeometry() { let area = parseFloat(document.getElementById('mw-area-input').value)||0; let perimeter = geometryInputMode==='estimate' ? Math.round(4*Math.sqrt(area)*1.25) : parseFloat(document.getElementById('mw-perimeter-input').value)||0; document.getElementById('mw-perimeter').innerText = perimeter + ' m'; document.getElementById('mw-fencing-cost').innerText = '₹'+(perimeter*150).toLocaleString(); let warn = document.getElementById('mw-geometry-warning'); if(area<30 && area>0){ warn.innerHTML = '⚠️ Minimum 30 sq m recommended.'; warn.style.display='block'; } else warn.style.display='none'; }
-  function simulateForestGrowth() { let year = parseInt(document.getElementById('mw-year-slider').value); document.getElementById('mw-year-label').innerText = 'Year '+year; let area = parseFloat(document.getElementById('mw-area-input').value)||100; let saplings = Math.round(area*4); let co2 = year===1?2:year===2?6:year===3?15:15+((year-3)*18); let total = saplings*co2; let out = document.getElementById('mw-co2-output'); if(total>1000) out.innerText = (total/1000).toFixed(2)+' Tons'; else out.innerText = total.toLocaleString()+' kg'; let tasks = document.getElementById('mw-maintenance-tasks'); if(year===1) tasks.innerHTML = '<li>Water 4L per sqm daily.</li><li>Manual weeding monthly.</li>'; else if(year===2) tasks.innerHTML = '<li>Watering reduced to 2L per sqm.</li><li>Check for invasive vines.</li>'; else tasks.innerHTML = '<li>Zero maintenance required.</li><li>Do not walk inside.</li>'; }
-  setTimeout(()=>{ calculateIrregularGeometry(); simulateForestGrowth(); }, 100);
-  
-  window.detectLocation=detectLocation; window.searchLocation=searchLocation; window.setDrawMode=setDrawMode; window.clearPolygon=clearPolygon; window.closePolygon=closePolygon; window.loadSampleField=loadSampleField;
-  window.analyzeSite=analyzeSite; window.calculateEnhancersAndBudget=calculateEnhancersAndBudget; window.toggleGeometryMode=toggleGeometryMode; window.calculateIrregularGeometry=calculateIrregularGeometry; window.simulateForestGrowth=simulateForestGrowth;
-</script>
+<script src="gvan.js"></script>
+
 </body>
 </html>
