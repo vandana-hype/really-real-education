@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MiyawakiSoilEnhancementDB",
+  "description": "Soil characteristics and specific biomass enhancer formulas (in kg/sqm) mapped to Indian agro-zones.",
+  "agro_zones": {
+    "north_central_arid_plains": {
+      "region_name": "North & Central India",
+      "climate_challenge": "Extreme summer heat, low humidity, high evaporation.",
+      "dominant_soils": [
+        {
+          "soil_id": "sandy_arid",
+          "soil_name": "Sandy / Desert Soil",
+          "characteristics": "High drainage, extremely poor water and nutrient retention.",
+          "enhancer_formula_kg_per_sqm": {
+            "water_retainer_cocopeat": 5.5,
+            "perforator_rice_husk": 1.5,
+            "organic_compost": 3.0,
+            "surface_mulch_thickness_cm": 15
+          },
+          "special_additives": ["Neem cake (anti-termite)", "Bentonite clay (to improve water holding)"]
+        },
+        {
+          "soil_id": "alluvial_loam",
+          "soil_name": "Indo-Gangetic Alluvial",
+          "characteristics": "Balanced texture, generally fertile but highly compacted by agriculture.",
+          "enhancer_formula_kg_per_sqm": {
+            "water_retainer_cocopeat": 3.0,
+            "perforator_rice_husk": 2.5,
+            "organic_compost": 2.5,
+            "surface_mulch_thickness_cm": 12
+          },
+          "special_additives": ["Mycorrhizal fungi"]
+        }
+      ]
+    },
+    "south_deccan_plateau": {
+      "region_name": "South India (Deccan)",
+      "climate_challenge": "Hard pan rock below surface, erratic monsoon.",
+      "dominant_soils": [
+        {
+          "soil_id": "black_cotton",
+          "soil_name": "Black Cotton Soil (Vertisol)",
+          "characteristics": "High clay content, cracks heavily when dry, poor aeration, waterlogging risk.",
+          "enhancer_formula_kg_per_sqm": {
+            "water_retainer_cocopeat": 1.0,
+            "perforator_rice_husk": 6.0,
+            "organic_compost": 2.0,
+            "surface_mulch_thickness_cm": 10
+          },
+          "special_additives": ["Gypsum (if highly alkaline)", "Coarse river sand (for aeration)"]
+        },
+        {
+          "soil_id": "red_laterite",
+          "soil_name": "Red Laterite Soil",
+          "characteristics": "Iron-rich, highly weathered, acidic, poor organic matter.",
+          "enhancer_formula_kg_per_sqm": {
+            "water_retainer_cocopeat": 4.0,
+            "perforator_rice_husk": 3.0,
+            "organic_compost": 4.0,
+            "surface_mulch_thickness_cm": 15
+          },
+          "special_additives": ["Agricultural lime (to balance pH)", "Bone meal (phosphorus source)"]
+        }
+      ]
+    },
+    "western_ghats_coastal": {
+      "region_name": "Western Ghats & Coastal",
+      "climate_challenge": "Heavy monsoon leaching nutrients, high humidity.",
+      "dominant_soils": [
+        {
+          "soil_id": "coastal_sandy",
+          "soil_name": "Coastal Sandy",
+          "characteristics": "High salinity, fast draining.",
+          "enhancer_formula_kg_per_sqm": {
+            "water_retainer_cocopeat": 6.0,
+            "perforator_rice_husk": 1.0,
+            "organic_compost": 4.0,
+            "surface_mulch_thickness_cm": 15
+          },
+          "special_additives": ["Gypsum (to flush salts)", "Seaweed extract"]
+        },
+        {
+          "soil_id": "forest_loam",
+          "soil_name": "Humid Forest Loam",
+          "characteristics": "Good baseline organic matter, can become waterlogged.",
+          "enhancer_formula_kg_per_sqm": {
+            "water_retainer_cocopeat": 2.0,
+            "perforator_rice_husk": 3.0,
+            "organic_compost": 2.0,
+            "surface_mulch_thickness_cm": 10
+          },
+          "special_additives": ["Wood ash (potash source)"]
+        }
+      ]
+    },
+    "east_northeast_subtropical": {
+      "region_name": "East & Northeast India",
+      "climate_challenge": "Heavy rainfall, acidic soils due to leaching.",
+      "dominant_soils": [
+        {
+          "soil_id": "acidic_loam",
+          "soil_name": "Sub-tropical Acidic Loam",
+          "characteristics": "Very low pH, high aluminum toxicity risk, good moisture.",
+          "enhancer_formula_kg_per_sqm": {
+            "water_retainer_cocopeat": 2.5,
+            "perforator_rice_husk": 3.5,
+            "organic_compost": 3.0,
+            "surface_mulch_thickness_cm": 12
+          },
+          "special_additives": ["Dolomitic lime (crucial for pH adjustment)", "Rock phosphate"]
+        },
+        {
+          "soil_id": "brahmaputra_alluvial",
+          "soil_name": "Floodplain Alluvial",
+          "characteristics": "Silty, fertile, prone to compaction and seasonal flooding.",
+          "enhancer_formula_kg_per_sqm": {
+            "water_retainer_cocopeat": 2.0,
+            "perforator_rice_husk": 4.0,
+            "organic_compost": 2.5,
+            "surface_mulch_thickness_cm": 10
+          },
+          "special_additives": ["Trichoderma (anti-fungal for wet conditions)"]
+        }
+      ]
+    }
+  }
+}

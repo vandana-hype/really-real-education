@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MiyawakiForestRegionsDB",
+  "description": "Regional plant species matrix partitioned by Miyawaki strata layers with specific watering coefficients for Indian geographic coordinates.",
+  "regions": {
+    "north_central_arid_plains": {
+      "region_id": "north_central_arid_plains",
+      "display_name": "North & Central India (Semi-Arid/Indo-Gangetic)",
+      "representative_states": ["Delhi", "Rajasthan", "Uttar Pradesh", "Madhya Pradesh", "Haryana"],
+      "baseline_daily_water_liters_per_sqm": 4.5,
+      "layers": {
+        "canopy": [
+          { "common_name": "Peepal", "botanical_name": "Ficus religiosa", "watering_factor": 1.0, "growth_rate": "fast" },
+          { "common_name": "Neem", "botanical_name": "Azadirachta indica", "watering_factor": 0.7, "growth_rate": "fast" },
+          { "common_name": "Banyan", "botanical_name": "Ficus benghalensis", "watering_factor": 1.0, "growth_rate": "medium" },
+          { "common_name": "Desi Mango", "botanical_name": "Mangifera indica", "watering_factor": 1.2, "growth_rate": "medium" }
+        ],
+        "tree": [
+          { "common_name": "Jamun", "botanical_name": "Syzygium cumini", "watering_factor": 1.1, "growth_rate": "fast" },
+          { "common_name": "Palash", "botanical_name": "Butea monosperma", "watering_factor": 0.6, "growth_rate": "medium" },
+          { "common_name": "Shisham", "botanical_name": "Dalbergia sissoo", "watering_factor": 0.8, "growth_rate": "fast" },
+          { "common_name": "Babool", "botanical_name": "Vachellia nilotica", "watering_factor": 0.5, "growth_rate": "fast" }
+        ],
+        "sub_tree": [
+          { "common_name": "Arjun", "botanical_name": "Terminalia arjuna", "watering_factor": 1.0, "growth_rate": "medium" },
+          { "common_name": "Amaltas", "botanical_name": "Cassia fistula", "watering_factor": 0.8, "growth_rate": "fast" },
+          { "common_name": "Sita Ashoka", "botanical_name": "Saraca asoca", "watering_factor": 1.1, "growth_rate": "slow" },
+          { "common_name": "Bel", "botanical_name": "Aegle marmelos", "watering_factor": 0.7, "growth_rate": "medium" }
+        ],
+        "shrub": [
+          { "common_name": "Karonda", "botanical_name": "Carissa carandas", "watering_factor": 0.6, "growth_rate": "medium" },
+          { "common_name": "Mehendi (Henna)", "botanical_name": "Lawsonia inermis", "watering_factor": 0.5, "growth_rate": "fast" },
+          { "common_name": "Curry Leaf", "botanical_name": "Murraya koenigii", "watering_factor": 0.9, "growth_rate": "medium" },
+          { "common_name": "Visual Ixora", "botanical_name": "Ixora coccinea", "watering_factor": 1.0, "growth_rate": "medium" }
+        ]
+      }
+    },
+    "south_deccan_plateau": {
+      "region_id": "south_deccan_plateau",
+      "display_name": "South India (Tropical/Deccan Semi-Arid Interior)",
+      "representative_states": ["Telangana", "Karnataka", "Andhra Pradesh", "Tamil Nadu Inland"],
+      "baseline_daily_water_liters_per_sqm": 4.0,
+      "layers": {
+        "canopy": [
+          { "common_name": "Teak", "botanical_name": "Tectona grandis", "watering_factor": 0.9, "growth_rate": "medium" },
+          { "common_name": "Tamarind", "botanical_name": "Tamarindus indica", "watering_factor": 0.7, "growth_rate": "slow" },
+          { "common_name": "Wild Jackfruit", "botanical_name": "Artocarpus heterophyllus", "watering_factor": 1.2, "growth_rate": "medium" },
+          { "common_name": "Mahua", "botanical_name": "Madhuca longifolia", "watering_factor": 0.8, "growth_rate": "slow" }
+        ],
+        "tree": [
+          { "common_name": "Honge (Karanji)", "botanical_name": "Millettia pinnata", "watering_factor": 0.8, "growth_rate": "fast" },
+          { "common_name": "Sandalwood", "botanical_name": "Santalum album", "watering_factor": 0.9, "growth_rate": "slow" },
+          { "common_name": "Indian Rosewood", "botanical_name": "Dalbergia latifolia", "watering_factor": 1.0, "growth_rate": "slow" },
+          { "common_name": "Kadamba", "botanical_name": "Neolamarckia cadamba", "watering_factor": 1.3, "growth_rate": "fast" }
+        ],
+        "sub_tree": [
+          { "common_name": "Amla", "botanical_name": "Phyllanthus emblica", "watering_factor": 0.8, "growth_rate": "medium" },
+          { "common_name": "Drumstick (Moringa)", "botanical_name": "Moringa oleifera", "watering_factor": 0.6, "growth_rate": "fast" },
+          { "common_name": "Kachnar", "botanical_name": "Bauhinia variegata", "watering_factor": 0.9, "growth_rate": "fast" },
+          { "common_name": "Bael", "botanical_name": "Aegle marmelos", "watering_factor": 0.7, "growth_rate": "medium" }
+        ],
+        "shrub": [
+          { "common_name": "Adhatoda (Adusa)", "botanical_name": "Justicia adhatoda", "watering_factor": 0.7, "growth_rate": "fast" },
+          { "common_name": "Shankhasura", "botanical_name": "Caesalpinia pulcherrima", "watering_factor": 0.8, "growth_rate": "fast" },
+          { "common_name": "Krishna Tulsi", "botanical_name": "Ocimum tenuiflorum", "watering_factor": 0.9, "growth_rate": "fast" },
+          { "common_name": "Wild Hibiscus", "botanical_name": "Hibiscus rosa-sinensis", "watering_factor": 1.1, "growth_rate": "medium" }
+        ]
+      }
+    },
+    "western_ghats_coastal": {
+      "region_id": "western_ghats_coastal",
+      "display_name": "Western Ghats & Coastal Belt (Humid/High Rainfall)",
+      "representative_states": ["Kerala", "Goa", "Coastal Karnataka", "Maharashtra Konkan Coast"],
+      "baseline_daily_water_liters_per_sqm": 3.0,
+      "layers": {
+        "canopy": [
+          { "common_name": "Anjili", "botanical_name": "Artocarpus hirsutus", "watering_factor": 1.4, "growth_rate": "medium" },
+          { "common_name": "Malabar Ironwood", "botanical_name": "Hopea parviflora", "watering_factor": 1.3, "growth_rate": "slow" },
+          { "common_name": "Indian Copal Tree", "botanical_name": "Vateria indica", "watering_factor": 1.5, "growth_rate": "medium" },
+          { "common_name": "Mast Tree", "botanical_name": "Polyalthia longifolia", "watering_factor": 1.0, "growth_rate": "fast" }
+        ],
+        "tree": [
+          { "common_name": "Atti (Cluster Fig)", "botanical_name": "Ficus racemosa", "watering_factor": 1.3, "growth_rate": "fast" },
+          { "common_name": "Calophyllum", "botanical_name": "Calophyllum inophyllum", "watering_factor": 1.1, "growth_rate": "medium" },
+          { "common_name": "Wild Nutmeg", "botanical_name": "Myristica malabarica", "watering_factor": 1.4, "growth_rate": "slow" },
+          { "common_name": "Red Sandalwood", "botanical_name": "Pterocarpus santalinus", "watering_factor": 0.8, "growth_rate": "slow" }
+        ],
+        "sub_tree": [
+          { "common_name": "Kokum", "botanical_name": "Garcinia indica", "watering_factor": 1.2, "growth_rate": "medium" },
+          { "common_name": "Carallia", "botanical_name": "Carallia brachiata", "watering_factor": 1.1, "growth_rate": "medium" },
+          { "common_name": "Areca Palm (Native)", "botanical_name": "Areca catechu", "watering_factor": 1.4, "growth_rate": "medium" },
+          { "common_name": "Fish Tail Palm", "botanical_name": "Caryota urens", "watering_factor": 1.2, "growth_rate": "fast" }
+        ],
+        "shrub": [
+          { "common_name": "Wild Pepper Shrub", "botanical_name": "Piper nigrum", "watering_factor": 1.3, "growth_rate": "fast" },
+          { "common_name": "Malabar Nut", "botanical_name": "Justicia beddomei", "watering_factor": 1.1, "growth_rate": "medium" },
+          { "common_name": "Blue Fountain Bush", "botanical_name": "Clerodendrum serratum", "watering_factor": 1.0, "growth_rate": "fast" },
+          { "common_name": "Forest Flame", "botanical_name": "Helicteres isora", "watering_factor": 0.9, "growth_rate": "medium" }
+        ]
+      }
+    },
+    "east_northeast_subtropical": {
+      "region_id": "east_northeast_subtropical",
+      "display_name": "East & Northeast India (Wet Sub-Tropical)",
+      "representative_states": ["Assam", "West Bengal", "Odisha", "Meghalaya", "Arunachal Pradesh Plains"],
+      "baseline_daily_water_liters_per_sqm": 3.5,
+      "layers": {
+        "canopy": [
+          { "common_name": "Hollong", "botanical_name": "Dipterocarpus retusus", "watering_factor": 1.4, "growth_rate": "medium" },
+          { "common_name": "Sal", "botanical_name": "Shorea robusta", "watering_factor": 1.1, "growth_rate": "slow" },
+          { "common_name": "Mekahi", "botanical_name": "Phoebe goalparensis", "watering_factor": 1.3, "growth_rate": "medium" },
+          { "common_name": "Simul (Silk Cotton)", "botanical_name": "Bombax ceiba", "watering_factor": 1.2, "growth_rate": "fast" }
+        ],
+        "tree": [
+          { "common_name": "Agarwood", "botanical_name": "Aquilaria malaccensis", "watering_factor": 1.3, "growth_rate": "slow" },
+          { "common_name": "Elephant Apple", "botanical_name": "Dillenia indica", "watering_factor": 1.4, "growth_rate": "medium" },
+          { "common_name": "Kadam", "botanical_name": "Neolamarckia cadamba", "watering_factor": 1.3, "growth_rate": "fast" },
+          { "common_name": "Gamar (White Teak)", "botanical_name": "Gmelina arborea", "watering_factor": 1.1, "growth_rate": "fast" }
+        ],
+        "sub_tree": [
+          { "common_name": "Assamese Lime", "botanical_name": "Citrus limon var. assamensis", "watering_factor": 1.2, "growth_rate": "medium" },
+          { "common_name": "Star Fruit (Kamranga)", "botanical_name": "Averrhoa carambola", "watering_factor": 1.1, "growth_rate": "medium" },
+          { "common_name": "Outenga", "botanical_name": "Dillenia pentagyna", "watering_factor": 1.2, "growth_rate": "medium" },
+          { "common_name": "Ficus Lacor", "botanical_name": "Ficus virens", "watering_factor": 1.2, "growth_rate": "fast" }
+        ],
+        "shrub": [
+          { "common_name": "Assam Indigo", "botanical_name": "Strobilanthes cusia", "watering_factor": 1.2, "growth_rate": "medium" },
+          { "common_name": "Tagar (Crape Jasmine)", "botanical_name": "Tabernaemontana divaricata", "watering_factor": 1.0, "growth_rate": "fast" },
+          { "common_name": "Dhapat Tita", "botanical_name": "Phlogacanthus thyrsiformis", "watering_factor": 1.1, "growth_rate": "medium" },
+          { "common_name": "Wild Coffee Shrub", "botanical_name": "Psychotria denticulata", "watering_factor": 1.3, "growth_rate": "slow" }
+        ]
+      }
+    }
+  }
+}
