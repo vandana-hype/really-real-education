@@ -52,7 +52,7 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
     let maintScore = maintLevel === "high" ? 1.0 : (maintLevel === "medium" ? 0.7 : 0.4);
     
     let budget = parseFloat(document.getElementById("budget").value) || 500000;
-    let fiveYrCost = parseFloat(document.getElementById("mCost").innerText.replace(/[^0-9.-]/g, '')) || 0;
+    let fiveYrCost = window._fiveYrCost || 1;
     let budgetScore = Math.min(1, budget / (fiveYrCost || 1));
     
     let spacing = parseFloat(document.getElementById("spacing").value) || 3;
@@ -477,7 +477,7 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
     let wA = parseFloat(document.getElementById("waterAvail").value);
     let mm = parseInt(S.rainfall) || 900;
     let budget = parseFloat(document.getElementById("budget").value);
-    let fiveYrCost = parseFloat(document.getElementById("mCost").innerText.replace(/[^0-9.-]/g, '')) || 0;
+    let fiveYrCost = window._fiveYrCost || 0;
     let ph = parseFloat(document.getElementById("soilPH").value);
     let phAdvice = getPHAdvice(ph);
     
@@ -543,6 +543,7 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
     let labourCost = area * multipliers.labourPerHa;
     let maintCostPerTree = (maintLevel === "low" ? 50 : maintLevel === "medium" ? 100 : 160) * multipliers.maintFactor;
     let fiveYrCost = plantingCost + labourCost + (maintCostPerTree * totalTrees * 5) + phAmendment.cost;
+    window._fiveYrCost = fiveYrCost;
     
     let climateScore = S.climate.includes("Tropical") ? 0.9 : 0.7;
     let rainfallScore = Math.min(1, mm/2000);
@@ -550,45 +551,27 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
     let elevationScore = el<800 ? 1 : (el<1500 ? 0.8 : 0.5);
     let phScore = getPHScore(pH);
     
-    if(radarChart) { radarChart.data.datasets[0].data = [climateScore, rainfallScore, soilScore, wA, elevationScore, phScore]; radarChart.update(); }
-    if(costChart) { costChart.data.datasets[0].data = [plantingCost, labourCost, maintCostPerTree*totalTrees*5, phAmendment.cost]; costChart.update(); }
+   
     
     let kgPerTree = S.climate.includes("Tropical") ? 18 : 12;
     let carbonPerYr = ((totalTrees * kgPerTree) / 1000).toFixed(1);
     let projData = [...Array(11).keys()].map(y => +((totalTrees * kgPerTree * y * (1 + y*0.035))/1000).toFixed(1));
     if(projChart) { projChart.data.datasets[0].data = projData; projChart.update(); }
     
-    document.getElementById("mTrees").innerText = totalTrees.toLocaleString();
-    document.getElementById("mCarbon").innerText = carbonPerYr;
-    document.getElementById("mCost").innerText = "₹" + fiveYrCost.toLocaleString();
-    
+   
     let overall = computeSuccessRate();
     document.getElementById("mSuccess").innerText = (overall*100).toFixed(0)+"%";
-    document.getElementById("heroTrees").innerText = totalTrees>999 ? (totalTrees/1000).toFixed(1)+"k" : totalTrees;
-    document.getElementById("heroCarbon").innerText = carbonPerYr;
-    document.getElementById("heroScore").innerText = (overall*100).toFixed(0)+"%";
     
-    document.getElementById("rb-climate").style.width = climateScore*100+"%"; document.getElementById("rv-climate").innerText = (climateScore*100).toFixed(0)+"%";
-    document.getElementById("rb-rain").style.width = rainfallScore*100+"%"; document.getElementById("rv-rain").innerText = (rainfallScore*100).toFixed(0)+"%";
-    document.getElementById("rb-soil").style.width = soilScore*100+"%"; document.getElementById("rv-soil").innerText = (soilScore*100).toFixed(0)+"%";
-    document.getElementById("rb-water").style.width = wA*100+"%"; document.getElementById("rv-water").innerText = (wA*100).toFixed(0)+"%";
-    document.getElementById("ringPct").innerText = (overall*100).toFixed(0)+"%";
-    let circ = document.getElementById("ringCircle"); if(circ) circ.style.strokeDashoffset = (263.89*(1-overall)).toFixed(2);
-    document.getElementById("ecoIndexVal").innerText = (overall*100).toFixed(0)+"%";
-    document.getElementById("ecoBar").style.width = overall*100+"%";
     
+ 
     updateSpeciesRec();
     updateSuggestions();
     if(polyClosed) renderPlantation();
   }
   
-  function updateAllUI() { 
-    document.getElementById("soilEdit").innerText = S.soil;
-    document.getElementById("rainEdit").innerText = S.rainfall;
-    document.getElementById("climateEdit").innerText = S.climate;
-    calc(); 
-  }
-  
+  function updateAllUI() {
+  calc();
+}
   // ========== FIELD DRAWING ==========
   function setDrawMode(mode) { drawModeActive=mode; document.getElementById("drawModeBtn")?.classList.toggle("active",mode); }
   function drawPolygonCanvas() { let c=document.getElementById("fieldCanvas"); if(!c) return; let ctx=c.getContext("2d"); c.width=c.clientWidth||600; c.height=340; ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle="var(--canopy)"; ctx.fillRect(0,0,c.width,c.height); if(polyPoints.length===0){ ctx.fillStyle="var(--ink-lt)"; ctx.font="14px sans-serif"; ctx.fillText("Click to place boundary points",c.width/2-110,c.height/2); return; } if(polyPoints.length>=3){ ctx.beginPath(); ctx.moveTo(polyPoints[0].x,polyPoints[0].y); polyPoints.forEach(p=>ctx.lineTo(p.x,p.y)); if(polyClosed) ctx.closePath(); ctx.fillStyle=polyClosed?"rgba(61,90,43,0.2)":"rgba(61,90,43,0.1)"; ctx.fill(); ctx.strokeStyle="var(--moss)"; ctx.lineWidth=2.5; ctx.setLineDash(polyClosed?[]:[6,6]); ctx.stroke(); ctx.setLineDash([]); } polyPoints.forEach((p,i)=>{ ctx.beginPath(); ctx.arc(p.x,p.y,5,0,Math.PI*2); ctx.fillStyle=i===0?"var(--amber)":"var(--moss)"; ctx.fill(); ctx.strokeStyle="white"; ctx.lineWidth=1.5; ctx.stroke(); }); }
@@ -599,11 +582,13 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
   function pointInPolygon(px,py,poly){ let inside=false; for(let i=0,j=poly.length-1;i<poly.length;j=i++){ let xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y; if(((yi>py)!==(yj>py))&&(px<(xj-xi)*(py-yi)/(yj-yi)+xi)) inside=!inside; } return inside; }
   function renderPlantation() { if(!polyClosed||polyPoints.length<3) return; let c=document.getElementById("plantationCanvas"); if(!c) return; c.width=c.clientWidth||600; c.height=340; let ctx=c.getContext("2d"); ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle="var(--canopy)"; ctx.fillRect(0,0,c.width,c.height); ctx.beginPath(); ctx.moveTo(polyPoints[0].x,polyPoints[0].y); polyPoints.forEach(p=>ctx.lineTo(p.x,p.y)); ctx.closePath(); ctx.fillStyle="rgba(141,191,100,0.2)"; ctx.fill(); ctx.strokeStyle="var(--moss)"; ctx.stroke(); let spacing=parseFloat(document.getElementById("spacing").value)||3; let step=spacing*4.2; let bbox={minX:Math.min(...polyPoints.map(p=>p.x)),maxX:Math.max(...polyPoints.map(p=>p.x)),minY:Math.min(...polyPoints.map(p=>p.y)),maxY:Math.max(...polyPoints.map(p=>p.y))}; let treeCount=0, channels=0; for(let y=bbox.minY+step/2; y<bbox.maxY; y+=step){ let isChannel=Math.floor(y/step)%7===3; if(isChannel){ ctx.beginPath(); ctx.moveTo(bbox.minX,y); ctx.lineTo(bbox.maxX,y); ctx.strokeStyle="#4a8fa8"; ctx.lineWidth=3; ctx.stroke(); channels++; continue; } for(let x=bbox.minX+step/2; x<bbox.maxX; x+=step){ if(pointInPolygon(x,y,polyPoints)){ let color=Math.floor(x/step)%3===1?"#8fb870":Math.floor(x/step)%3===2?"#c97a2f":"#3d5a2b"; ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fillStyle=color; ctx.fill(); treeCount++; } } } let areaUnits=Math.abs(polyPoints.reduce((a,p,i)=>{let j=(i+1)%polyPoints.length;return a+p.x*polyPoints[j].y-polyPoints[j].x*p.y;},0)/2); let estHa=(areaUnits/(step*step*800)).toFixed(1); let coverage=Math.min(92,(treeCount*20/areaUnits)*10).toFixed(0); document.getElementById("polyTrees").innerHTML=treeCount; document.getElementById("polyArea").innerHTML=estHa+" ha"; document.getElementById("polyCoverage").innerHTML=coverage+"%"; document.getElementById("polyChannels").innerHTML=channels; }
  
-  function initCharts() {
-    radarChart = new Chart(document.getElementById("radarChart"),{type:"radar",data:{labels:["Climate","Rainfall","Soil","Water","Elevation","pH"],datasets:[{label:"Suitability",data:[0,0,0,0,0,0],backgroundColor:"rgba(61,90,43,0.2)",borderColor:"#3d5a2b"}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:1}}}});
-    costChart = new Chart(document.getElementById("costChart"),{type:"doughnut",data:{labels:["Sapling + Planting","Labour (5 yr)","Maintenance (5 yr)","Soil Amendment"],datasets:[{data:[0,0,0,0],backgroundColor:["#3d5a2b","#567a40","#a8c97f","#c97a2f"]}]},options:{cutout:"60%"}});
-    projChart = new Chart(document.getElementById("projChart"),{type:"line",data:{labels:[0,1,2,3,4,5,6,7,8,9,10],datasets:[{label:"tCO₂",data:[0,0,0,0,0,0,0,0,0,0,0],borderColor:"#3d5a2b",fill:true}]},options:{responsive:true}});
-  }
+ function initCharts() {
+  projChart = new Chart(document.getElementById("projChart"),{
+    type:"line",
+    data:{labels:[0,1,2,3,4,5,6,7,8,9,10],datasets:[{label:"tCO₂",data:[0,0,0,0,0,0,0,0,0,0,0],borderColor:"#3d5a2b",fill:true}]},
+    options:{responsive:true}
+  });
+}
   
   window.addEventListener("DOMContentLoaded",()=>{
     leafMap = L.map("map").setView([S.lat,S.lon],5); L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{attribution:"© OpenStreetMap"}).addTo(leafMap); leafMarker = L.marker([S.lat,S.lon]).addTo(leafMap).bindPopup("📍 Default").openPopup();
