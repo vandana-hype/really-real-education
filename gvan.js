@@ -35,8 +35,9 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
     let rainfallScore = Math.min(1, mm/2000);
     let soilScore = (S.soil.includes("Clay")||S.soil.includes("Alluvial")) ? 0.85 : (S.soil.includes("Sandy") ? 0.6 : 0.7);
     let waterScore = parseFloat(document.getElementById("waterAvail").value) || 0.75;
+    let elevationScore = (parseFloat(document.getElementById("elevation").value) || 320) < 800 ? 1 : 0.7;
     let phScore = getPHScore(parseFloat(document.getElementById("soilPH").value) || 6.5);
-    let siteSuitability = (climateScore*0.25 + rainfallScore*0.25 + soilScore*0.25 + waterScore*0.20 + phScore*0.05);
+    let siteSuitability = (climateScore*0.25 + rainfallScore*0.2 + soilScore*0.2 + waterScore*0.2 + elevationScore*0.1 + phScore*0.05);
     
     let goal = document.getElementById("goal").value;
     let goalScore = 1.0;
@@ -50,7 +51,10 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
     let maintLevel = document.getElementById("maintenance").value;
     let maintScore = maintLevel === "high" ? 1.0 : (maintLevel === "medium" ? 0.7 : 0.4);
     
-    // Spacing appropriateness
+    let budget = parseFloat(document.getElementById("budget").value) || 500000;
+    let fiveYrCost = parseFloat(document.getElementById("mCost").innerText.replace(/[^0-9.-]/g, '')) || 0;
+    let budgetScore = Math.min(1, budget / (fiveYrCost || 1));
+    
     let spacing = parseFloat(document.getElementById("spacing").value) || 3;
     let spacingScore = 1.0;
     if(goal === "timber" && spacing < 4) spacingScore = 0.6;
@@ -58,11 +62,7 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
     if(goal === "carbon" && spacing > 4) spacingScore = 0.8;
     if(goal === "mixed" && (spacing < 2.5 || spacing > 5)) spacingScore = 0.7;
     
-    // Weighted sum
-    let successRate = (siteSuitability * 0.55) +
-                      (goalScore * 0.20) +
-                      (maintScore * 0.15) +
-                      (spacingScore * 0.10);
+    let successRate = (siteSuitability * 0.50) + (goalScore * 0.15) + (maintScore * 0.10) + (budgetScore * 0.15) + (spacingScore * 0.10);
     return Math.min(1, Math.max(0, successRate));
   }
   
@@ -96,7 +96,7 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
     document.getElementById('climateEdit')?.addEventListener('click', (e) => { e.stopPropagation(); showDropdown(e.target, climateOpts, (val) => { S.climate = val; updateAllUI(); toast(`Climate updated to ${val}`); }); });
   }
   
-  // ========== GLOBAL LOCATION FUNCTIONS ==========
+  // ========== GLOBAL LOCATION FUNCTIONS (Bridged to Miyawaki Engine) ==========
   async function searchLocation() {
     let query = document.getElementById("locationInput").value.trim();
     if(!query) { toast("Enter a location name"); return; }
@@ -113,13 +113,13 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
       document.getElementById("locDot").style.background = "#4caf50";
       document.getElementById("locStatus").innerHTML = `📍 ${data[0].display_name.substring(0,40)}`;
 
-      // Bridge: Update Miyawaki coordinates
+      // Bridge: Update Miyawaki Form coordinates
       if(document.getElementById('mw-lat')) document.getElementById('mw-lat').value = lat.toFixed(4);
       if(document.getElementById('mw-lon')) document.getElementById('mw-lon').value = lon.toFixed(4);
       
       // Bridge: Auto-calculate Miyawaki if already active
-      if (typeof analyzeSite === "function" && document.getElementById('mw-results') && document.getElementById('mw-results').style.display === 'block') {
-         analyzeSite();
+      if (typeof window.analyzeSite === "function" && document.getElementById('mw-results') && document.getElementById('mw-results').style.display === 'block') {
+         window.analyzeSite();
       }
 
       toast(`Location set to ${data[0].display_name.substring(0,40)}`);
@@ -128,7 +128,9 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
 
   function detectLocation() {
     if(!navigator.geolocation) { toast("Geolocation not supported"); return; }
-    let btn=document.getElementById("detectBtn"); btn.innerText="⏳ detecting..."; btn.disabled=true;
+    let btn = document.getElementById("detectBtn"); 
+    if(btn) { btn.innerText = "⏳ detecting..."; btn.disabled = true; }
+    
     navigator.geolocation.getCurrentPosition(
       async (pos)=> { 
         let lat = pos.coords.latitude;
@@ -136,13 +138,13 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
         updateFromLocation(lat, lon);
         if(leafMap) leafMap.setView([lat, lon], 16);
 
-        // Bridge: Update Miyawaki coordinates
+        // Bridge: Update Miyawaki Form coordinates
         if(document.getElementById('mw-lat')) document.getElementById('mw-lat').value = lat.toFixed(4);
         if(document.getElementById('mw-lon')) document.getElementById('mw-lon').value = lon.toFixed(4);
 
         // Bridge: Auto-calculate Miyawaki if already active
-        if (typeof analyzeSite === "function" && document.getElementById('mw-results') && document.getElementById('mw-results').style.display === 'block') {
-           analyzeSite();
+        if (typeof window.analyzeSite === "function" && document.getElementById('mw-results') && document.getElementById('mw-results').style.display === 'block') {
+           window.analyzeSite();
         }
 
         let locationName = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
@@ -155,9 +157,12 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
         document.getElementById("locDot").style.background = "#4caf50";
         document.getElementById("locStatus").innerHTML = `📍 ${locationName}`;
         toast(`Exact location detected!`);
-        btn.innerText="✅ Located"; btn.disabled=false;
+        if(btn) { btn.innerText = "✅ Located"; btn.disabled = false; }
       },
-      (err)=> { toast("Location error: "+err.message); btn.innerText="📍 Detect"; btn.disabled=false; },
+      (err)=> { 
+        toast("Location error: "+err.message); 
+        if(btn) { btn.innerText = "📍 Detect"; btn.disabled = false; } 
+      },
       { enableHighAccuracy: true, timeout: 10000 }
     );
   }
@@ -178,13 +183,252 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
     }
   } 
 
-  // ========== SPECIES RECOMMENDATION (GENERAL PLANNER) ==========
+  // ========== MIYAWAKI ANALYZER & UI UPDATERS ==========
+  let plantData = null;
+  let soilData = null;
+  let currentZoneId = null;
+
+  async function analyzeSite() {
+    const lat = parseFloat(document.getElementById('mw-lat').value);
+    const lon = parseFloat(document.getElementById('mw-lon').value);
+    
+    document.getElementById('mw-loading').style.display = 'block';
+    document.getElementById('mw-results').style.display = 'none';
+
+    try {
+      if (!plantData || !soilData) {
+        const [pRes, sRes] = await Promise.all([
+          fetch('plant data.json'),
+          fetch('soil quaility and enhancers.json')
+        ]);
+        
+        if (!pRes.ok || !sRes.ok) throw new Error("Ensure JSON files are on a local server.");
+        
+        plantData = await pRes.json();
+        soilData = await sRes.json();
+      }
+
+      currentZoneId = getAgroZone(lat, lon);
+      populateMiyawakiUI();
+      
+    } catch (error) {
+      alert("Error loading data: " + error.message);
+      document.getElementById('mw-loading').style.display = 'none';
+    }
+  }
+
+  function populateMiyawakiUI() {
+    document.getElementById('mw-loading').style.display = 'none';
+    document.getElementById('mw-results').style.display = 'block';
+
+    const plantRegion = plantData.regions[currentZoneId];
+    const soilRegion = soilData.agro_zones[currentZoneId];
+
+    document.getElementById('mw-zone-name').innerText = plantRegion.display_name;
+
+    let plantsHtml = '';
+    const layers = ['canopy', 'tree', 'sub_tree', 'shrub'];
+    layers.forEach(layer => {
+      plantsHtml += `<div style="margin-bottom:8px;"><strong>${layer.toUpperCase()} (25%):</strong><br>`;
+      plantRegion.layers[layer].forEach(p => {
+        plantsHtml += `• ${p.common_name} <em style="color:#6b7a5e;">(${p.botanical_name})</em><br>`;
+      });
+      plantsHtml += `</div>`;
+    });
+    document.getElementById('mw-plants-list').innerHTML = plantsHtml;
+
+    const soilSelect = document.getElementById('mw-soil-select');
+    soilSelect.innerHTML = '';
+    soilRegion.dominant_soils.forEach((soil, index) => {
+      let opt = document.createElement('option');
+      opt.value = index; 
+      opt.innerHTML = soil.soil_name + " - " + soil.characteristics;
+      soilSelect.appendChild(opt);
+    });
+
+    calculateEnhancersAndBudget();
+  }
+
+  function calculateEnhancersAndBudget() {
+    const area = parseFloat(document.getElementById('mw-area').value) || 100;
+    const ph = parseFloat(document.getElementById('mw-ph').value) || 6.5;
+    const soilIndex = document.getElementById('mw-soil-select').value;
+    const soilRegion = soilData.agro_zones[currentZoneId];
+    const selectedSoil = soilRegion.dominant_soils[soilIndex];
+    const formula = selectedSoil.enhancer_formula_kg_per_sqm;
+
+    const rates = { sapling: 45, excavation: 80, coco: 20, husk: 10, compost: 15, mulch: 15 };
+
+    const saplings = Math.round(area * 3.5);
+    const cocoKg = area * formula.water_retainer_cocopeat;
+    const huskKg = area * formula.perforator_rice_husk;
+    const compostKg = area * formula.organic_compost;
+
+    let costSaplings = saplings * rates.sapling;
+    let costExcavation = area * rates.excavation;
+    let costCoco = cocoKg * rates.coco;
+    let costHusk = huskKg * rates.husk;
+    let costCompost = compostKg * rates.compost;
+    let costMulch = area * rates.mulch;
+
+    let phAmendmentName = "";
+    let costPh = 0;
+    let phAdviceHtml = "";
+
+    if (ph < 5.5) {
+      const limeKg = area * 0.25; 
+      costPh = limeKg * 8; 
+      phAmendmentName = `Dolomitic Lime (${limeKg.toFixed(1)}kg)`;
+      phAdviceHtml = `<div style="background:#fde8e8; color:#c0392b; padding:8px; border-radius:6px; margin-bottom:8px;">⚠️ <strong>Acidic Soil (pH ${ph}):</strong> Added lime budget to prevent mineral toxicity.</div>`;
+    } else if (ph > 7.5) {
+      const sulphurKg = area * 0.20; 
+      costPh = sulphurKg * 15; 
+      phAmendmentName = `Agri-Sulphur (${sulphurKg.toFixed(1)}kg)`;
+      phAdviceHtml = `<div style="background:#fff3e0; color:#c97a2f; padding:8px; border-radius:6px; margin-bottom:8px;">⚠️ <strong>Alkaline Soil (pH ${ph}):</strong> Added sulphur budget to prevent nutrient locking.</div>`;
+    } else {
+      phAdviceHtml = `<div style="background:#e6f5e8; color:#2d7a3a; padding:8px; border-radius:6px; margin-bottom:8px;">✅ <strong>Optimal pH (${ph}):</strong> No special pH amendments required.</div>`;
+    }
+    
+    const totalCost = costSaplings + costExcavation + costCoco + costHusk + costCompost + costMulch + costPh;
+
+    let budgetHtml = `
+      ${phAdviceHtml}
+      <table style="width:100%; border-collapse: collapse; margin-bottom: 10px;">
+        <tr style="border-bottom: 1px solid #ddd;"><td style="padding:4px 0;"><strong>Saplings (x${saplings})</strong></td><td style="text-align:right; font-family:'DM Mono', monospace;">₹${costSaplings.toLocaleString()}</td></tr>
+        <tr style="border-bottom: 1px solid #ddd;"><td style="padding:4px 0;"><strong>1m Trench Excavation</strong></td><td style="text-align:right; font-family:'DM Mono', monospace;">₹${costExcavation.toLocaleString()}</td></tr>
+        <tr style="border-bottom: 1px solid #ddd;"><td style="padding:4px 0;"><strong>Cocopeat (${cocoKg.toFixed(1)}kg)</strong></td><td style="text-align:right; font-family:'DM Mono', monospace;">₹${costCoco.toLocaleString()}</td></tr>
+        <tr style="border-bottom: 1px solid #ddd;"><td style="padding:4px 0;"><strong>Rice Husk (${huskKg.toFixed(1)}kg)</strong></td><td style="text-align:right; font-family:'DM Mono', monospace;">₹${costHusk.toLocaleString()}</td></tr>
+        <tr style="border-bottom: 1px solid #ddd;"><td style="padding:4px 0;"><strong>Compost (${compostKg.toFixed(1)}kg)</strong></td><td style="text-align:right; font-family:'DM Mono', monospace;">₹${costCompost.toLocaleString()}</td></tr>
+        <tr style="border-bottom: 1px solid #ddd;"><td style="padding:4px 0;"><strong>Surface Mulch</strong></td><td style="text-align:right; font-family:'DM Mono', monospace;">₹${costMulch.toLocaleString()}</td></tr>
+    `;
+    
+    if (costPh > 0) {
+      budgetHtml += `<tr style="border-bottom: 1px solid #ddd;"><td style="padding:4px 0; color:#c0392b;"><strong>pH Correction:<br><span style="font-size:0.75rem;font-weight:normal;">${phAmendmentName}</span></strong></td><td style="text-align:right; color:#c0392b; font-family:'DM Mono', monospace;">₹${costPh.toLocaleString()}</td></tr>`;
+    }
+    
+    budgetHtml += `</table>
+      <div style="background:#f9f9f9; padding:8px; border-radius:6px; font-size:0.75rem; border: 1px solid #eee;">
+        <strong>Other Required Additives:</strong> ${selectedSoil.special_additives.join(', ')}
+      </div>
+    `;
+
+    document.getElementById('mw-budget-list').innerHTML = budgetHtml;
+    document.getElementById('mw-total-cost').innerText = '₹' + totalCost.toLocaleString();
+  }
+
+  // ========== GEOMETRY CALCULATIONS ==========
+  let geometryInputMode = 'estimate';
+
+  function toggleGeometryMode(mode) {
+    geometryInputMode = mode;
+    const compContainer = document.getElementById('mw-complexity-container');
+    const manualContainer = document.getElementById('mw-manual-perimeter-container');
+    const btnEstimate = document.getElementById('btn-mode-estimate');
+    const btnManual = document.getElementById('btn-mode-manual');
+
+    if (mode === 'manual') {
+      compContainer.style.display = 'none'; manualContainer.style.display = 'block';
+      btnManual.style.background = '#3d5a2b'; btnManual.style.color = 'white';
+      btnEstimate.style.background = 'transparent'; btnEstimate.style.color = '#3d5a2b';
+    } else {
+      compContainer.style.display = 'block'; manualContainer.style.display = 'none';
+      btnEstimate.style.background = '#3d5a2b'; btnEstimate.style.color = 'white';
+      btnManual.style.background = 'transparent'; btnManual.style.color = '#3d5a2b';
+    }
+    calculateIrregularGeometry();
+  }
+
+  function calculateIrregularGeometry() {
+    const area = parseFloat(document.getElementById('mw-area-input').value) || 0;
+    let finalPerimeter = 0;
+
+    if (geometryInputMode === 'estimate') {
+      const complexityFactor = parseFloat(document.getElementById('mw-shape-complexity').value);
+      finalPerimeter = Math.round(4 * Math.sqrt(area) * complexityFactor);
+    } else {
+      finalPerimeter = parseFloat(document.getElementById('mw-perimeter-input').value) || 0;
+    }
+    
+    const fencingRatePerMeter = 150; 
+    const totalFencingCost = finalPerimeter * fencingRatePerMeter;
+    
+    document.getElementById('mw-perimeter').innerText = finalPerimeter + ' m';
+    document.getElementById('mw-fencing-cost').innerText = '₹' + totalFencingCost.toLocaleString();
+
+    const warningBox = document.getElementById('mw-geometry-warning');
+    warningBox.style.display = 'block';
+
+    if (area < 30 && area > 0) {
+      warningBox.style.background = '#fff3e0'; warningBox.style.color = '#c97a2f';
+      warningBox.innerHTML = '⚠️ <strong>Area warning:</strong> Miyawaki patches require a minimum footprint of 30 sq meters to effectively bundle microclimate humidity.';
+    } else if (geometryInputMode === 'manual' && finalPerimeter > 0 && area > 0) {
+      const criticalRatio = finalPerimeter / Math.sqrt(area);
+      if (criticalRatio > 6.0) {
+        warningBox.style.background = '#fff3e0'; warningBox.style.color = '#c97a2f';
+        warningBox.innerHTML = '⚠️ <strong>High Edge Exposure Ratio:</strong> This perimeter layout is highly stretched or segmented. Broaden the forest shape dimensions.';
+      } else {
+        warningBox.style.background = '#e6f5e8'; warningBox.style.color = '#2d7a3a';
+        warningBox.innerHTML = '✅ <strong>Manual Bounds Registered.</strong>';
+      }
+    } else if (area >= 30) {
+      warningBox.style.background = '#e6f5e8'; warningBox.style.color = '#2d7a3a';
+      warningBox.innerHTML = '✅ <strong>Dimensions Validated.</strong>';
+    } else {
+      warningBox.style.display = 'none';
+    }
+    
+    const mainAreaInput = document.getElementById('mw-area');
+    if (mainAreaInput) { 
+      mainAreaInput.value = area;
+      if (document.getElementById('mw-results') && document.getElementById('mw-results').style.display === 'block') {
+         calculateEnhancersAndBudget(); 
+      }
+    }
+  }
+
+  // ========== TIMELINE SIMULATOR ==========
+  function simulateForestGrowth() {
+    const year = parseInt(document.getElementById('mw-year-slider').value);
+    document.getElementById('mw-year-label').innerText = 'Year ' + year;
+
+    const areaInput = document.getElementById('mw-area');
+    const area = areaInput ? parseFloat(areaInput.value) || 100 : 100;
+    const saplings = Math.round(area * 3.5);
+
+    const taskList = document.getElementById('mw-maintenance-tasks');
+    const statusList = document.getElementById('mw-eco-status');
+    const co2Output = document.getElementById('mw-co2-output');
+
+    let co2PerTree = 0;
+    if (year === 1) co2PerTree = 2; else if (year === 2) co2PerTree = 6; else if (year === 3) co2PerTree = 15; else co2PerTree = 15 + ((year - 3) * 18); 
+    const totalCO2 = saplings * co2PerTree;
+    
+    if (totalCO2 > 1000) co2Output.innerText = (totalCO2 / 1000).toFixed(2) + ' Tons';
+    else co2Output.innerText = totalCO2.toLocaleString() + ' kg';
+
+    if (year === 1) {
+      taskList.innerHTML = `<li>Water 4L per sqm daily.</li><li>Manual weeding monthly (do not uproot, cut and drop as mulch).</li><li>Check support sticks.</li>`;
+      statusList.innerHTML = `<li>Average height: 1.5 - 2 meters.</li><li>Roots establishing in perforated soil.</li><li>Vulnerable to pests and grazing.</li>`;
+    } else if (year === 2) {
+      taskList.innerHTML = `<li>Watering reduced to 2L per sqm daily.</li><li>Bi-monthly check for invasive vines.</li><li>Remove support sticks if stems are thick.</li>`;
+      statusList.innerHTML = `<li>Average height: 3 - 4 meters.</li><li>Canopy is beginning to touch and merge.</li><li>Local birds and insects start nesting.</li>`;
+    } else if (year === 3) {
+      taskList.innerHTML = `<li><strong>Zero maintenance required.</strong></li><li>Stop watering (unless extreme drought).</li><li>Do not enter or walk inside the patch.</li>`;
+      statusList.innerHTML = `<li>Average height: 5+ meters.</li><li>Canopy is completely closed.</li><li>No sunlight reaches the floor (weeds die naturally).</li>`;
+    } else {
+      taskList.innerHTML = `<li><strong>100% Self-Sustaining.</strong></li><li>Monitor perimeter fencing.</li><li>Enjoy the local biodiversity.</li>`;
+      statusList.innerHTML = `<li>Distinct 4-tier canopy fully established.</li><li>Local ambient temperature drops by 2°C to 4°C.</li><li>Heavy leaf drop creates natural compost layer.</li>`;
+    }
+  }
+
+  // ========== GENERAL PLANNER ==========
   function getSpeciesRecommendation() {
     const goal = document.getElementById("goal").value;
     const climate = S.climate;
     const rainfall = parseInt(S.rainfall) || 900;
     const waterAvail = parseFloat(document.getElementById("waterAvail").value) || 0.75;
     const ph = parseFloat(document.getElementById("soilPH").value) || 6.5;
+    const elevation = parseFloat(document.getElementById("elevation").value) || 300;
     const spacing = parseFloat(document.getElementById("spacing").value) || 3;
     const soilType = S.soil;
     
@@ -194,6 +438,7 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
     else if(climate.includes("Subtropical")) zone = "subtropical";
     else if(climate.includes("Temperate")) zone = "temperate";
     if(rainfall < 600) zone = "arid";
+    if(elevation > 1500) zone = "temperate";
     if(waterAvail < 0.35) zone = "arid";
     
     const speciesMap = {
@@ -223,32 +468,25 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
   function updateSpeciesRec() {
     let recs = getSpeciesRecommendation();
     let html = `<div style="display:flex;flex-direction:column;gap:0.8rem;">`;
-    for(let r of recs) {
-      html += `<div class="species-rec-card"><strong>🌱 ${r.name}</strong><br><span style="font-size:0.8rem;color:var(--ink-mid);">${r.reason}</span></div>`;
-    }
-    html += `</div><p style="margin-top:0.8rem;font-size:0.7rem;">👉 Recommendations strongly influenced by soil pH, climate, rainfall, water, goal, and spacing.</p>`;
+    for(let r of recs) html += `<div class="species-rec-card"><strong>🌱 ${r.name}</strong><br><span style="font-size:0.8rem;color:var(--ink-mid);">${r.reason}</span></div>`;
+    html += `</div><p style="margin-top:0.8rem;font-size:0.7rem;">👉 Recommendations influenced by soil pH, climate, rainfall, water.</p>`;
     document.getElementById("speciesRecBody").innerHTML = html;
   }
   
   function updateSuggestions() {
     let wA = parseFloat(document.getElementById("waterAvail").value);
     let mm = parseInt(S.rainfall) || 900;
+    let budget = parseFloat(document.getElementById("budget").value);
     let fiveYrCost = parseFloat(document.getElementById("mCost").innerText.replace(/[^0-9.-]/g, '')) || 0;
     let ph = parseFloat(document.getElementById("soilPH").value);
     let phAdvice = getPHAdvice(ph);
     
     let suggestions = [];
-    if(wA < 0.4) suggestions.push("💧 Water shortage: Dig farm ponds, use drip irrigation, plant drought‑tolerant trees like Neem, Khejri, Ber.");
-    if(mm < 700) suggestions.push("☀️ Low rainfall: Mulch heavily, plant after monsoon, choose Acacia, Prosopis, Custard Apple.");
-    if(soilScore < 0.5) suggestions.push("🌱 Poor soil: Add farmyard manure or compost. Grow green manure crops before planting.");
-    if(ph < 5.5) suggestions.push(`🧪 ${phAdvice} Recommended: Mix wood ash (2-3 kg/10 sq m) or agricultural lime. Get soil test from KVK.`);
-    if(ph > 8) suggestions.push(`🧪 ${phAdvice} Recommended: Add lots of compost (5-10 kg/sq m) or sulphur (1-2 kg/10 sq m).`);
-    
-    if(suggestions.length === 0) suggestions.push("✅ Your site looks good! Maintain regular weeding and watch for pests.");
-    suggestions.push("🏛️ District Forest Officer: Contact your local forest range office for technical help and saplings.");
-    suggestions.push("👨‍🌾 Agriculture Officer (ATMA): Get advice on agroforestry and subsidies. Call Kisan Call Centre 1551.");
-    suggestions.push("🔥 Forest Fire: Dial 1924 immediately if you see fire.");
-    suggestions.push("📞 Nearest Krishi Vigyan Kendra (KVK): Free soil testing and planting demonstrations.");
+    if(wA < 0.4) suggestions.push("💧 Water shortage: Dig farm ponds, use drip irrigation.");
+    if(mm < 700) suggestions.push("☀️ Low rainfall: Mulch heavily, plant after monsoon.");
+    if(budget < fiveYrCost) suggestions.push("💰 Budget shortfall: Apply for NAP, CAMPA, or SMAF subsidy.");
+    if(ph < 5.5 || ph > 8) suggestions.push(`🧪 ${phAdvice}`);
+    if(suggestions.length === 0) suggestions.push("✅ Your site looks good! Maintain regular weeding.");
     
     let html = `<div style="display:flex;flex-direction:column;gap:0.6rem;">`;
     for(let s of suggestions) html += `<div style="background:var(--sky);padding:0.6rem;border-radius:12px;font-size:0.8rem;">${s}</div>`;
@@ -272,9 +510,11 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
     let area = unit==="ha"? raw_area : unit==="sqm"? raw_area/10000 : raw_area*0.404686;
     let areaSqm = unit==="ha"? raw_area*10000 : unit==="sqm"? raw_area : raw_area*4046.86;
     
+    let budget = parseFloat(document.getElementById("budget").value) || 500000;
     let sp = parseFloat(document.getElementById("spacing").value) || 3;
     let wA = parseFloat(document.getElementById("waterAvail").value);
     let pH = parseFloat(document.getElementById("soilPH").value);
+    let el = parseFloat(document.getElementById("elevation").value);
     let mm = parseInt(S.rainfall) || 900;
     let goal = document.getElementById("goal").value;
     let maintLevel = document.getElementById("maintenance").value;
@@ -306,12 +546,12 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
     
     let climateScore = S.climate.includes("Tropical") ? 0.9 : 0.7;
     let rainfallScore = Math.min(1, mm/2000);
-    let soilScore = (S.soil.includes("Clay")||S.soil.includes("Alluvial")) ? 0.85 : (S.soil.includes("Sandy") ? 0.6 : 0.7);
-    let waterScore = wA;
+    let soilScore = (S.soil.includes("Clay")||S.soil.includes("Alluvial")) ? 0.85 : 0.65;
+    let elevationScore = el<800 ? 1 : (el<1500 ? 0.8 : 0.5);
     let phScore = getPHScore(pH);
     
-    // Update radar chart (only site factors)
-    if(radarChart) { radarChart.data.datasets[0].data = [climateScore, rainfallScore, soilScore, waterScore, phScore]; radarChart.update(); }
+    if(radarChart) { radarChart.data.datasets[0].data = [climateScore, rainfallScore, soilScore, wA, elevationScore, phScore]; radarChart.update(); }
+    if(costChart) { costChart.data.datasets[0].data = [plantingCost, labourCost, maintCostPerTree*totalTrees*5, phAmendment.cost]; costChart.update(); }
     
     let kgPerTree = S.climate.includes("Tropical") ? 18 : 12;
     let carbonPerYr = ((totalTrees * kgPerTree) / 1000).toFixed(1);
@@ -328,8 +568,6 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
     document.getElementById("heroCarbon").innerText = carbonPerYr;
     document.getElementById("heroScore").innerText = (overall*100).toFixed(0)+"%";
     
-    // Update health ring and bars (only site factors for visual)
-    let siteOnlyOverall = climateScore*0.25 + rainfallScore*0.25 + soilScore*0.25 + waterScore*0.2 + phScore*0.05;
     document.getElementById("rb-climate").style.width = climateScore*100+"%"; document.getElementById("rv-climate").innerText = (climateScore*100).toFixed(0)+"%";
     document.getElementById("rb-rain").style.width = rainfallScore*100+"%"; document.getElementById("rv-rain").innerText = (rainfallScore*100).toFixed(0)+"%";
     document.getElementById("rb-soil").style.width = soilScore*100+"%"; document.getElementById("rv-soil").innerText = (soilScore*100).toFixed(0)+"%";
@@ -338,38 +576,6 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
     let circ = document.getElementById("ringCircle"); if(circ) circ.style.strokeDashoffset = (263.89*(1-overall)).toFixed(2);
     document.getElementById("ecoIndexVal").innerText = (overall*100).toFixed(0)+"%";
     document.getElementById("ecoBar").style.width = overall*100+"%";
-    
-    // Factor analysis table (including goal, maintenance, budget, spacing)
-    let maintScore = maintLevel === "high" ? 1.0 : (maintLevel === "medium" ? 0.7 : 0.4);
-    let spacingScore = 1.0;
-    if(goal === "timber" && sp < 4) spacingScore = 0.6;
-    if(goal === "fruit" && sp > 4) spacingScore = 0.7;
-    if(goal === "carbon" && sp > 4) spacingScore = 0.8;
-    let goalAlignmentScore = (goal === "fruit" ? (waterScore * 0.6 + (phScore > 0.7 ? 1 : 0.5) * 0.4) :
-                              (goal === "timber" ? (soilScore * 0.5 + rainfallScore * 0.5) :
-                               (goal === "carbon" ? (waterScore * 0.5 + rainfallScore * 0.5) :
-                                (goal === "restoration" ? (soilScore * 0.3 + waterScore * 0.3 + rainfallScore * 0.4) :
-                                 (soilScore * 0.4 + waterScore * 0.3 + rainfallScore * 0.3)))));
-    goalAlignmentScore = Math.min(1, Math.max(0, goalAlignmentScore));
-    
-    let rows = [
-      {f:"Climate", v:S.climate, score:climateScore, status:climateScore>0.7?"ok":"warn"},
-      {f:"Rainfall", v:S.rainfall, score:rainfallScore, status:rainfallScore>0.6?"ok":"warn"},
-      {f:"Soil", v:S.soil, score:soilScore, status:soilScore>0.7?"ok":"warn"},
-      {f:"Water", v:wA.toFixed(2), score:waterScore, status:waterScore>0.6?"ok":"warn"},
-      {f:"Soil pH", v:pH.toFixed(1), score:phScore, status:phScore>0.8?"ok":(phScore>0.5?"warn":"bad")},
-      {f:"Goal Alignment", v:goal, score:goalAlignmentScore, status:goalAlignmentScore>0.7?"ok":"warn"},
-      {f:"Maintenance", v:maintLevel, score:maintScore, status:maintScore>0.7?"ok":"warn"},
-      {f:"Spacing Suitability", v:sp+" m", score:spacingScore, status:spacingScore>0.8?"ok":"warn"}
-    ];
-    document.getElementById("analysisBody").innerHTML = rows.map(r => `
-      <tr>
-        <td style="font-weight:500">${r.f}</td>
-        <td>${r.v}</td>
-        <td><div style="background:#e2e8cf;border-radius:20px;width:60px"><div style="width:${r.score*100}%;background:var(--moss);height:6px"></div></div>${(r.score*100).toFixed(0)}%</td>
-        <td><span class="status-pill ${r.status}">${r.status==="ok"?"Good":(r.status==="warn"?"Marginal":"Poor")}</span></td>
-      </tr>
-    `).join("");
     
     updateSpeciesRec();
     updateSuggestions();
@@ -383,54 +589,6 @@ let S = { lat:28.6139, lon:77.2090, soil:"Clay-Loam", rainfall:"900mm", climate:
     calc(); 
   }
   
-
-function simulateForestGrowth() {
-    const year = parseInt(document.getElementById('mw-year-slider').value);
-    document.getElementById('mw-year-label').innerText = 'Year ' + year;
-
-    // Fetch area from main widget, default to 100 if not found
-    const areaInput = document.getElementById('mw-area');
-    const area = areaInput ? parseFloat(areaInput.value) || 100 : 100;
-    const saplings = Math.round(area * 3.5);
-
-    const taskList = document.getElementById('mw-maintenance-tasks');
-    const statusList = document.getElementById('mw-eco-status');
-    const co2Output = document.getElementById('mw-co2-output');
-
-    // CO2 Math: A growing tree sequesters roughly 15kg/year, compounding slightly as biomass increases.
-    // Early years have lower sequestration.
-    let co2PerTree = 0;
-    if (year === 1) co2PerTree = 2;
-    else if (year === 2) co2PerTree = 6;
-    else if (year === 3) co2PerTree = 15;
-    else co2PerTree = 15 + ((year - 3) * 18); // Mature growth
-    
-    const totalCO2 = saplings * co2PerTree;
-    
-    // Format CO2 text
-    if (totalCO2 > 1000) {
-      co2Output.innerText = (totalCO2 / 1000).toFixed(2) + ' Tons';
-    } else {
-      co2Output.innerText = totalCO2.toLocaleString() + ' kg';
-    }
-
-    // Dynamic Logic for Years
-    if (year === 1) {
-      taskList.innerHTML = `<li>Water 4L per sqm daily.</li><li>Manual weeding monthly (do not uproot, cut and drop as mulch).</li><li>Check support sticks.</li>`;
-      statusList.innerHTML = `<li>Average height: 1.5 - 2 meters.</li><li>Roots establishing in perforated soil.</li><li>Vulnerable to pests and grazing.</li>`;
-    } else if (year === 2) {
-      taskList.innerHTML = `<li>Watering reduced to 2L per sqm daily.</li><li>Bi-monthly check for invasive vines.</li><li>Remove support sticks if stems are thick.</li>`;
-      statusList.innerHTML = `<li>Average height: 3 - 4 meters.</li><li>Canopy is beginning to touch and merge.</li><li>Local birds and insects start nesting.</li>`;
-    } else if (year === 3) {
-      taskList.innerHTML = `<li><strong>Zero maintenance required.</strong></li><li>Stop watering (unless extreme drought).</li><li>Do not enter or walk inside the patch.</li>`;
-      statusList.innerHTML = `<li>Average height: 5+ meters.</li><li>Canopy is completely closed.</li><li>No sunlight reaches the floor (weeds die naturally).</li>`;
-    } else {
-      taskList.innerHTML = `<li><strong>100% Self-Sustaining.</strong></li><li>Monitor perimeter fencing.</li><li>Enjoy the local biodiversity.</li>`;
-      statusList.innerHTML = `<li>Distinct 4-tier canopy fully established.</li><li>Local ambient temperature drops by 2°C to 4°C.</li><li>Heavy leaf drop creates natural, permanent compost layer.</li>`;
-    }
-  }
-
-
   // ========== FIELD DRAWING ==========
   function setDrawMode(mode) { drawModeActive=mode; document.getElementById("drawModeBtn")?.classList.toggle("active",mode); }
   function drawPolygonCanvas() { let c=document.getElementById("fieldCanvas"); if(!c) return; let ctx=c.getContext("2d"); c.width=c.clientWidth||600; c.height=340; ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle="var(--canopy)"; ctx.fillRect(0,0,c.width,c.height); if(polyPoints.length===0){ ctx.fillStyle="var(--ink-lt)"; ctx.font="14px sans-serif"; ctx.fillText("Click to place boundary points",c.width/2-110,c.height/2); return; } if(polyPoints.length>=3){ ctx.beginPath(); ctx.moveTo(polyPoints[0].x,polyPoints[0].y); polyPoints.forEach(p=>ctx.lineTo(p.x,p.y)); if(polyClosed) ctx.closePath(); ctx.fillStyle=polyClosed?"rgba(61,90,43,0.2)":"rgba(61,90,43,0.1)"; ctx.fill(); ctx.strokeStyle="var(--moss)"; ctx.lineWidth=2.5; ctx.setLineDash(polyClosed?[]:[6,6]); ctx.stroke(); ctx.setLineDash([]); } polyPoints.forEach((p,i)=>{ ctx.beginPath(); ctx.arc(p.x,p.y,5,0,Math.PI*2); ctx.fillStyle=i===0?"var(--amber)":"var(--moss)"; ctx.fill(); ctx.strokeStyle="white"; ctx.lineWidth=1.5; ctx.stroke(); }); }
@@ -442,7 +600,7 @@ function simulateForestGrowth() {
   function renderPlantation() { if(!polyClosed||polyPoints.length<3) return; let c=document.getElementById("plantationCanvas"); if(!c) return; c.width=c.clientWidth||600; c.height=340; let ctx=c.getContext("2d"); ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle="var(--canopy)"; ctx.fillRect(0,0,c.width,c.height); ctx.beginPath(); ctx.moveTo(polyPoints[0].x,polyPoints[0].y); polyPoints.forEach(p=>ctx.lineTo(p.x,p.y)); ctx.closePath(); ctx.fillStyle="rgba(141,191,100,0.2)"; ctx.fill(); ctx.strokeStyle="var(--moss)"; ctx.stroke(); let spacing=parseFloat(document.getElementById("spacing").value)||3; let step=spacing*4.2; let bbox={minX:Math.min(...polyPoints.map(p=>p.x)),maxX:Math.max(...polyPoints.map(p=>p.x)),minY:Math.min(...polyPoints.map(p=>p.y)),maxY:Math.max(...polyPoints.map(p=>p.y))}; let treeCount=0, channels=0; for(let y=bbox.minY+step/2; y<bbox.maxY; y+=step){ let isChannel=Math.floor(y/step)%7===3; if(isChannel){ ctx.beginPath(); ctx.moveTo(bbox.minX,y); ctx.lineTo(bbox.maxX,y); ctx.strokeStyle="#4a8fa8"; ctx.lineWidth=3; ctx.stroke(); channels++; continue; } for(let x=bbox.minX+step/2; x<bbox.maxX; x+=step){ if(pointInPolygon(x,y,polyPoints)){ let color=Math.floor(x/step)%3===1?"#8fb870":Math.floor(x/step)%3===2?"#c97a2f":"#3d5a2b"; ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fillStyle=color; ctx.fill(); treeCount++; } } } let areaUnits=Math.abs(polyPoints.reduce((a,p,i)=>{let j=(i+1)%polyPoints.length;return a+p.x*polyPoints[j].y-polyPoints[j].x*p.y;},0)/2); let estHa=(areaUnits/(step*step*800)).toFixed(1); let coverage=Math.min(92,(treeCount*20/areaUnits)*10).toFixed(0); document.getElementById("polyTrees").innerHTML=treeCount; document.getElementById("polyArea").innerHTML=estHa+" ha"; document.getElementById("polyCoverage").innerHTML=coverage+"%"; document.getElementById("polyChannels").innerHTML=channels; }
  
   function initCharts() {
-    radarChart = new Chart(document.getElementById("radarChart"),{type:"radar",data:{labels:["Climate","Rainfall","Soil","Water","pH"],datasets:[{label:"Suitability",data:[0,0,0,0,0],backgroundColor:"rgba(61,90,43,0.2)",borderColor:"#3d5a2b"}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:1}}}});
+    radarChart = new Chart(document.getElementById("radarChart"),{type:"radar",data:{labels:["Climate","Rainfall","Soil","Water","Elevation","pH"],datasets:[{label:"Suitability",data:[0,0,0,0,0,0],backgroundColor:"rgba(61,90,43,0.2)",borderColor:"#3d5a2b"}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:1}}}});
     costChart = new Chart(document.getElementById("costChart"),{type:"doughnut",data:{labels:["Sapling + Planting","Labour (5 yr)","Maintenance (5 yr)","Soil Amendment"],datasets:[{data:[0,0,0,0],backgroundColor:["#3d5a2b","#567a40","#a8c97f","#c97a2f"]}]},options:{cutout:"60%"}});
     projChart = new Chart(document.getElementById("projChart"),{type:"line",data:{labels:[0,1,2,3,4,5,6,7,8,9,10],datasets:[{label:"tCO₂",data:[0,0,0,0,0,0,0,0,0,0,0],borderColor:"#3d5a2b",fill:true}]},options:{responsive:true}});
   }
@@ -455,7 +613,15 @@ function simulateForestGrowth() {
     let fcanvas = document.getElementById("fieldCanvas"); fcanvas?.addEventListener("click",handleCanvasClick); drawPolygonCanvas();
     document.getElementById("themeToggle")?.addEventListener("click",()=>{ document.body.classList.toggle("dark"); toast("Theme toggled"); });
     setDrawMode(true); 
-    toast("✅ GPS and Search successfully linked to Miyawaki Engine.");
+    toast("✅ App Loaded. Linked coordinates correctly.");
+    setTimeout(calculateIrregularGeometry, 100);
+    setTimeout(simulateForestGrowth, 100);
   });
   
-  window.calc=calc; window.detectLocation=detectLocation; window.clearPolygon=clearPolygon; window.closePolygon=closePolygon; window.loadSampleField=loadSampleField; window.setDrawMode=setDrawMode; window.searchLocation=searchLocation;
+  // Make functions global to the window
+  window.calc=calc; window.detectLocation=detectLocation; window.clearPolygon=clearPolygon; window.closePolygon=closePolygon; window.loadSampleField=loadSampleField; window.setDrawMode=setDrawMode; window.searchLocation=searchLocation; window.getAgroZone=getAgroZone;
+  window.analyzeSite = analyzeSite;
+  window.calculateEnhancersAndBudget = calculateEnhancersAndBudget;
+  window.toggleGeometryMode = toggleGeometryMode;
+  window.calculateIrregularGeometry = calculateIrregularGeometry;
+  window.simulateForestGrowth = simulateForestGrowth;
