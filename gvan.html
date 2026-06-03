@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Gvan — Forest Ecology Planner | Comprehensive Success Rate</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&family=Poppins:wght@300;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
@@ -30,12 +31,10 @@
     ::-webkit-scrollbar { width: 6px; background: var(--canopy); }
     ::-webkit-scrollbar-thumb { background: var(--moss-mid); border-radius: 3px; }
     header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(248, 249, 250, 0.8);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(31, 41, 51, 0.08);
+      position: fixed; top: 0; width: 100%; z-index: 100; background: var(--header-bg);
+      backdrop-filter: blur(16px); border-bottom: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 68px;
+      flex-wrap: wrap;
     }
     .site-header {
   position: sticky;
@@ -904,7 +903,7 @@
     setupEditableFields();
     updateAllUI();
     let fcanvas = document.getElementById("fieldCanvas"); fcanvas.addEventListener("click",handleCanvasClick); drawPolygonCanvas();
-    
+    document.getElementById("themeToggle").addEventListener("click",()=>{ document.body.classList.toggle("dark"); toast("Theme toggled"); });
     setDrawMode(true); 
     toast("✅ Success rate now includes goal, maintenance, budget, spacing – fully comprehensive");
   });
