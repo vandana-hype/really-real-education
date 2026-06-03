@@ -30,12 +30,7 @@
     body { font-family: 'DM Sans', sans-serif; background: var(--sky); color: var(--ink); overflow-x: hidden; }
     ::-webkit-scrollbar { width: 6px; background: var(--canopy); }
     ::-webkit-scrollbar-thumb { background: var(--moss-mid); border-radius: 3px; }
-    header {
-      position: fixed; top: 0; width: 100%; z-index: 100; background: var(--header-bg);
-      backdrop-filter: blur(16px); border-bottom: 1px solid var(--border-light);
-      display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 68px;
-      flex-wrap: wrap;
-    }
+   
    .site-header {
   position: sticky;
   top: 0;
@@ -225,7 +220,7 @@
     footer { background: var(--bark); color: var(--sky); padding: 1.5rem; display: flex; justify-content: space-between; flex-wrap: wrap; }
     #toast { position: fixed; bottom: 1rem; right: 1rem; background: var(--bark); color: var(--sky); padding: 0.6rem 1rem; border-radius: 40px; z-index: 1000; opacity: 0; transition: 0.2s; pointer-events: none; }
     #toast.show { opacity: 1; }
-    @media (max-width:800px) { .grid-2 { grid-template-columns: 1fr; } .hero-stats { display: none; } header { flex-direction: column; height: auto; padding: 0.5rem; gap: 0.5rem; } .location-search { margin-left: 0; } .material-grid { grid-template-columns: 1fr; } }
+    @media (max-width:800px) { .grid-2 { grid-template-columns: 1fr; } .hero-stats { display: none; } .site-header { flex-direction: column; height: auto; padding: 0.5rem; gap: 0.5rem; }.location-search { margin-left: 0; } .material-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -242,7 +237,8 @@
       <a href="https://reallyrealeducation.org/blog.html">Blogs</a>
       <a href="https://reallyrealeducation.org/posts.html">Posts</a>
       <a href="https://reallyrealeducation.org/articles.html">Journals</a>
-    </nav>
+</nav>
+    <button id="themeToggle" style="background:none;border:none;cursor:pointer;font-size:1.2rem;padding:6px;">🌓</button>
   </div>
 </header>
 <div class="hero">
@@ -294,8 +290,7 @@
         <div class="input-group"><label>Water Availability (0 = very dry, 1 = abundant)</label><input type="range" id="waterAvail" min="0" max="1" step="0.01" value="0.75" oninput="document.getElementById('wAvVal').innerText=this.value;calc()"><span id="wAvVal">0.75</span></div>
         <div class="input-group"><label>Tree Spacing (m)</label><select id="spacing" onchange="calc()"><option value="2">2x2 dense</option><option value="3" selected>3x3 standard</option><option value="4">4x4 agroforestry</option><option value="6">6x6 timber</option></select></div>
       </div></div>
-      <div><div class="card"><div class="card-header">📊 Suitability Radar</div><div class="card-body"><div class="chart-wrap"><canvas id="radarChart"></canvas></div></div></div>
-      <div class="card" style="margin-top:1rem"><div class="card-header">💰 Cost Breakdown</div><div class="card-body"><div class="chart-wrap"><canvas id="costChart"></canvas></div></div></div></div>
+      <div><div class="card"><div class="card-header">💰 Cost Breakdown</div><div class="card-body"><div class="chart-wrap"><canvas id="costChart"></canvas></div></div></div></div>
     </div>
     <div class="grid-4" style="margin:1rem 0">
       <div class="analysis-panel" style="background:var(--canopy);padding:0.8rem;border-radius:16px"><div>🌳 Total Trees</div><div id="mTrees" style="font-size:1.8rem;font-weight:800">—</div></div>
@@ -835,8 +830,7 @@
 
     <div class="card" style="margin:1rem 0"><div class="card-header">🌿 Smart Species Recommendation (pH‑optimised)</div><div class="card-body" id="speciesRecBody">Loading...</div></div>
     <div class="card" style="margin:1rem 0"><div class="card-header">🔬 Factor Analysis (including pH & management)</div><div style="overflow-x:auto"><table class="analysis-table"><thead><tr><th>Factor</th><th>Value</th><th>Score</th><th>Status</th></tr></thead><tbody id="analysisBody"></tbody> </table></div></div>
-    <div class="grid-2"><div class="card"><div class="card-header">📈 10-Year Carbon Projection</div><div class="card-body"><div class="chart-wrap-sm"><canvas id="projChart"></canvas></div></div></div>
-    <div class="card"><div class="card-header">💡 Suggestions & Local Contacts</div><div class="card-body" id="suggestionsBody"></div></div></div>
+    <div class="card"><div class="card-header">💡 Suggestions & Local Contacts</div><div class="card-body" id="suggestionsBody"></div></div>
   </div>
 
   <div class="section" id="field-section">
@@ -1217,7 +1211,7 @@
     let wA = parseFloat(document.getElementById("waterAvail").value);
     let mm = parseInt(S.rainfall) || 900;
     let budget = parseFloat(document.getElementById("budget").value);
-    let fiveYrCost = parseFloat(document.getElementById("mCost").innerText.replace(/[^0-9.-]/g, '')) || 0;
+   let fiveYrCost = parseFloat(document.getElementById("mCost").innerText.replace(/[^0-9.-]/g, '')) || 500000;
     let ph = parseFloat(document.getElementById("soilPH").value);
     let soilScore = (S.soil.includes("Clay")||S.soil.includes("Alluvial")) ? 0.85 : 0.65;
     let phAdvice = getPHAdvice(ph);
@@ -1315,7 +1309,7 @@
     let phScore = getPHScore(pH);
     
     // Update radar chart (only site factors)
-    if(radarChart) { radarChart.data.datasets[0].data = [climateScore, rainfallScore, soilScore, waterScore, elevationScore, phScore]; radarChart.update(); }
+    
     
     // Update cost chart (including amendment)
     if(costChart) { costChart.data.datasets[0].data = [plantingCost, labourCost, maintCostPerTree*totalTrees*5, phAmendmentCost]; costChart.update(); }
@@ -1323,8 +1317,7 @@
     // Carbon projection
     let kgPerTree = S.climate.includes("Tropical") ? 18 : (S.climate.includes("Subtropical") ? 15 : 12);
     let carbonPerYr = ((totalTrees * kgPerTree) / 1000).toFixed(1);
-    let projData = [...Array(11).keys()].map(y => +((totalTrees * kgPerTree * y * (1 + y*0.035))/1000).toFixed(1));
-    if(projChart) { projChart.data.datasets[0].data = projData; projChart.update(); }
+    
     
     document.getElementById("mTrees").innerText = totalTrees.toLocaleString();
     document.getElementById("mCarbon").innerText = carbonPerYr;
@@ -1406,9 +1399,7 @@
   function renderPlantation() { if(!polyClosed||polyPoints.length<3) return; let c=document.getElementById("plantationCanvas"); if(!c) return; c.width=c.clientWidth||600; c.height=340; let ctx=c.getContext("2d"); ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle="var(--canopy)"; ctx.fillRect(0,0,c.width,c.height); ctx.beginPath(); ctx.moveTo(polyPoints[0].x,polyPoints[0].y); polyPoints.forEach(p=>ctx.lineTo(p.x,p.y)); ctx.closePath(); ctx.fillStyle="rgba(141,191,100,0.2)"; ctx.fill(); ctx.strokeStyle="var(--moss)"; ctx.stroke(); let spacing=parseFloat(document.getElementById("spacing").value)||3; let step=spacing*4.2; let bbox={minX:Math.min(...polyPoints.map(p=>p.x)),maxX:Math.max(...polyPoints.map(p=>p.x)),minY:Math.min(...polyPoints.map(p=>p.y)),maxY:Math.max(...polyPoints.map(p=>p.y))}; let treeCount=0, channels=0; for(let y=bbox.minY+step/2; y<bbox.maxY; y+=step){ let isChannel=Math.floor(y/step)%7===3; if(isChannel){ ctx.beginPath(); ctx.moveTo(bbox.minX,y); ctx.lineTo(bbox.maxX,y); ctx.strokeStyle="#4a8fa8"; ctx.lineWidth=3; ctx.stroke(); channels++; continue; } for(let x=bbox.minX+step/2; x<bbox.maxX; x+=step){ if(pointInPolygon(x,y,polyPoints)){ let color=Math.floor(x/step)%3===1?"#8fb870":Math.floor(x/step)%3===2?"#c97a2f":"#3d5a2b"; ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fillStyle=color; ctx.fill(); treeCount++; } } } let areaUnits=Math.abs(polyPoints.reduce((a,p,i)=>{let j=(i+1)%polyPoints.length;return a+p.x*polyPoints[j].y-polyPoints[j].x*p.y;},0)/2); let estHa=(areaUnits/(step*step*800)).toFixed(1); let coverage=Math.min(92,(treeCount*20/areaUnits)*10).toFixed(0); document.getElementById("polyTrees").innerHTML=treeCount; document.getElementById("polyArea").innerHTML=estHa+" ha"; document.getElementById("polyCoverage").innerHTML=coverage+"%"; document.getElementById("polyChannels").innerHTML=channels; }
   
   function initCharts() {
-    radarChart = new Chart(document.getElementById("radarChart"),{type:"radar",data:{labels:["Climate","Rainfall","Soil","Water","Elevation","pH"],datasets:[{label:"Suitability",data:[0,0,0,0,0,0],backgroundColor:"rgba(61,90,43,0.2)",borderColor:"#3d5a2b"}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:1}}}});
     costChart = new Chart(document.getElementById("costChart"),{type:"doughnut",data:{labels:["Sapling + Planting","Labour (5 yr)","Maintenance (5 yr)","Soil Amendment"],datasets:[{data:[0,0,0,0],backgroundColor:["#3d5a2b","#567a40","#a8c97f","#c97a2f"]}]},options:{cutout:"60%"}});
-    projChart = new Chart(document.getElementById("projChart"),{type:"line",data:{labels:[0,1,2,3,4,5,6,7,8,9,10],datasets:[{label:"tCO₂",data:[0,0,0,0,0,0,0,0,0,0,0],borderColor:"#3d5a2b",fill:true}]},options:{responsive:true}});
   }
   
   window.addEventListener("DOMContentLoaded",()=>{
