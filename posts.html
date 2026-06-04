@@ -1,88 +1,185 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Posts | Really Real Education</title>
-    <meta name="description" content="Daily quote posts generated automatically for Really Real Education.">
+    <meta
+      name="description"
+      content="Daily quote posts generated automatically for Really Real Education."
+    />
 
     <!-- Open Graph (LinkedIn, Facebook, WhatsApp) -->
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Really Real Education">
-    <meta property="og:title" id="og-title" content="Daily Quote 155 — Really Real Education">
-    <meta property="og:description" id="og-description" content="Daily learning quote post #155.">
-    <meta property="og:image" id="og-image" content="https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_155.jpg">
-    <meta property="og:url" id="og-url" content="https://reallyrealeducation.org/posts/post-2026-06-04.html">
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Really Real Education" />
+    <meta
+      property="og:title"
+      id="og-title"
+      content="Daily Quote 155 — Really Real Education"
+    />
+    <meta
+      property="og:description"
+      id="og-description"
+      content="Daily learning quote post #155."
+    />
+    <meta
+      property="og:image"
+      id="og-image"
+      content="https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_155.jpg"
+    />
+    <meta
+      property="og:url"
+      id="og-url"
+      content="https://reallyrealeducation.org/posts/post-2026-06-04.html"
+    />
 
     <!-- Twitter / X Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@JalteDiyeNPO">
-    <meta name="twitter:title" id="tw-title" content="Daily Quote 155 — Really Real Education">
-    <meta name="twitter:description" id="tw-description" content="Daily learning quote post #155.">
-    <meta name="twitter:image" id="tw-image" content="https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_155.jpg">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@JalteDiyeNPO" />
+    <meta
+      name="twitter:title"
+      id="tw-title"
+      content="Daily Quote 155 — Really Real Education"
+    />
+    <meta
+      name="twitter:description"
+      id="tw-description"
+      content="Daily learning quote post #155."
+    />
+    <meta
+      name="twitter:image"
+      id="tw-image"
+      content="https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_155.jpg"
+    />
 
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" href="assets/images/our mission.png" type="image/x-icon">
-</head>
-<body>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="icon" href="assets/images/our mission.png" type="image/x-icon" />
+  </head>
+  <body>
     <div class="page">
-        <header class="site-header">
-            <div class="site-header-inner">
-                <div class="brand">
-                    <div class="brand-title">Really Real Education</div>
-                    <div class="brand-tagline">An Educational Initiative of <a href="https://jaltediyefoundation.org" target="_blank" rel="noopener noreferrer">Jalte Diye Foundation</a></div>
-                </div>
-                <nav class="site-nav">
-                    <a href="index.html">Home</a>
-                    <a href="books.html">Books</a>
-                    <a href="gvan.html">Gvan</a>
-                    <a href="blog.html">Blogs</a>
-                    <a href="posts.html" aria-current="page">Posts</a>
-                    <a href="articles.html">Journals</a>
-                </nav>
+      <header class="site-header">
+        <div class="site-header-inner">
+          <div class="brand">
+            <div class="brand-title">Really Real Education</div>
+            <div class="brand-tagline">
+              An Educational Initiative of
+              <a
+                href="https://jaltediyefoundation.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Jalte Diye Foundation</a
+              >
             </div>
-        </header>
+          </div>
+          <nav class="site-nav">
+            <a href="index.html">Home</a>
+            <a href="books.html">Books</a>
+            <a href="gvan.html">Gvan</a>
+            <a href="blog.html">Blogs</a>
+            <a href="posts.html" aria-current="page">Posts</a>
+            <a href="articles.html">Journals</a>
+          </nav>
+        </div>
+      </header>
 
-        <main class="container">
-            <section class="section">
-                <div class="section-head">
-                    <div>
-                        <h1 class="section-title">Daily posts feed</h1>
-                        <p class="section-desc">A fresh post is added every day</p>
-                    </div>
-                </div>
-                <div id="posts-feed" class="posts-feed" aria-live="polite"></div>
-            </section>
-        </main>
+      <main class="container">
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <h1 class="section-title">Daily posts feed</h1>
+              <p class="section-desc">A fresh post is added every day</p>
+            </div>
+          </div>
+          <div id="posts-feed" class="posts-feed" aria-live="polite"></div>
+        </section>
+      </main>
 
-        <footer class="footer">
-            <div>This feed updates automatically every day.</div>
-            <div class="footer-links">
-                <a href="https://jaltediyefoundation.org" target="_blank" rel="noopener noreferrer">Privacy &amp; Terms</a>
-                <a href="compliance.html">Compliance</a>
-                <a href="rss.xml" target="_blank" rel="noopener noreferrer">RSS</a>
-            </div>
-            <div class="footer-links">
-                <a class="social-link" href="https://www.facebook.com/JalteDiyeFoundation/" target="_blank" rel="noopener noreferrer" aria-label="Jalte Diye Foundation on Facebook">
-                    <img class="social-icon" src="assets/images/Facebook_Logo_Primary.png" alt="Facebook">
-                </a>
-                <a class="social-link" href="https://www.instagram.com/jalte_diye_foundation/" target="_blank" rel="noopener noreferrer" aria-label="Jalte Diye Foundation on Instagram">
-                    <img class="social-icon" src="assets/images/Instagram_Glyph_Gradient.png" alt="Instagram">
-                </a>
-                <a class="social-link" href="https://www.linkedin.com/company/jalte-diye-foundation/" target="_blank" rel="noopener noreferrer" aria-label="Jalte Diye Foundation on LinkedIn">
-                    <img class="social-icon" src="assets/images/LI-In-Bug.png" alt="LinkedIn">
-                </a>
-                <a class="social-link" href="https://x.com/JalteDiyeNPO" target="_blank" rel="noopener noreferrer" aria-label="Jalte Diye Foundation on X">
-                    <img class="social-icon" src="assets/images/logo-black.png" alt="X">
-                </a>
-                <a class="social-link" href="https://www.youtube.com/@JalteDiyeNPO" target="_blank" rel="noopener noreferrer" aria-label="Jalte Diye Foundation on YouTube">
-                    <img class="social-icon" src="assets/images/yt_icon_red_digital.png" alt="YouTube">
-                </a>
-            </div>
-            <div class="fine-print">Use the LinkedIn share button on each post to publish quickly.</div>
-        </footer>
+      <footer class="footer">
+        <div>This feed updates automatically every day.</div>
+        <div class="footer-links">
+          <a
+            href="https://jaltediyefoundation.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Privacy &amp; Terms</a
+          >
+          <a href="compliance.html">Compliance</a>
+          <a href="rss.xml" target="_blank" rel="noopener noreferrer">RSS</a>
+          <a href="founder.html">Founder's message</a>
+        </div>
+        <div class="footer-links">
+          <a
+            class="social-link"
+            href="https://www.facebook.com/JalteDiyeFoundation/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Jalte Diye Foundation on Facebook"
+          >
+            <img
+              class="social-icon"
+              src="assets/images/Facebook_Logo_Primary.png"
+              alt="Facebook"
+            />
+          </a>
+          <a
+            class="social-link"
+            href="https://www.instagram.com/jalte_diye_foundation/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Jalte Diye Foundation on Instagram"
+          >
+            <img
+              class="social-icon"
+              src="assets/images/Instagram_Glyph_Gradient.png"
+              alt="Instagram"
+            />
+          </a>
+          <a
+            class="social-link"
+            href="https://www.linkedin.com/company/jalte-diye-foundation/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Jalte Diye Foundation on LinkedIn"
+          >
+            <img
+              class="social-icon"
+              src="assets/images/LI-In-Bug.png"
+              alt="LinkedIn"
+            />
+          </a>
+          <a
+            class="social-link"
+            href="https://x.com/JalteDiyeNPO"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Jalte Diye Foundation on X"
+          >
+            <img
+              class="social-icon"
+              src="assets/images/logo-black.png"
+              alt="X"
+            />
+          </a>
+          <a
+            class="social-link"
+            href="https://www.youtube.com/@JalteDiyeNPO"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Jalte Diye Foundation on YouTube"
+          >
+            <img
+              class="social-icon"
+              src="assets/images/yt_icon_red_digital.png"
+              alt="YouTube"
+            />
+          </a>
+        </div>
+        <div class="fine-print">
+          Use the LinkedIn share button on each post to publish quickly.
+        </div>
+      </footer>
     </div>
 
     <script src="js/posts.js"></script>
-</body>
+  </body>
 </html>

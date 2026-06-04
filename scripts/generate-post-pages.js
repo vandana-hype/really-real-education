@@ -34,7 +34,7 @@ function formatDate(isoDate) {
     year: "numeric",
     month: "long",
     day: "numeric",
-    timeZone: "UTC"
+    timeZone: "UTC",
   });
 }
 
@@ -45,7 +45,8 @@ function getPostPermalink(post) {
 function renderPostPage(post) {
   const permalink = getPostPermalink(post);
   const title = `Daily Quote ${post.imageNumber || ""} | Really Real Education`;
-  const description = post.excerpt || "Daily learning quote from Really Real Education.";
+  const description =
+    post.excerpt || "Daily learning quote from Really Real Education.";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -112,6 +113,7 @@ function renderPostPage(post) {
             <div class="footer-links">
                 <a href="https://jaltediyefoundation.org" target="_blank" rel="noopener noreferrer">Privacy &amp; Terms</a>
                 <a href="../compliance.html">Compliance</a>
+                <a href="../founder.html">Founder's message</a>
             </div>
             <div class="fine-print">Really Real Education by Jalte Diye Foundation.</div>
         </footer>
