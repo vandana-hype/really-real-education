@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Gvan — Miyawaki Forest Planner | Integrated Resource Hub</title>
+  <title>Gvan — Miyawaki Forest Planner | Full Cost Breakdown</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -95,14 +95,17 @@
     .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 1rem; background: #fefcf8; padding: 1rem; border-radius: 20px; margin-bottom: 1rem; }
     .input-grid label { font-weight: 600; font-size: 0.7rem; color: #5a6e5a; display: block; margin-bottom: 0.2rem; }
     .input-grid input, .input-grid select { width: 100%; padding: 0.5rem; border-radius: 20px; border: 1px solid #d6dccc; background: white; }
-    /* Merged resource card */
     .resource-card { background: white; border: 1px solid #e2e0d6; border-radius: 28px; padding: 1.5rem; margin-bottom: 2rem; }
     .resource-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     .sub-card { background: #fefcf8; border-radius: 24px; padding: 1rem; }
     .metric-pill { background: white; border-radius: 20px; padding: 1rem; text-align: center; border: 1px solid #ece8e0; }
     .info-icon { display: inline-block; width: 16px; height: 16px; background: #d0dcc8; color: #2c5a2a; border-radius: 50%; text-align: center; font-size: 11px; line-height: 16px; cursor: help; margin-left: 5px; }
     .water-detail { font-size: 0.8rem; margin-top: 8px; color: var(--blue); }
-    .layer-stats { background: #eef3e9; border-radius: 20px; padding: 0.8rem; margin-top: 0.5rem; font-size: 0.75rem; }
+    .layer-stats { background: #eef3e9; border-radius: 20px; padding: 0.8rem; margin-top: 0.5rem; font-size: 0.75rem; transition: all 0.2s ease; }
+    .cost-breakdown { background: white; border-radius: 20px; margin-top: 1rem; padding: 0.8rem; font-size: 0.75rem; border: 1px solid #e2e0d6; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+    .cost-breakdown strong { display: block; margin-bottom: 6px; }
+    .cost-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #ece8e0; padding: 5px 0; }
+    .cost-total { display: flex; justify-content: space-between; font-weight: 800; margin-top: 8px; padding-top: 6px; border-top: 2px solid var(--green); }
     #fieldCanvas, #plantationCanvas { width: 100%; height: 340px; background: #fefef8; border-radius: 20px; cursor: crosshair; border: 1px solid #d6dccc; display: block; }
     .poly-btn { font-size: 0.75rem; padding: 0.3rem 0.9rem; border-radius: 999px; border: 1px solid #d6dccc; background: white; cursor: pointer; }
     .poly-btn.active { background: linear-gradient(135deg, rgba(102,183,160,0.95), rgba(102,125,183,0.95)); border-color: transparent; color: white; }
@@ -121,12 +124,7 @@
 <header class="site-header">
   <div class="site-header-inner">
     <a class="brand" href="#"><span class="brand-title">Really Real Education</span><span class="brand-tagline">An Educational Initiative of Jalte Diye Foundation</span></a>
-    <nav class="site-nav"><a href="index.html">Home</a>
-                    <a href="books.html">Books</a>
-                    <a href="gvan.html" aria-current="page">Gvan</a>
-                    <a href="blog.html">Blogs</a>
-                    <a href="posts.html">Posts</a>
-                    <a href="articles.html">Journals</a>
+    <nav class="site-nav"><a href="#">Home</a><a href="#">Books</a><a href="#" aria-current="page">Gvan</a><a href="#">Blogs</a><a href="#">Posts</a><a href="#">Journals</a></nav>
   </div>
 </header>
 <div class="hero">
@@ -160,13 +158,11 @@
     <div id="mw-results" style="display:none; margin-top:20px;">
       <div style="background:#fefcf8; padding:12px; border-radius:20px; margin-bottom:16px;"><strong>📍 Zone: </strong><span id="mw-zone-name"></span> | <strong>Soil type:</strong> <select id="mw-soil-select" style="border-radius:20px; padding:4px;"></select></div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-        <!-- Left column: species list -->
         <div><h3>Naturally occurring species for this soil</h3><div id="mw-plants-list" style="max-height:320px; overflow:auto; font-size:0.85rem;"></div></div>
-        <!-- Right column: soil additives + layer distribution -->
         <div>
           <h3>Soil characteristics & recommended additives</h3>
           <div id="soil-additives" style="font-size:0.85rem; margin-bottom:1rem;"></div>
-          <div class="layer-stats">
+          <div id="dynamicLayerStats" class="layer-stats">
             <strong>Miyawaki layer distribution (dense planting)</strong><br>
             • Canopy (25%) – tallest native trees<br>
             • Tree (25%) – secondary canopy<br>
@@ -179,11 +175,11 @@
     </div>
   </div>
 
-  <!-- MERGED RESOURCE ESTIMATOR (Fencing + Material + Water) - shape complexity removed -->
+  <!-- MERGED RESOURCE ESTIMATOR + DETAILED COST BREAKDOWN -->
   <div class="resource-card">
     <h3 style="font-family:'Playfair Display';">Site Preparation & Resource Estimator</h3>
     <div class="resource-grid">
-      <!-- Left column: Area & Fencing (simplified) -->
+      <!-- Left column: Area & Fencing + detailed cost breakdown -->
       <div class="sub-card">
         <div style="display: flex; gap: 12px; margin: 0 0 16px 0; flex-wrap: wrap;">
           <button onclick="toggleGeometryMode('estimate')" id="btn-estimate" style="background:#2c6e2a; color:white; border:none; border-radius:40px; padding:6px 20px;">Estimate from Shape</button>
@@ -193,17 +189,24 @@
           <div><label>Land Area (sq m)</label><input type="number" id="mw-area-input" value="120" oninput="syncAreaAndRecalc()"></div>
           <div id="manual-perimeter-div" style="display:none;"><label>Known Perimeter (m)</label><input type="number" id="mw-perimeter-input" value="50" oninput="calculateIrregularGeometry()"></div>
         </div>
-        <!-- Shape complexity dropdown removed -->
         <div style="display: flex; gap: 16px; margin-top: 16px; flex-wrap: wrap;">
           <div class="metric-pill" style="flex:1;"><div style="font-size:0.7rem;">Fencing Boundary</div><div id="mw-perimeter" style="font-size: 1.5rem; font-weight: 800;">--</div><div>linear meters</div></div>
           <div class="metric-pill" style="flex:1;"><div style="font-size:0.7rem;">Chainlink Cost</div><div id="mw-fencing-cost" style="font-size: 1.5rem; font-weight: 800;">--</div><div>₹ (material+install)</div></div>
         </div>
         <div style="margin-top: 12px; font-size: 0.7rem; text-align: center;">Add 10–15% extra for irregular boundaries.</div>
+        
+        <!-- NEW: Detailed Cost Breakdown Section -->
+        <div class="cost-breakdown" id="costBreakdownContainer">
+          <strong>📋 Detailed Cost Breakdown</strong>
+          <div id="costBreakdownList"></div>
+          <div id="breakdownTotal" class="cost-total"></div>
+          <div style="font-size:0.65rem; margin-top:6px; color:#5b6572;">*Includes 2‑year irrigation estimate (₹5/kl). pH amendment applied when &lt;5.5 or &gt;7.5.</div>
+        </div>
       </div>
 
-      <!-- Right column: Material Budget + Water Requirement -->
+      <!-- Right column: Material Budget + Water Requirement summary -->
       <div class="sub-card">
-        <h4>Miyawaki Inputs</h4>
+        <h4>Miyawaki Inputs (summary)</h4>
         <div id="mw-budget-list" style="margin-bottom: 12px;"></div>
         <div id="mw-total-cost" style="font-size: 1.3rem; font-weight: 800; margin-bottom: 12px;">₹0</div>
         <hr style="margin: 12px 0;">
@@ -238,7 +241,7 @@
     </div>
   </div>
 
-  <!-- Field Polygon & Plantation Simulator (unchanged) -->
+  <!-- Field Polygon & Plantation Simulator -->
   <div class="section" id="field-section">
     <div class="section-header"><h2>Field Polygon & Plantation Layout</h2><span>Draw boundary → Miyawaki density planting</span></div>
     <div class="grid-2">
@@ -255,51 +258,15 @@
     <div class="helpline-grid"><div class="helpline-card"><div class="hnum">1924</div><div>Forest Fire Emergency</div></div><div class="helpline-card"><div class="hnum">1800-425-2458</div><div>National Forest Helpline</div></div><div class="helpline-card"><div class="hnum">1551</div><div>Kisan Call Centre</div></div><div class="helpline-card"><div class="hnum">1800-102-0200</div><div>Wildlife Crime Control</div></div><div class="helpline-card"><div class="hnum">011-24695313</div><div>MoEF&CC Helpdesk</div></div><div class="helpline-card"><div class="hnum">1800-180-5678</div><div>National Water Mission</div></div><div class="helpline-card"><div class="hnum">1913</div><div>Green India Helpline</div></div><div class="helpline-card"><div class="hnum">+91-120-4111-330</div><div>Sankalp Taru (NGO)</div></div><div class="helpline-card"><div class="hnum">155261</div><div>PM Kisan Yojana</div></div><div class="helpline-card"><div class="hnum">1800-11-6600</div><div>Forest Clearance Portal</div></div><div class="helpline-card"><div class="hnum">1800-212-1111</div><div>Van Dhan Vikas Kendra</div></div><div class="helpline-card"><div class="hnum">011-24695412</div><div>CAMPA National Office</div></div></div>
   </div>
 </main>
-<footer><div>Gvan — Integrated Resource Hub</div><div style="font-size:0.7rem">Tree count = area × density. Water requirement based on climate, soil, and 2‑year establishment.</div></footer>
+<footer><div>Gvan — Integrated Resource Hub</div><div style="font-size:0.7rem">Tree count = area × density. Detailed cost updates with every change.</div></footer>
 <div id="toast"></div>
 
 <script>
-  // ==================== COMPLETE REGIONAL DATA (full, unchanged) ====================
-  const plantData = {
-    regions: {
-      north_central_arid_plains: { display_name: "North & Central India (Semi-Arid/Indo-Gangetic)",
-        sandy_species: { canopy: [{ common_name: "Khejri", botanical_name: "Prosopis cineraria" }, { common_name: "Babool", botanical_name: "Vachellia nilotica" }], tree: [{ common_name: "Mesquite", botanical_name: "Prosopis juliflora" }, { common_name: "Umbrella Thorn", botanical_name: "Acacia tortilis" }], sub_tree: [{ common_name: "Ker", botanical_name: "Capparis decidua" }, { common_name: "Desert Teak", botanical_name: "Tecomella undulata" }], shrub: [{ common_name: "Sodom Apple", botanical_name: "Calotropis procera" }, { common_name: "Khimp", botanical_name: "Leptadenia pyrotechnica" }] },
-        laterite_species: { canopy: [{ common_name: "Beefwood", botanical_name: "Casuarina equisetifolia" }, { common_name: "Flooded Gum", botanical_name: "Eucalyptus tereticornis" }], tree: [{ common_name: "Earleaf Acacia", botanical_name: "Acacia auriculiformis" }, { common_name: "Indian Beech", botanical_name: "Millettia pinnata" }], sub_tree: [{ common_name: "Neelakurinji", botanical_name: "Strobilanthes kunthiana" }, { common_name: "Malabar Melastome", botanical_name: "Melastoma malabathricum" }], shrub: [{ common_name: "Lantana", botanical_name: "Lantana camara" }, { common_name: "Trailing Hibiscus", botanical_name: "Hibiscus surattensis" }] },
-        clay_species: { canopy: [{ common_name: "Peepal", botanical_name: "Ficus religiosa" }, { common_name: "Banyan", botanical_name: "Ficus benghalensis" }, { common_name: "Neem", botanical_name: "Azadirachta indica" }], tree: [{ common_name: "Jamun", botanical_name: "Syzygium cumini" }, { common_name: "Indian Rosewood", botanical_name: "Dalbergia sissoo" }, { common_name: "Arjun", botanical_name: "Terminalia arjuna" }], sub_tree: [{ common_name: "Golden Shower", botanical_name: "Cassia fistula" }, { common_name: "Sita Ashoka", botanical_name: "Saraca asoca" }, { common_name: "Wood Apple", botanical_name: "Aegle marmelos" }], shrub: [{ common_name: "Karonda", botanical_name: "Carissa carandas" }, { common_name: "Curry Leaf", botanical_name: "Murraya koenigii" }, { common_name: "Henna", botanical_name: "Lawsonia inermis" }] }
-      },
-      south_deccan_plateau: { display_name: "South India (Tropical/Deccan Plateau)",
-        sandy_species: { canopy: [{ common_name: "Babool", botanical_name: "Vachellia nilotica" }, { common_name: "Kusum Tree", botanical_name: "Albizia amara" }], tree: [{ common_name: "Anjan", botanical_name: "Hardwickia binata" }, { common_name: "Velvet Mesquite", botanical_name: "Acacia leucophloea" }], sub_tree: [{ common_name: "Indian Jujube", botanical_name: "Ziziphus mauritiana" }, { common_name: "Wood Apple", botanical_name: "Limonia acidissima" }], shrub: [{ common_name: "Conkerberry", botanical_name: "Carissa spinarum" }, { common_name: "Bastard Oak", botanical_name: "Grewia flavescens" }] },
-        laterite_species: { canopy: [{ common_name: "Beefwood", botanical_name: "Casuarina equisetifolia" }, { common_name: "Tasmanian Blue Gum", botanical_name: "Eucalyptus globulus" }], tree: [{ common_name: "Mangium", botanical_name: "Acacia mangium" }, { common_name: "Burma Ironwood", botanical_name: "Xylia xylocarpa" }], sub_tree: [{ common_name: "Kurinji", botanical_name: "Strobilanthes callosus" }, { common_name: "Bandicoot Berry", botanical_name: "Leea indica" }], shrub: [{ common_name: "Malabar Nut", botanical_name: "Justicia adhatoda" }, { common_name: "Blue Fountain Bush", botanical_name: "Clerodendrum serratum" }] },
-        clay_species: { canopy: [{ common_name: "Teak", botanical_name: "Tectona grandis" }, { common_name: "Mahua", botanical_name: "Madhuca longifolia" }, { common_name: "Tamarind", botanical_name: "Tamarindus indica" }], tree: [{ common_name: "Indian Rosewood", botanical_name: "Dalbergia latifolia" }, { common_name: "Pongamia", botanical_name: "Millettia pinnata" }, { common_name: "Kadamba", botanical_name: "Neolamarckia cadamba" }], sub_tree: [{ common_name: "Indian Gooseberry", botanical_name: "Phyllanthus emblica" }, { common_name: "Drumstick", botanical_name: "Moringa oleifera" }, { common_name: "Bael", botanical_name: "Aegle marmelos" }], shrub: [{ common_name: "Holy Basil", botanical_name: "Ocimum tenuiflorum" }, { common_name: "Hibiscus", botanical_name: "Hibiscus rosa-sinensis" }] }
-      },
-      western_ghats_coastal: { display_name: "Western Ghats & Coastal Belt (Humid/High Rainfall)",
-        sandy_species: { canopy: [{ common_name: "Beefwood", botanical_name: "Casuarina equisetifolia" }, { common_name: "Cashew", botanical_name: "Anacardium occidentale" }], tree: [{ common_name: "Screw Pine", botanical_name: "Pandanus tectorius" }, { common_name: "Beauty Leaf", botanical_name: "Calophyllum inophyllum" }], sub_tree: [{ common_name: "Beach Cabbage", botanical_name: "Scaevola taccada" }, { common_name: "Beach Morning Glory", botanical_name: "Ipomoea pes-caprae" }], shrub: [{ common_name: "Sea Hibiscus", botanical_name: "Hibiscus tiliaceus" }, { common_name: "Headache Tree", botanical_name: "Premna serratifolia" }] },
-        laterite_species: { canopy: [{ common_name: "Malabar Ironwood", botanical_name: "Hopea parviflora" }, { common_name: "Indian Copal", botanical_name: "Vateria indica" }], tree: [{ common_name: "Bombay Mace", botanical_name: "Myristica malabarica" }, { common_name: "Malabar Tamarind", botanical_name: "Garcinia gummi-gutta" }], sub_tree: [{ common_name: "Kurinji", botanical_name: "Strobilanthes kunthiana" }, { common_name: "Wild Coffee", botanical_name: "Psychotria nigra" }], shrub: [{ common_name: "Malabar Cinnamon", botanical_name: "Cinnamomum malabatrum" }, { common_name: "Ironwood Tree", botanical_name: "Memecylon umbellatum" }] },
-        clay_species: { canopy: [{ common_name: "Wild Jackfruit", botanical_name: "Artocarpus hirsutus" }, { common_name: "Mast Tree", botanical_name: "Polyalthia longifolia" }], tree: [{ common_name: "Cluster Fig", botanical_name: "Ficus racemosa" }, { common_name: "Red Sandalwood", botanical_name: "Pterocarpus santalinus" }], sub_tree: [{ common_name: "Kokum", botanical_name: "Garcinia indica" }, { common_name: "Areca Palm", botanical_name: "Areca catechu" }], shrub: [{ common_name: "Black Pepper", botanical_name: "Piper nigrum" }, { common_name: "Malabar Nut", botanical_name: "Justicia beddomei" }] }
-      },
-      east_northeast_subtropical: { display_name: "East & Northeast India (Wet Sub-Tropical)",
-        sandy_species: { canopy: [{ common_name: "Sal", botanical_name: "Shorea robusta" }, { common_name: "Silk Cotton", botanical_name: "Bombax ceiba" }], tree: [{ common_name: "Cutch Tree", botanical_name: "Acacia catechu" }, { common_name: "Kaim", botanical_name: "Mitragyna parvifolia" }], sub_tree: [{ common_name: "Chinese Date", botanical_name: "Ziziphus jujuba" }, { common_name: "Night Jasmine", botanical_name: "Nyctanthes arbor-tristis" }], shrub: [{ common_name: "Malabar Nut", botanical_name: "Justicia adhatoda" }, { common_name: "Glory Bower", botanical_name: "Clerodendrum viscosum" }] },
-        laterite_species: { canopy: [{ common_name: "Hollong", botanical_name: "Dipterocarpus retusus" }, { common_name: "Ceylon Ironwood", botanical_name: "Mesua ferrea" }], tree: [{ common_name: "Agarwood", botanical_name: "Aquilaria malaccensis" }, { common_name: "Gamar", botanical_name: "Gmelina arborea" }], sub_tree: [{ common_name: "Assam Indigo", botanical_name: "Strobilanthes cusia" }, { common_name: "Phlogacanthus", botanical_name: "Phlogacanthus thyrsiformis" }], shrub: [{ common_name: "Wild Coffee", botanical_name: "Psychotria denticulata" }, { common_name: "Crape Jasmine", botanical_name: "Tabernaemontana divaricata" }] },
-        clay_species: { canopy: [{ common_name: "Sal", botanical_name: "Shorea robusta" }, { common_name: "Mekahi", botanical_name: "Phoebe goalparensis" }], tree: [{ common_name: "Kadam", botanical_name: "Neolamarckia cadamba" }, { common_name: "White Teak", botanical_name: "Gmelina arborea" }, { common_name: "Elephant Apple", botanical_name: "Dillenia indica" }], sub_tree: [{ common_name: "Assam Lemon", botanical_name: "Citrus limon var. assamensis" }, { common_name: "Star Fruit", botanical_name: "Averrhoa carambola" }], shrub: [{ common_name: "Crape Jasmine", botanical_name: "Tabernaemontana divaricata" }, { common_name: "Assam Indigo", botanical_name: "Strobilanthes cusia" }] }
-      }
-    }
-  };
+  // ========== COMPLETE REGIONAL DATA (full, unchanged) ==========
+  const plantData = { regions: { north_central_arid_plains: { display_name: "North & Central India (Semi-Arid/Indo-Gangetic)", sandy_species: { canopy: [{ common_name: "Khejri", botanical_name: "Prosopis cineraria" }, { common_name: "Babool", botanical_name: "Vachellia nilotica" }], tree: [{ common_name: "Mesquite", botanical_name: "Prosopis juliflora" }, { common_name: "Umbrella Thorn", botanical_name: "Acacia tortilis" }], sub_tree: [{ common_name: "Ker", botanical_name: "Capparis decidua" }, { common_name: "Desert Teak", botanical_name: "Tecomella undulata" }], shrub: [{ common_name: "Sodom Apple", botanical_name: "Calotropis procera" }, { common_name: "Khimp", botanical_name: "Leptadenia pyrotechnica" }] }, laterite_species: { canopy: [{ common_name: "Beefwood", botanical_name: "Casuarina equisetifolia" }, { common_name: "Flooded Gum", botanical_name: "Eucalyptus tereticornis" }], tree: [{ common_name: "Earleaf Acacia", botanical_name: "Acacia auriculiformis" }, { common_name: "Indian Beech", botanical_name: "Millettia pinnata" }], sub_tree: [{ common_name: "Neelakurinji", botanical_name: "Strobilanthes kunthiana" }, { common_name: "Malabar Melastome", botanical_name: "Melastoma malabathricum" }], shrub: [{ common_name: "Lantana", botanical_name: "Lantana camara" }, { common_name: "Trailing Hibiscus", botanical_name: "Hibiscus surattensis" }] }, clay_species: { canopy: [{ common_name: "Peepal", botanical_name: "Ficus religiosa" }, { common_name: "Banyan", botanical_name: "Ficus benghalensis" }, { common_name: "Neem", botanical_name: "Azadirachta indica" }], tree: [{ common_name: "Jamun", botanical_name: "Syzygium cumini" }, { common_name: "Indian Rosewood", botanical_name: "Dalbergia sissoo" }, { common_name: "Arjun", botanical_name: "Terminalia arjuna" }], sub_tree: [{ common_name: "Golden Shower", botanical_name: "Cassia fistula" }, { common_name: "Sita Ashoka", botanical_name: "Saraca asoca" }, { common_name: "Wood Apple", botanical_name: "Aegle marmelos" }], shrub: [{ common_name: "Karonda", botanical_name: "Carissa carandas" }, { common_name: "Curry Leaf", botanical_name: "Murraya koenigii" }, { common_name: "Henna", botanical_name: "Lawsonia inermis" }] } }, south_deccan_plateau: { display_name: "South India (Tropical/Deccan Plateau)", sandy_species: { canopy: [{ common_name: "Babool", botanical_name: "Vachellia nilotica" }, { common_name: "Kusum Tree", botanical_name: "Albizia amara" }], tree: [{ common_name: "Anjan", botanical_name: "Hardwickia binata" }, { common_name: "Velvet Mesquite", botanical_name: "Acacia leucophloea" }], sub_tree: [{ common_name: "Indian Jujube", botanical_name: "Ziziphus mauritiana" }, { common_name: "Wood Apple", botanical_name: "Limonia acidissima" }], shrub: [{ common_name: "Conkerberry", botanical_name: "Carissa spinarum" }, { common_name: "Bastard Oak", botanical_name: "Grewia flavescens" }] }, laterite_species: { canopy: [{ common_name: "Beefwood", botanical_name: "Casuarina equisetifolia" }, { common_name: "Tasmanian Blue Gum", botanical_name: "Eucalyptus globulus" }], tree: [{ common_name: "Mangium", botanical_name: "Acacia mangium" }, { common_name: "Burma Ironwood", botanical_name: "Xylia xylocarpa" }], sub_tree: [{ common_name: "Kurinji", botanical_name: "Strobilanthes callosus" }, { common_name: "Bandicoot Berry", botanical_name: "Leea indica" }], shrub: [{ common_name: "Malabar Nut", botanical_name: "Justicia adhatoda" }, { common_name: "Blue Fountain Bush", botanical_name: "Clerodendrum serratum" }] }, clay_species: { canopy: [{ common_name: "Teak", botanical_name: "Tectona grandis" }, { common_name: "Mahua", botanical_name: "Madhuca longifolia" }, { common_name: "Tamarind", botanical_name: "Tamarindus indica" }], tree: [{ common_name: "Indian Rosewood", botanical_name: "Dalbergia latifolia" }, { common_name: "Pongamia", botanical_name: "Millettia pinnata" }, { common_name: "Kadamba", botanical_name: "Neolamarckia cadamba" }], sub_tree: [{ common_name: "Indian Gooseberry", botanical_name: "Phyllanthus emblica" }, { common_name: "Drumstick", botanical_name: "Moringa oleifera" }, { common_name: "Bael", botanical_name: "Aegle marmelos" }], shrub: [{ common_name: "Holy Basil", botanical_name: "Ocimum tenuiflorum" }, { common_name: "Hibiscus", botanical_name: "Hibiscus rosa-sinensis" }] } }, western_ghats_coastal: { display_name: "Western Ghats & Coastal Belt (Humid/High Rainfall)", sandy_species: { canopy: [{ common_name: "Beefwood", botanical_name: "Casuarina equisetifolia" }, { common_name: "Cashew", botanical_name: "Anacardium occidentale" }], tree: [{ common_name: "Screw Pine", botanical_name: "Pandanus tectorius" }, { common_name: "Beauty Leaf", botanical_name: "Calophyllum inophyllum" }], sub_tree: [{ common_name: "Beach Cabbage", botanical_name: "Scaevola taccada" }, { common_name: "Beach Morning Glory", botanical_name: "Ipomoea pes-caprae" }], shrub: [{ common_name: "Sea Hibiscus", botanical_name: "Hibiscus tiliaceus" }, { common_name: "Headache Tree", botanical_name: "Premna serratifolia" }] }, laterite_species: { canopy: [{ common_name: "Malabar Ironwood", botanical_name: "Hopea parviflora" }, { common_name: "Indian Copal", botanical_name: "Vateria indica" }], tree: [{ common_name: "Bombay Mace", botanical_name: "Myristica malabarica" }, { common_name: "Malabar Tamarind", botanical_name: "Garcinia gummi-gutta" }], sub_tree: [{ common_name: "Kurinji", botanical_name: "Strobilanthes kunthiana" }, { common_name: "Wild Coffee", botanical_name: "Psychotria nigra" }], shrub: [{ common_name: "Malabar Cinnamon", botanical_name: "Cinnamomum malabatrum" }, { common_name: "Ironwood Tree", botanical_name: "Memecylon umbellatum" }] }, clay_species: { canopy: [{ common_name: "Wild Jackfruit", botanical_name: "Artocarpus hirsutus" }, { common_name: "Mast Tree", botanical_name: "Polyalthia longifolia" }], tree: [{ common_name: "Cluster Fig", botanical_name: "Ficus racemosa" }, { common_name: "Red Sandalwood", botanical_name: "Pterocarpus santalinus" }], sub_tree: [{ common_name: "Kokum", botanical_name: "Garcinia indica" }, { common_name: "Areca Palm", botanical_name: "Areca catechu" }], shrub: [{ common_name: "Black Pepper", botanical_name: "Piper nigrum" }, { common_name: "Malabar Nut", botanical_name: "Justicia beddomei" }] } }, east_northeast_subtropical: { display_name: "East & Northeast India (Wet Sub-Tropical)", sandy_species: { canopy: [{ common_name: "Sal", botanical_name: "Shorea robusta" }, { common_name: "Silk Cotton", botanical_name: "Bombax ceiba" }], tree: [{ common_name: "Cutch Tree", botanical_name: "Acacia catechu" }, { common_name: "Kaim", botanical_name: "Mitragyna parvifolia" }], sub_tree: [{ common_name: "Chinese Date", botanical_name: "Ziziphus jujuba" }, { common_name: "Night Jasmine", botanical_name: "Nyctanthes arbor-tristis" }], shrub: [{ common_name: "Malabar Nut", botanical_name: "Justicia adhatoda" }, { common_name: "Glory Bower", botanical_name: "Clerodendrum viscosum" }] }, laterite_species: { canopy: [{ common_name: "Hollong", botanical_name: "Dipterocarpus retusus" }, { common_name: "Ceylon Ironwood", botanical_name: "Mesua ferrea" }], tree: [{ common_name: "Agarwood", botanical_name: "Aquilaria malaccensis" }, { common_name: "Gamar", botanical_name: "Gmelina arborea" }], sub_tree: [{ common_name: "Assam Indigo", botanical_name: "Strobilanthes cusia" }, { common_name: "Phlogacanthus", botanical_name: "Phlogacanthus thyrsiformis" }], shrub: [{ common_name: "Wild Coffee", botanical_name: "Psychotria denticulata" }, { common_name: "Crape Jasmine", botanical_name: "Tabernaemontana divaricata" }] }, clay_species: { canopy: [{ common_name: "Sal", botanical_name: "Shorea robusta" }, { common_name: "Mekahi", botanical_name: "Phoebe goalparensis" }], tree: [{ common_name: "Kadam", botanical_name: "Neolamarckia cadamba" }, { common_name: "White Teak", botanical_name: "Gmelina arborea" }, { common_name: "Elephant Apple", botanical_name: "Dillenia indica" }], sub_tree: [{ common_name: "Assam Lemon", botanical_name: "Citrus limon var. assamensis" }, { common_name: "Star Fruit", botanical_name: "Averrhoa carambola" }], shrub: [{ common_name: "Crape Jasmine", botanical_name: "Tabernaemontana divaricata" }, { common_name: "Assam Indigo", botanical_name: "Strobilanthes cusia" }] } } } };
+  const soilData = { agro_zones: { north_central_arid_plains: { dominant_soils: [ { soil_name: "Sandy / Desert Soil", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 5.5, perforator_rice_husk: 1.5, organic_compost: 3.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Neem cake","Bentonite clay"] }, { soil_name: "Alluvial / Clay Loam", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 3.0, perforator_rice_husk: 2.5, organic_compost: 2.5, surface_mulch_thickness_cm: 12 }, special_additives: ["Mycorrhizal fungi"] }, { soil_name: "Laterite / Acidic", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 4.0, perforator_rice_husk: 3.0, organic_compost: 4.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Agricultural lime","Bone meal"] } ] }, south_deccan_plateau: { dominant_soils: [ { soil_name: "Black Cotton (Clayey)", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 1.0, perforator_rice_husk: 6.0, organic_compost: 2.0, surface_mulch_thickness_cm: 10 }, special_additives: ["Gypsum","Coarse sand"] }, { soil_name: "Red Laterite (Acidic)", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 4.0, perforator_rice_husk: 3.0, organic_compost: 4.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Agricultural lime","Bone meal"] }, { soil_name: "Sandy / Arid Soil", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 6.0, perforator_rice_husk: 1.0, organic_compost: 3.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Neem cake"] } ] }, western_ghats_coastal: { dominant_soils: [ { soil_name: "Coastal Sandy", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 6.0, perforator_rice_husk: 1.0, organic_compost: 4.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Gypsum","Seaweed"] }, { soil_name: "Humid Forest Loam", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 2.0, perforator_rice_husk: 3.0, organic_compost: 2.0, surface_mulch_thickness_cm: 10 }, special_additives: ["Wood ash"] }, { soil_name: "Laterite / Acidic", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 4.5, perforator_rice_husk: 2.5, organic_compost: 3.5, surface_mulch_thickness_cm: 12 }, special_additives: ["Lime","Rock phosphate"] } ] }, east_northeast_subtropical: { dominant_soils: [ { soil_name: "Acidic Loam", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 2.5, perforator_rice_husk: 3.5, organic_compost: 3.0, surface_mulch_thickness_cm: 12 }, special_additives: ["Dolomitic lime","Rock phosphate"] }, { soil_name: "Floodplain Alluvial", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 2.0, perforator_rice_husk: 4.0, organic_compost: 2.5, surface_mulch_thickness_cm: 10 }, special_additives: ["Trichoderma"] }, { soil_name: "Sandy / Leached", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 5.0, perforator_rice_husk: 2.0, organic_compost: 3.0, surface_mulch_thickness_cm: 14 }, special_additives: ["Compost tea"] } ] } } };
 
-  const soilData = {
-    agro_zones: {
-      north_central_arid_plains: { dominant_soils: [ { soil_name: "Sandy / Desert Soil", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 5.5, perforator_rice_husk: 1.5, organic_compost: 3.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Neem cake","Bentonite clay"] }, { soil_name: "Alluvial / Clay Loam", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 3.0, perforator_rice_husk: 2.5, organic_compost: 2.5, surface_mulch_thickness_cm: 12 }, special_additives: ["Mycorrhizal fungi"] }, { soil_name: "Laterite / Acidic", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 4.0, perforator_rice_husk: 3.0, organic_compost: 4.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Agricultural lime","Bone meal"] } ] },
-      south_deccan_plateau: { dominant_soils: [ { soil_name: "Black Cotton (Clayey)", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 1.0, perforator_rice_husk: 6.0, organic_compost: 2.0, surface_mulch_thickness_cm: 10 }, special_additives: ["Gypsum","Coarse sand"] }, { soil_name: "Red Laterite (Acidic)", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 4.0, perforator_rice_husk: 3.0, organic_compost: 4.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Agricultural lime","Bone meal"] }, { soil_name: "Sandy / Arid Soil", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 6.0, perforator_rice_husk: 1.0, organic_compost: 3.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Neem cake"] } ] },
-      western_ghats_coastal: { dominant_soils: [ { soil_name: "Coastal Sandy", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 6.0, perforator_rice_husk: 1.0, organic_compost: 4.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Gypsum","Seaweed"] }, { soil_name: "Humid Forest Loam", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 2.0, perforator_rice_husk: 3.0, organic_compost: 2.0, surface_mulch_thickness_cm: 10 }, special_additives: ["Wood ash"] }, { soil_name: "Laterite / Acidic", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 4.5, perforator_rice_husk: 2.5, organic_compost: 3.5, surface_mulch_thickness_cm: 12 }, special_additives: ["Lime","Rock phosphate"] } ] },
-      east_northeast_subtropical: { dominant_soils: [ { soil_name: "Acidic Loam", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 2.5, perforator_rice_husk: 3.5, organic_compost: 3.0, surface_mulch_thickness_cm: 12 }, special_additives: ["Dolomitic lime","Rock phosphate"] }, { soil_name: "Floodplain Alluvial", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 2.0, perforator_rice_husk: 4.0, organic_compost: 2.5, surface_mulch_thickness_cm: 10 }, special_additives: ["Trichoderma"] }, { soil_name: "Sandy / Leached", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 5.0, perforator_rice_husk: 2.0, organic_compost: 3.0, surface_mulch_thickness_cm: 14 }, special_additives: ["Compost tea"] } ] }
-    }
-  };
-
-  function getAgroZone(lat, lon) {
-    if (lat < 6.0 || lat > 38.0 || lon < 68.0 || lon > 98.0) return "north_central_arid_plains";
-    if (lon > 87.0 || (lat > 22.0 && lon > 84.0)) return "east_northeast_subtropical";
-    if (lat < 20.0) return (lon < 77.5) ? "western_ghats_coastal" : "south_deccan_plateau";
-    return "north_central_arid_plains";
-  }
+  function getAgroZone(lat, lon) { if (lat < 6.0 || lat > 38.0 || lon < 68.0 || lon > 98.0) return "north_central_arid_plains"; if (lon > 87.0 || (lat > 22.0 && lon > 84.0)) return "east_northeast_subtropical"; if (lat < 20.0) return (lon < 77.5) ? "western_ghats_coastal" : "south_deccan_plateau"; return "north_central_arid_plains"; }
 
   let map, marker, currentCoords = { lat: 28.6139, lng: 77.2090 };
   let polyPoints = [], polyClosed = false, drawModeActive = true;
@@ -308,54 +275,94 @@
   const METER_PER_PX = 0.1;
   let currentZoneId = "north_central_arid_plains";
 
-  function updateSpeciesBySoil() {
-    const region = plantData.regions[currentZoneId];
+  // Helper: update layer distribution based on soil (kept from previous, triggers on soil change)
+  function updateLayerDistributionBasedOnSoil() {
     const soilSelect = document.getElementById('mw-soil-select');
-    const txt = soilSelect.options[soilSelect.selectedIndex]?.text.toLowerCase() || "";
-    let type = "clay";
-    if (txt.includes("sandy")) type = "sandy";
-    else if (txt.includes("laterite") || txt.includes("acidic")) type = "laterite";
-    let set = type === "sandy" ? region.sandy_species : (type === "laterite" ? region.laterite_species : region.clay_species);
-    let html = "";
-    for (let l of ['canopy','tree','sub_tree','shrub']) {
-      let list = set[l] || [];
-      html += `<div><strong>${l}</strong><br>`;
-      list.forEach(p => html += `• ${p.common_name} (${p.botanical_name})<br>`);
-      html += `</div>`;
-    }
-    document.getElementById('mw-plants-list').innerHTML = html;
-    let soilIdx = parseInt(soilSelect.value, 10);
-    let soilRegion = soilData.agro_zones[currentZoneId];
-    if (soilRegion && soilRegion.dominant_soils[soilIdx]) {
-      document.getElementById('soil-additives').innerHTML = `<div><strong>${soilRegion.dominant_soils[soilIdx].soil_name}</strong><br>Additives: ${soilRegion.dominant_soils[soilIdx].special_additives.join(', ')}</div>`;
-    } else {
-      document.getElementById('soil-additives').innerHTML = "<div>Select a soil type</div>";
-    }
+    if (!soilSelect || soilSelect.options.length === 0) return;
+    const selectedText = soilSelect.options[soilSelect.selectedIndex]?.text.toLowerCase() || "";
+    let canopyPct = 25, treePct = 25, subTreePct = 25, shrubPct = 25;
+    if (selectedText.includes("sandy")) { canopyPct = 15; treePct = 20; subTreePct = 30; shrubPct = 35; }
+    else if (selectedText.includes("clay") || selectedText.includes("black cotton")) { canopyPct = 35; treePct = 30; subTreePct = 20; shrubPct = 15; }
+    else if (selectedText.includes("laterite") || selectedText.includes("acidic")) { canopyPct = 20; treePct = 25; subTreePct = 30; shrubPct = 25; }
+    const layerStatsDiv = document.getElementById('dynamicLayerStats');
+    if (layerStatsDiv) layerStatsDiv.innerHTML = `<strong>Miyawaki layer distribution (dense planting)</strong><br>• Canopy (${canopyPct}%) – tallest native trees<br>• Tree (${treePct}%) – secondary canopy<br>• Sub‑tree (${subTreePct}%) – understorey trees<br>• Shrub (${shrubPct}%) – native shrubs & ground cover<br><span style="font-size:0.7rem;">Total density: 2–6 saplings/m² (adjustable in field designer)</span>`;
   }
 
-  function analyzeSite() {
-    document.getElementById('mw-loading').style.display = 'block';
-    document.getElementById('mw-results').style.display = 'none';
-    setTimeout(() => {
-      let lat = parseFloat(document.getElementById('mw-lat').value);
-      let lon = parseFloat(document.getElementById('mw-lon').value);
-      currentZoneId = getAgroZone(lat, lon);
-      let plantRegion = plantData.regions[currentZoneId];
-      let soilRegion = soilData.agro_zones[currentZoneId];
-      if (!plantRegion || !soilRegion) { toast("Region data missing"); document.getElementById('mw-loading').style.display = 'none'; return; }
-      document.getElementById('mw-zone-name').innerText = plantRegion.display_name;
-      let sel = document.getElementById('mw-soil-select');
-      sel.innerHTML = '';
-      soilRegion.dominant_soils.forEach((s,i) => { let opt = document.createElement('option'); opt.value=i; opt.text = s.soil_name; sel.appendChild(opt); });
-      sel.onchange = () => { updateSpeciesBySoil(); calculateEnhancersAndBudget(); updateWaterRequirement(); };
-      updateSpeciesBySoil();
-      document.getElementById('mw-results').style.display = 'block';
-      calculateEnhancersAndBudget();
-      updateWaterRequirement();
-      document.getElementById('mw-loading').style.display = 'none';
-    }, 100);
+  // NEW: Detailed cost breakdown (bifurcation)
+  function updateCostBreakdown() {
+    const area = parseFloat(document.getElementById('mw-area-input').value) || 0;
+    if (area === 0) { document.getElementById('costBreakdownList').innerHTML = '<div class="cost-item">Enter area to see breakdown</div>'; return; }
+    const density = currentDensity;
+    const perimeterElem = document.getElementById('mw-perimeter');
+    const perimeter = perimeterElem ? parseFloat(perimeterElem.innerText) || 0 : 0;
+    const pH = parseFloat(document.getElementById('mw-ph').value) || 6.5;
+    const saplings = area * density;
+    // Soil amendment factors from selected soil (if available)
+    let cocopeatKg = 0, riceHuskKg = 0, compostKg = 0;
+    const soilSelect = document.getElementById('mw-soil-select');
+    if (soilSelect && soilSelect.options.length > 0 && currentZoneId && soilData.agro_zones[currentZoneId]) {
+      const idx = parseInt(soilSelect.value, 10);
+      const soilRegion = soilData.agro_zones[currentZoneId];
+      if (soilRegion && soilRegion.dominant_soils[idx]) {
+        const enh = soilRegion.dominant_soils[idx].enhancer_formula_kg_per_sqm;
+        cocopeatKg = enh.water_retainer_cocopeat;
+        riceHuskKg = enh.perforator_rice_husk;
+        compostKg = enh.organic_compost;
+      }
+    } else { // fallback default clay loam
+      cocopeatKg = 3.0; riceHuskKg = 2.5; compostKg = 2.5;
+    }
+    const saplingCost = saplings * 45;
+    const sitePrep = area * 80;
+    const cocopeatCost = area * cocopeatKg * 20;
+    const riceHuskCost = area * riceHuskKg * 10;
+    const compostCost = area * compostKg * 15;
+    let pHAmendmentCost = 0;
+    if (pH < 5.5) pHAmendmentCost = area * 0.25 * 8;
+    else if (pH > 7.5) pHAmendmentCost = area * 0.2 * 15;
+    const fencingCost = perimeter * 150;
+    // Water cost calculation (2 years)
+    const lat = parseFloat(document.getElementById('mw-lat').value) || 28.6;
+    let baseET = 4;
+    const climate = getAgroZone(lat, 0);
+    if (climate === "western_ghats_coastal") baseET = 3.0;
+    else if (climate === "east_northeast_subtropical") baseET = 3.5;
+    else if (climate === "south_deccan_plateau") baseET = 4.2;
+    else baseET = 4.5;
+    let soilTypeText = (soilSelect && soilSelect.options[soilSelect.selectedIndex]?.text.toLowerCase()) || "clay";
+    let soilFactor = 1.0;
+    if (soilTypeText.includes("sandy")) soilFactor = 1.3;
+    else if (soilTypeText.includes("clay")) soilFactor = 0.8;
+    else if (soilTypeText.includes("laterite")) soilFactor = 1.1;
+    const dailyWaterL = area * baseET * soilFactor;
+    const totalWaterL = dailyWaterL * 365 * 2;
+    const waterCost = (totalWaterL / 1000) * 5; // ₹5 per kl
+    const total = saplingCost + sitePrep + cocopeatCost + riceHuskCost + compostCost + pHAmendmentCost + fencingCost + waterCost;
+    // Build HTML
+    const formatINR = (val) => '₹' + Math.round(val).toLocaleString();
+    let html = `
+      <div class="cost-item"><span>🌱 Saplings (${Math.round(saplings)} × ₹45)</span><span>${formatINR(saplingCost)}</span></div>
+      <div class="cost-item"><span>⛏️ Site prep (${area} m² × ₹80)</span><span>${formatINR(sitePrep)}</span></div>
+      <div class="cost-item"><span>🥥 Cocopeat (${(area*cocopeatKg).toFixed(1)} kg × ₹20)</span><span>${formatINR(cocopeatCost)}</span></div>
+      <div class="cost-item"><span>🌾 Rice husk (${(area*riceHuskKg).toFixed(1)} kg × ₹10)</span><span>${formatINR(riceHuskCost)}</span></div>
+      <div class="cost-item"><span>🍂 Organic compost (${(area*compostKg).toFixed(1)} kg × ₹15)</span><span>${formatINR(compostCost)}</span></div>`;
+    if (pHAmendmentCost > 0) html += `<div class="cost-item"><span>⚗️ pH amendment (${pH<5.5?'lime':'sulfur'})</span><span>${formatINR(pHAmendmentCost)}</span></div>`;
+    html += `<div class="cost-item"><span>🔒 Fencing (${perimeter} m × ₹150/m)</span><span>${formatINR(fencingCost)}</span></div>
+             <div class="cost-item"><span>💧 Water (2 years, ${Math.round(totalWaterL/1000)} kL × ₹5)</span><span>${formatINR(waterCost)}</span></div>`;
+    document.getElementById('costBreakdownList').innerHTML = html;
+    document.getElementById('breakdownTotal').innerHTML = `<span>🏷️ TOTAL ESTIMATED BUDGET</span><span>${formatINR(total)}</span>`;
+    // Also update the summary total cost pill for consistency
+    const totalElem = document.getElementById('mw-total-cost');
+    if (totalElem) totalElem.innerText = formatINR(total);
   }
 
+  // integrate breakdown call into existing functions
+  const originalCalculateEnhancersAndBudget = window.calculateEnhancersAndBudget;
+  function enhanceAndBudgetWrapper() { if (originalCalculateEnhancersAndBudget) originalCalculateEnhancersAndBudget(); updateCostBreakdown(); }
+  const originalCalculateIrregularGeometry = window.calculateIrregularGeometry;
+  function enhanceGeometry() { if (originalCalculateIrregularGeometry) originalCalculateIrregularGeometry(); updateCostBreakdown(); }
+
+  // Override / attach to existing functions
   function calculateEnhancersAndBudget() {
     if (!currentZoneId) return;
     let area = parseFloat(document.getElementById('mw-area').value) || 100;
@@ -371,9 +378,30 @@
     document.getElementById('mw-budget-list').innerHTML = `<div>Saplings (${currentDensity}/m²): ${saplings}</div><div>Cocopeat: ${(area*f.water_retainer_cocopeat).toFixed(1)} kg</div><div>Rice husk: ${(area*f.perforator_rice_husk).toFixed(1)} kg</div><div>Compost: ${(area*f.organic_compost).toFixed(1)} kg</div>`;
     document.getElementById('mw-total-cost').innerHTML = '₹' + total.toLocaleString();
     updateWaterRequirement();
+    updateCostBreakdown();
   }
-
-  function updateWaterRequirement() {
+  function calculateIrregularGeometry() {
+    let area = parseFloat(document.getElementById('mw-area-input').value) || 0;
+    let perimeter = 0;
+    if (geometryMode === 'estimate') { perimeter = Math.round(4 * Math.sqrt(area) * 1.25); }
+    else { perimeter = parseFloat(document.getElementById('mw-perimeter-input').value) || 0; }
+    document.getElementById('mw-perimeter').innerText = perimeter + ' m';
+    document.getElementById('mw-fencing-cost').innerHTML = '₹' + (perimeter * 150).toLocaleString();
+    if (document.getElementById('mw-area')) document.getElementById('mw-area').value = area;
+    if (document.getElementById('mw-results').style.display === 'block') { calculateEnhancersAndBudget(); updateWaterRequirement(); }
+    updateCostBreakdown();
+  }
+  function syncAreaAndRecalc() {
+    let area = parseFloat(document.getElementById('mw-area-input').value);
+    if (!isNaN(area)) { document.getElementById('mw-area').value = area; calculateIrregularGeometry(); if (document.getElementById('mw-results').style.display === 'block') { calculateEnhancersAndBudget(); updateWaterRequirement(); } simulateForestGrowth(); if (polyClosed) renderPlantation(); updateCostBreakdown(); }
+  }
+  function updateDensityAndSimulate() {
+    currentDensity = parseFloat(document.getElementById('densitySlider').value);
+    document.getElementById('densityValue').innerText = currentDensity + ' saplings/m²';
+    if (polyClosed) { renderPlantation(); if (document.getElementById('mw-results').style.display === 'block') calculateEnhancersAndBudget(); }
+    updateCostBreakdown();
+  }
+  function updateWaterRequirement() { /* same as original, but we also call updateCostBreakdown elsewhere */ 
     let area = parseFloat(document.getElementById('mw-area').value) || 100;
     let lat = parseFloat(document.getElementById('mw-lat').value) || 28.6;
     let idx = parseInt(document.getElementById('mw-soil-select').value, 10);
@@ -392,89 +420,34 @@
     let dailyWaterL = area * baseET * soilFactor;
     let totalWaterTwoYears = dailyWaterL * 365 * 2;
     let waterCost = (totalWaterTwoYears / 1000) * 5;
-    document.getElementById('water-requirement').innerHTML = `
-      <div>Daily water need: <strong>${Math.round(dailyWaterL)} L/day</strong></div>
-      <div>Weekly: ${Math.round(dailyWaterL*7)} L/week</div>
-      <div>Monthly: ${Math.round(dailyWaterL*30)} L/month</div>
-    `;
+    document.getElementById('water-requirement').innerHTML = `<div>Daily water need: <strong>${Math.round(dailyWaterL)} L/day</strong></div><div>Weekly: ${Math.round(dailyWaterL*7)} L/week</div><div>Monthly: ${Math.round(dailyWaterL*30)} L/month</div>`;
     document.getElementById('water-detail').innerHTML = `<div>Total water for 2‑year establishment: <strong>${Math.round(totalWaterTwoYears/1000)} m³</strong> (approx. ₹${Math.round(waterCost).toLocaleString()})</div><div style="font-size:0.7rem;">Based on climate zone, soil type, and daily irrigation for 2 years.</div>`;
   }
-
+  function updateSpeciesBySoil() { const region = plantData.regions[currentZoneId]; const soilSelect = document.getElementById('mw-soil-select'); const txt = soilSelect.options[soilSelect.selectedIndex]?.text.toLowerCase() || ""; let type = "clay"; if (txt.includes("sandy")) type = "sandy"; else if (txt.includes("laterite") || txt.includes("acidic")) type = "laterite"; let set = type === "sandy" ? region.sandy_species : (type === "laterite" ? region.laterite_species : region.clay_species); let html = ""; for (let l of ['canopy','tree','sub_tree','shrub']) { let list = set[l] || []; html += `<div><strong>${l}</strong><br>`; list.forEach(p => html += `• ${p.common_name} (${p.botanical_name})<br>`); html += `</div>`; } document.getElementById('mw-plants-list').innerHTML = html; let soilIdx = parseInt(soilSelect.value, 10); let soilRegion = soilData.agro_zones[currentZoneId]; if (soilRegion && soilRegion.dominant_soils[soilIdx]) { document.getElementById('soil-additives').innerHTML = `<div><strong>${soilRegion.dominant_soils[soilIdx].soil_name}</strong><br>Additives: ${soilRegion.dominant_soils[soilIdx].special_additives.join(', ')}</div>`; } else { document.getElementById('soil-additives').innerHTML = "<div>Select a soil type</div>"; } updateLayerDistributionBasedOnSoil(); updateCostBreakdown(); }
+  function analyzeSite() { document.getElementById('mw-loading').style.display = 'block'; document.getElementById('mw-results').style.display = 'none'; setTimeout(() => { let lat = parseFloat(document.getElementById('mw-lat').value); let lon = parseFloat(document.getElementById('mw-lon').value); currentZoneId = getAgroZone(lat, lon); let plantRegion = plantData.regions[currentZoneId]; let soilRegion = soilData.agro_zones[currentZoneId]; if (!plantRegion || !soilRegion) { toast("Region data missing"); document.getElementById('mw-loading').style.display = 'none'; return; } document.getElementById('mw-zone-name').innerText = plantRegion.display_name; let sel = document.getElementById('mw-soil-select'); sel.innerHTML = ''; soilRegion.dominant_soils.forEach((s,i) => { let opt = document.createElement('option'); opt.value=i; opt.text = s.soil_name; sel.appendChild(opt); }); sel.onchange = () => { updateSpeciesBySoil(); calculateEnhancersAndBudget(); updateWaterRequirement(); updateLayerDistributionBasedOnSoil(); updateCostBreakdown(); }; updateSpeciesBySoil(); updateLayerDistributionBasedOnSoil(); document.getElementById('mw-results').style.display = 'block'; calculateEnhancersAndBudget(); updateWaterRequirement(); updateCostBreakdown(); document.getElementById('mw-loading').style.display = 'none'; }, 100); }
+  // map and canvas init functions unchanged ...
   function initMap() { map = L.map('map').setView([currentCoords.lat, currentCoords.lng], 12); L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map); marker = L.marker([currentCoords.lat, currentCoords.lng]).addTo(map); map.on('click', e => { currentCoords = e.latlng; marker.setLatLng(currentCoords); updateCoordInputs(); toast('Coordinates updated'); if(document.getElementById('mw-results').style.display === 'block') analyzeSite(); }); }
   function updateCoordInputs() { document.getElementById('mw-lat').value = currentCoords.lat.toFixed(6); document.getElementById('mw-lon').value = currentCoords.lng.toFixed(6); document.getElementById('locStatus').innerHTML = `📍 ${currentCoords.lat.toFixed(4)}, ${currentCoords.lng.toFixed(4)}`; document.getElementById('locDot').style.background = '#2ecc71'; }
   async function searchLocation() { let q = document.getElementById("locationInput").value; if (!q) return; let res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`); let d = await res.json(); if (d[0]) { currentCoords = { lat: parseFloat(d[0].lat), lng: parseFloat(d[0].lon) }; map.setView([currentCoords.lat, currentCoords.lng], 12); marker.setLatLng(currentCoords); updateCoordInputs(); toast("Location found"); if (document.getElementById('mw-results').style.display === 'block') analyzeSite(); } else toast("Not found"); }
   function detectLocation() { if (!navigator.geolocation) return; navigator.geolocation.getCurrentPosition(p => { currentCoords = { lat: p.coords.latitude, lng: p.coords.longitude }; map.setView([currentCoords.lat, currentCoords.lng], 14); marker.setLatLng(currentCoords); updateCoordInputs(); toast("Location detected"); if (document.getElementById('mw-results').style.display === 'block') analyzeSite(); }); }
   function toast(msg) { let t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000); }
   let geometryMode = 'estimate';
-  function toggleGeometryMode(mode) {
-    geometryMode = mode;
-    document.getElementById('manual-perimeter-div').style.display = mode === 'manual' ? 'block' : 'none';
-    calculateIrregularGeometry();
-  }
-  function calculateIrregularGeometry() {
-    let area = parseFloat(document.getElementById('mw-area-input').value) || 0;
-    let perimeter = 0;
-    if (geometryMode === 'estimate') {
-      // Use a fixed shape factor (1.25) instead of complexity dropdown
-      perimeter = Math.round(4 * Math.sqrt(area) * 1.25);
-    } else {
-      perimeter = parseFloat(document.getElementById('mw-perimeter-input').value) || 0;
-    }
-    document.getElementById('mw-perimeter').innerText = perimeter + ' m';
-    document.getElementById('mw-fencing-cost').innerHTML = '₹' + (perimeter * 150).toLocaleString();
-    if (document.getElementById('mw-area')) document.getElementById('mw-area').value = area;
-    if (document.getElementById('mw-results').style.display === 'block') { calculateEnhancersAndBudget(); updateWaterRequirement(); }
-  }
-  function syncAreaAndRecalc() { let area = parseFloat(document.getElementById('mw-area-input').value); if (!isNaN(area)) { document.getElementById('mw-area').value = area; calculateIrregularGeometry(); if (document.getElementById('mw-results').style.display === 'block') { calculateEnhancersAndBudget(); updateWaterRequirement(); } simulateForestGrowth(); if (polyClosed) renderPlantation(); } }
+  function toggleGeometryMode(mode) { geometryMode = mode; document.getElementById('manual-perimeter-div').style.display = mode === 'manual' ? 'block' : 'none'; calculateIrregularGeometry(); }
   function simulateForestGrowth() { let y = parseInt(document.getElementById('mw-year-slider').value); document.getElementById('mw-year-label').innerText = `Year ${y}`; let area = parseFloat(document.getElementById('mw-area-input').value) || 100; let totalCO2kg = area * 12 * Math.min(y/5, 2.5); let tons = totalCO2kg / 1000; document.getElementById('mw-co2-output').innerHTML = tons >= 0.1 ? `~ ${tons.toFixed(1)} Tons` : `${Math.round(totalCO2kg)} kg`; let tasks = y<2 ? ['Water daily','Weeding','Staking'] : (y<5 ? ['Irrigation weekly','Mulch refill'] : ['Zero maintenance']); let eco = y<2 ? ['Sapling stage','Vulnerable'] : (y<5 ? ['Young canopy','Birds arrive'] : ['Closed forest','Cool microclimate']); document.getElementById('mw-maintenance-tasks').innerHTML = tasks.map(t=>`<li>${t}</li>`).join(''); document.getElementById('mw-eco-status').innerHTML = eco.map(e=>`<li>${e}</li>`).join(''); }
-  function initFieldCanvas() {
-    fieldCanvas = document.getElementById('fieldCanvas'); plantCanvas = document.getElementById('plantationCanvas');
-    ctxField = fieldCanvas.getContext('2d'); ctxPlant = plantCanvas.getContext('2d');
-    fieldCanvas.addEventListener('click', (e) => { if(drawModeActive && !polyClosed) addPolygonPoint(e); });
-    clearPolygon(); setDrawMode(true);
-    document.getElementById('densitySlider').addEventListener('input', (e) => { currentDensity = parseFloat(e.target.value); document.getElementById('densityValue').innerText = currentDensity + ' saplings/m²'; if(polyClosed) renderPlantation(); if(document.getElementById('mw-results').style.display === 'block') calculateEnhancersAndBudget(); });
-  }
+  function initFieldCanvas() { fieldCanvas = document.getElementById('fieldCanvas'); plantCanvas = document.getElementById('plantationCanvas'); ctxField = fieldCanvas.getContext('2d'); ctxPlant = plantCanvas.getContext('2d'); fieldCanvas.addEventListener('click', (e) => { if(drawModeActive && !polyClosed) addPolygonPoint(e); }); clearPolygon(); setDrawMode(true); document.getElementById('densitySlider').addEventListener('input', (e) => { currentDensity = parseFloat(e.target.value); document.getElementById('densityValue').innerText = currentDensity + ' saplings/m²'; if(polyClosed) renderPlantation(); if(document.getElementById('mw-results').style.display === 'block') calculateEnhancersAndBudget(); updateCostBreakdown(); }); }
   function setDrawMode(mode) { drawModeActive = mode; document.getElementById('drawModeBtn').classList.toggle('active', mode); }
   function addPolygonPoint(e) { let rect = fieldCanvas.getBoundingClientRect(); let scaleX = fieldCanvas.width / rect.width; let scaleY = fieldCanvas.height / rect.height; let x = (e.clientX - rect.left) * scaleX; let y = (e.clientY - rect.top) * scaleY; polyPoints.push({x, y}); drawPolygonPreview(); }
   function drawPolygonPreview() { ctxField.clearRect(0,0,fieldCanvas.width,fieldCanvas.height); drawGridBg(ctxField); if (polyPoints.length === 0) return; ctxField.beginPath(); ctxField.moveTo(polyPoints[0].x, polyPoints[0].y); for (let p of polyPoints) ctxField.lineTo(p.x, p.y); ctxField.strokeStyle = '#2c6e2a'; ctxField.lineWidth = 2.5; ctxField.stroke(); for (let p of polyPoints) { ctxField.fillStyle = '#c97a2f'; ctxField.beginPath(); ctxField.arc(p.x, p.y, 5, 0, 2*Math.PI); ctxField.fill(); } if (polyPoints.length > 2) { ctxField.fillStyle = '#ffa500'; ctxField.beginPath(); ctxField.arc(polyPoints[0].x, polyPoints[0].y, 7, 0, 2*Math.PI); ctxField.fill(); } }
   function drawGridBg(ctx) { ctx.fillStyle = '#fefef5'; ctx.fillRect(0,0,fieldCanvas.width,fieldCanvas.height); ctx.strokeStyle = '#d6dccc'; ctx.lineWidth = 0.5; for (let i=0; i<fieldCanvas.width; i+=30) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,fieldCanvas.height); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(fieldCanvas.width,i); ctx.stroke(); } }
-  function clearPolygon() { polyPoints = []; polyClosed = false; drawPolygonPreview(); ctxPlant.clearRect(0,0,plantCanvas.width,plantCanvas.height); document.getElementById('polyTrees').innerText = '—'; document.getElementById('polyArea').innerText = '—'; document.getElementById('polyCoverage').innerText = '—'; }
-  function closePolygon() { if (polyPoints.length < 3) { toast("Need at least 3 points"); return; } polyClosed = true; drawPolygonPreview(); updateAreaFromPolygon(); renderPlantation(); toast("Polygon simulated – area updated."); }
-  function loadSampleField() { polyPoints = [ {x: fieldCanvas.width*0.2, y: fieldCanvas.height*0.3}, {x: fieldCanvas.width*0.8, y: fieldCanvas.height*0.25}, {x: fieldCanvas.width*0.9, y: fieldCanvas.height*0.65}, {x: fieldCanvas.width*0.55, y: fieldCanvas.height*0.85}, {x: fieldCanvas.width*0.25, y: fieldCanvas.height*0.75} ]; polyClosed = true; drawPolygonPreview(); updateAreaFromPolygon(); renderPlantation(); toast("Sample field loaded – area updated."); }
-  function updateAreaFromPolygon() { let areaPx = polygonAreaInPixels(polyPoints); let areaSqM = areaPx * (METER_PER_PX * METER_PER_PX); document.getElementById('polyArea').innerText = areaSqM.toFixed(1); document.getElementById('mw-area-input').value = areaSqM.toFixed(1); document.getElementById('mw-area').value = areaSqM.toFixed(1); calculateIrregularGeometry(); if (document.getElementById('mw-results').style.display === 'block') { calculateEnhancersAndBudget(); updateWaterRequirement(); } simulateForestGrowth(); let treeCount = Math.round(areaSqM * currentDensity); document.getElementById('polyTrees').innerText = treeCount; let canopyCoverage = Math.min(95, (treeCount * Math.PI * (1.5*1.5)) / areaSqM * 100); document.getElementById('polyCoverage').innerText = canopyCoverage.toFixed(1); }
+  function clearPolygon() { polyPoints = []; polyClosed = false; drawPolygonPreview(); ctxPlant.clearRect(0,0,plantCanvas.width,plantCanvas.height); document.getElementById('polyTrees').innerText = '—'; document.getElementById('polyArea').innerText = '—'; document.getElementById('polyCoverage').innerText = '—'; updateCostBreakdown(); }
+  function closePolygon() { if (polyPoints.length < 3) { toast("Need at least 3 points"); return; } polyClosed = true; drawPolygonPreview(); updateAreaFromPolygon(); renderPlantation(); toast("Polygon simulated – area updated."); updateCostBreakdown(); }
+  function loadSampleField() { polyPoints = [ {x: fieldCanvas.width*0.2, y: fieldCanvas.height*0.3}, {x: fieldCanvas.width*0.8, y: fieldCanvas.height*0.25}, {x: fieldCanvas.width*0.9, y: fieldCanvas.height*0.65}, {x: fieldCanvas.width*0.55, y: fieldCanvas.height*0.85}, {x: fieldCanvas.width*0.25, y: fieldCanvas.height*0.75} ]; polyClosed = true; drawPolygonPreview(); updateAreaFromPolygon(); renderPlantation(); toast("Sample field loaded – area updated."); updateCostBreakdown(); }
+  function updateAreaFromPolygon() { let areaPx = polygonAreaInPixels(polyPoints); let areaSqM = areaPx * (METER_PER_PX * METER_PER_PX); document.getElementById('polyArea').innerText = areaSqM.toFixed(1); document.getElementById('mw-area-input').value = areaSqM.toFixed(1); document.getElementById('mw-area').value = areaSqM.toFixed(1); calculateIrregularGeometry(); if (document.getElementById('mw-results').style.display === 'block') { calculateEnhancersAndBudget(); updateWaterRequirement(); } simulateForestGrowth(); let treeCount = Math.round(areaSqM * currentDensity); document.getElementById('polyTrees').innerText = treeCount; let canopyCoverage = Math.min(95, (treeCount * Math.PI * (1.5*1.5)) / areaSqM * 100); document.getElementById('polyCoverage').innerText = canopyCoverage.toFixed(1); updateCostBreakdown(); }
   function polygonAreaInPixels(poly) { let area = 0; for (let i=0; i<poly.length; i++) { let j = (i+1) % poly.length; area += poly[i].x * poly[j].y; area -= poly[j].x * poly[i].y; } return Math.abs(area) / 2; }
   function pointInPolygon(px, py, poly) { let inside = false; for (let i=0, j=poly.length-1; i<poly.length; j=i++) { let xi = poly[i].x, yi = poly[i].y, xj = poly[j].x, yj = poly[j].y; let intersect = ((yi > py) != (yj > py)) && (px < (xj - xi) * (py - yi) / (yj - yi) + xi); if (intersect) inside = !inside; } return inside; }
-  function renderPlantation() {
-    if (!polyClosed || polyPoints.length < 3) return;
-    ctxPlant.clearRect(0,0,plantCanvas.width,plantCanvas.height); drawGridBg(ctxPlant);
-    ctxPlant.beginPath(); ctxPlant.moveTo(polyPoints[0].x, polyPoints[0].y);
-    for (let p of polyPoints) ctxPlant.lineTo(p.x, p.y); ctxPlant.closePath();
-    ctxPlant.fillStyle = 'rgba(44,110,42,0.08)'; ctxPlant.fill(); ctxPlant.strokeStyle = '#2c6e2a'; ctxPlant.lineWidth = 2; ctxPlant.stroke();
-    let areaSqM = parseFloat(document.getElementById('mw-area-input').value) || 0;
-    let approxPlants = Math.round(areaSqM * currentDensity);
-    let spacingPx = Math.sqrt(areaSqM / approxPlants) / METER_PER_PX;
-    if (spacingPx < 5) spacingPx = 5;
-    let bbox = { minX: Math.min(...polyPoints.map(p=>p.x)), maxX: Math.max(...polyPoints.map(p=>p.x)), minY: Math.min(...polyPoints.map(p=>p.y)), maxY: Math.max(...polyPoints.map(p=>p.y)) };
-    for (let y = bbox.minY + spacingPx/2; y < bbox.maxY; y += spacingPx) {
-      for (let x = bbox.minX + spacingPx/2; x < bbox.maxX; x += spacingPx) {
-        if (pointInPolygon(x, y, polyPoints)) {
-          ctxPlant.fillStyle = '#2c6e2a'; ctxPlant.beginPath(); ctxPlant.arc(x, y, 5, 0, 2*Math.PI); ctxPlant.fill();
-          ctxPlant.fillStyle = '#8fb870'; ctxPlant.beginPath(); ctxPlant.arc(x, y, 3, 0, 2*Math.PI); ctxPlant.fill();
-        }
-      }
-    }
-    let actualTreeCount = Math.round(areaSqM * currentDensity);
-    document.getElementById('polyTrees').innerText = actualTreeCount;
-    let canopyCoverage = Math.min(95, (actualTreeCount * Math.PI * (1.5*1.5)) / areaSqM * 100);
-    document.getElementById('polyCoverage').innerText = canopyCoverage.toFixed(1);
-  }
-  function updateDensityAndSimulate() { currentDensity = parseFloat(document.getElementById('densitySlider').value); document.getElementById('densityValue').innerText = currentDensity + ' saplings/m²'; if (polyClosed) { renderPlantation(); if (document.getElementById('mw-results').style.display === 'block') calculateEnhancersAndBudget(); } }
-  window.onload = () => { initMap(); initFieldCanvas(); updateCoordInputs(); calculateIrregularGeometry(); simulateForestGrowth(); document.getElementById('mw-area-input').addEventListener('input', syncAreaAndRecalc); toast("Integrated resource hub ready. Shape complexity removed."); };
-  window.searchLocation = searchLocation; window.detectLocation = detectLocation; window.analyzeSite = analyzeSite;
-  window.toggleGeometryMode = toggleGeometryMode; window.calculateIrregularGeometry = calculateIrregularGeometry;
-  window.simulateForestGrowth = simulateForestGrowth; window.setDrawMode = setDrawMode; window.clearPolygon = clearPolygon;
-  window.closePolygon = closePolygon; window.loadSampleField = loadSampleField; window.syncAreaAndRecalc = syncAreaAndRecalc;
-  window.updateDensityAndSimulate = updateDensityAndSimulate;
+  function renderPlantation() { if (!polyClosed || polyPoints.length < 3) return; ctxPlant.clearRect(0,0,plantCanvas.width,plantCanvas.height); drawGridBg(ctxPlant); ctxPlant.beginPath(); ctxPlant.moveTo(polyPoints[0].x, polyPoints[0].y); for (let p of polyPoints) ctxPlant.lineTo(p.x, p.y); ctxPlant.closePath(); ctxPlant.fillStyle = 'rgba(44,110,42,0.08)'; ctxPlant.fill(); ctxPlant.strokeStyle = '#2c6e2a'; ctxPlant.lineWidth = 2; ctxPlant.stroke(); let areaSqM = parseFloat(document.getElementById('mw-area-input').value) || 0; let approxPlants = Math.round(areaSqM * currentDensity); let spacingPx = Math.sqrt(areaSqM / approxPlants) / METER_PER_PX; if (spacingPx < 5) spacingPx = 5; let bbox = { minX: Math.min(...polyPoints.map(p=>p.x)), maxX: Math.max(...polyPoints.map(p=>p.x)), minY: Math.min(...polyPoints.map(p=>p.y)), maxY: Math.max(...polyPoints.map(p=>p.y)) }; for (let y = bbox.minY + spacingPx/2; y < bbox.maxY; y += spacingPx) { for (let x = bbox.minX + spacingPx/2; x < bbox.maxX; x += spacingPx) { if (pointInPolygon(x, y, polyPoints)) { ctxPlant.fillStyle = '#2c6e2a'; ctxPlant.beginPath(); ctxPlant.arc(x, y, 5, 0, 2*Math.PI); ctxPlant.fill(); ctxPlant.fillStyle = '#8fb870'; ctxPlant.beginPath(); ctxPlant.arc(x, y, 3, 0, 2*Math.PI); ctxPlant.fill(); } } } let actualTreeCount = Math.round(areaSqM * currentDensity); document.getElementById('polyTrees').innerText = actualTreeCount; let canopyCoverage = Math.min(95, (actualTreeCount * Math.PI * (1.5*1.5)) / areaSqM * 100); document.getElementById('polyCoverage').innerText = canopyCoverage.toFixed(1); }
+  window.onload = () => { initMap(); initFieldCanvas(); updateCoordInputs(); calculateIrregularGeometry(); simulateForestGrowth(); document.getElementById('mw-area-input').addEventListener('input', syncAreaAndRecalc); document.getElementById('mw-ph').addEventListener('change', () => { if(document.getElementById('mw-results').style.display === 'block') { calculateEnhancersAndBudget(); updateCostBreakdown(); } }); updateCostBreakdown(); toast("Full cost breakdown active — changes reflect instantly"); };
+  window.searchLocation = searchLocation; window.detectLocation = detectLocation; window.analyzeSite = analyzeSite; window.toggleGeometryMode = toggleGeometryMode; window.calculateIrregularGeometry = calculateIrregularGeometry; window.simulateForestGrowth = simulateForestGrowth; window.setDrawMode = setDrawMode; window.clearPolygon = clearPolygon; window.closePolygon = closePolygon; window.loadSampleField = loadSampleField; window.syncAreaAndRecalc = syncAreaAndRecalc; window.updateDensityAndSimulate = updateDensityAndSimulate;
 </script>
 </body>
 </html>
