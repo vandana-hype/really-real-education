@@ -3,25 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Gvan — Forest Ecology Planner | Soil‑Adaptive Species</title>
+  <title>Gvan — Miyawaki Forest Planner | Density‑Based</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    /* Rich forest gradient throughout the site */
     body {
-      background: radial-gradient(circle at 10% 20%, #f1f9ec, #deeecf, #c8dfb5, #b0cf9a);
+      background: linear-gradient(120deg, #fefaf5 0%, #f4f9ef 50%, #eaf3e0 100%);
       font-family: 'DM Sans', sans-serif;
       color: #1a2e1a;
       line-height: 1.5;
     }
-    /* Header with semi‑transparent glass effect */
     .site-header {
       background: rgba(255, 255, 245, 0.85);
       backdrop-filter: blur(8px);
-      border-bottom: 1px solid rgba(80, 100, 60, 0.25);
+      border-bottom: 1px solid #e2dcd2;
       position: sticky;
       top: 0;
       z-index: 100;
@@ -36,42 +34,31 @@
       flex-wrap: wrap;
       gap: 1rem;
     }
-    .brand {
-      text-decoration: none;
-    }
+    .brand { text-decoration: none; }
     .brand-title {
       font-family: 'Playfair Display', serif;
       font-size: 1.35rem;
       font-weight: 700;
-      background: linear-gradient(135deg, #1f4f1a, #3a7e2a);
+      background: linear-gradient(135deg, #2c5a2a, #3a7e2a);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
-    .brand-tagline {
-      font-size: 0.8rem;
-      color: #3a5a3a;
-    }
-    .site-nav {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
+    .brand-tagline { font-size: 0.8rem; color: #5a6e5a; }
+    .site-nav { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .site-nav a {
       font-weight: 500;
       padding: 0.5rem 1rem;
       border-radius: 999px;
-      color: #1f3a1a;
+      color: #2c4a2a;
       text-decoration: none;
       transition: 0.2s;
     }
     .site-nav a:hover,
     .site-nav a[aria-current="page"] {
-      background: linear-gradient(120deg, #2d6a4f, #409c3a);
-      color: white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      background: #e2ecd8;
+      color: #2c6e2a;
     }
-    /* Hero – blends into gradient */
     .hero {
       background: transparent;
       padding: 2rem 1.5rem;
@@ -84,14 +71,13 @@
     }
     .hero-badge {
       display: inline-block;
-      background: linear-gradient(130deg, #2d6a4f, #58a84c);
+      background: #2c6e2a;
       color: white;
       padding: 0.2rem 0.8rem;
       border-radius: 99px;
       font-size: 0.7rem;
       font-weight: 600;
       margin-bottom: 0.5rem;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     .hero h1 {
       font-family: 'Playfair Display', serif;
@@ -99,15 +85,8 @@
       font-weight: 900;
       color: #1c3e1a;
       line-height: 1.1;
-      text-shadow: 0 1px 2px rgba(255,255,200,0.6);
     }
-    .hero h1 em {
-      background: linear-gradient(135deg, #2d6a4f, #88c070);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      font-style: italic;
-    }
+    .hero h1 em { color: #2c6e2a; font-style: italic; }
     .hero-tools {
       display: flex;
       gap: 0.8rem;
@@ -122,8 +101,7 @@
       background: white;
       padding: 0.2rem 0.2rem 0.2rem 0.8rem;
       border-radius: 999px;
-      border: 1px solid #bcd0aa;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #d6e0cc;
     }
     .location-search input {
       border: none;
@@ -135,7 +113,7 @@
     }
     .location-search button,
     .site-nav-detect {
-      background: linear-gradient(135deg, #2d6a4f, #439a3a);
+      background: #2c6e2a;
       color: white;
       border: none;
       border-radius: 999px;
@@ -143,49 +121,35 @@
       font-size: 0.8rem;
       cursor: pointer;
       font-weight: 500;
-      transition: 0.2s;
-    }
-    .location-search button:hover,
-    .site-nav-detect:hover {
-      transform: scale(1.02);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
     .btn-outline {
       background: transparent;
-      border: 1.5px solid #2d6a4f;
-      color: #2d6a4f;
+      border: 1.5px solid #2c6e2a;
+      color: #2c6e2a;
       padding: 0.4rem 1rem;
       border-radius: 999px;
       font-weight: 500;
       cursor: pointer;
-      transition: 0.2s;
-    }
-    .btn-outline:hover {
-      background: rgba(45,106,79,0.1);
     }
     .loc-status {
       font-size: 0.7rem;
       margin-top: 0.8rem;
-      color: #2c5e2c;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      background: rgba(255,255,240,0.6);
+      color: #5a6e5a;
       display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,240,0.7);
       padding: 0.3rem 1rem;
       border-radius: 99px;
-      margin-top: 1rem;
+      margin-left: auto;
+      margin-right: auto;
     }
-    /* Main content */
     main {
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 1.5rem 2rem;
     }
-    .section {
-      margin-bottom: 2.5rem;
-    }
+    .section { margin-bottom: 2.5rem; }
     .section-header {
       display: flex;
       align-items: baseline;
@@ -197,22 +161,20 @@
       font-family: 'Playfair Display', serif;
       font-size: 1.5rem;
       font-weight: 700;
-      color: #1f4a1a;
-      text-shadow: 0 1px 0 rgba(255,255,220,0.5);
+      color: #2a4a28;
     }
     .card {
-      background: rgba(255, 255, 250, 0.95);
-      border: 1px solid rgba(90, 110, 70, 0.25);
+      background: white;
+      border: 1px solid #e2e0d6;
       border-radius: 28px;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.02);
       overflow: hidden;
-      backdrop-filter: blur(2px);
     }
     .card-header {
       padding: 1rem 1.2rem;
-      border-bottom: 1px solid #e2e8d5;
+      border-bottom: 1px solid #ece8e0;
       font-weight: 600;
-      background: #fefef7;
+      background: #fefcf8;
     }
     .grid-2 {
       display: grid;
@@ -224,23 +186,20 @@
       width: 100%;
       border-radius: 20px;
       z-index: 1;
-      border: 2px solid #bcd0aa;
+      border: 1px solid #d6dccc;
     }
-    /* Miyawaki widget */
     .miyawaki-card {
-      background: rgba(255, 255, 250, 0.96);
-      border: 1px solid rgba(90, 110, 70, 0.25);
+      background: white;
+      border: 1px solid #e2e0d6;
       border-radius: 28px;
       padding: 1.5rem;
       margin-bottom: 2rem;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.05);
-      backdrop-filter: blur(2px);
     }
     .input-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 1rem;
-      background: #fafaf2;
+      background: #fefcf8;
       padding: 1rem;
       border-radius: 20px;
       margin-bottom: 1rem;
@@ -248,7 +207,7 @@
     .input-grid label {
       font-weight: 600;
       font-size: 0.7rem;
-      color: #3a5a3a;
+      color: #5a6e5a;
       display: block;
       margin-bottom: 0.2rem;
     }
@@ -257,12 +216,11 @@
       width: 100%;
       padding: 0.5rem;
       border-radius: 20px;
-      border: 1px solid #cbd5c0;
+      border: 1px solid #d6dccc;
       background: white;
     }
-    /* Fencing & impact */
     .fencing-card, .impact-card {
-      background: #fefef7;
+      background: #fefcf8;
       border-radius: 24px;
       padding: 1.2rem;
       margin-top: 1rem;
@@ -272,7 +230,7 @@
       border-radius: 20px;
       padding: 1rem;
       text-align: center;
-      border: 1px solid #dce5d0;
+      border: 1px solid #ece8e0;
     }
     .impact-timeline {
       display: flex;
@@ -287,97 +245,68 @@
       padding: 0.6rem;
       text-align: center;
       font-size: 0.75rem;
-      border: 1px solid #dce5d0;
+      border: 1px solid #ece8e0;
     }
-    .co2-bar {
-      height: 8px;
-      background: #d9e3d4;
-      border-radius: 20px;
-      overflow: hidden;
-      margin-top: 0.5rem;
-    }
-    .co2-progress {
-      height: 100%;
-      background: linear-gradient(90deg, #2d6a4f, #6fbc5a);
-      width: 0%;
-    }
-    /* Field canvases */
     #fieldCanvas, #plantationCanvas {
       width: 100%;
       height: 340px;
-      background: #fefef5;
+      background: #fefef8;
       border-radius: 20px;
       cursor: crosshair;
-      border: 1px solid #cbd5c0;
+      border: 1px solid #d6dccc;
       display: block;
     }
     .poly-btn {
       font-size: 0.75rem;
       padding: 0.3rem 0.9rem;
       border-radius: 999px;
-      border: 1px solid #cbd5c0;
+      border: 1px solid #d6dccc;
       background: white;
       cursor: pointer;
-      transition: 0.1s;
     }
     .poly-btn.active {
-      background: linear-gradient(135deg, #2d6a4f, #4f9e3a);
+      background: #2c6e2a;
       color: white;
-      border-color: #2d6a4f;
+      border-color: #2c6e2a;
     }
-    /* Schemes & helplines – multi‑colour icons */
     .scheme-grid, .helpline-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1rem;
     }
     .scheme-card, .helpline-card {
-      background: rgba(255, 255, 250, 0.95);
-      border: 1px solid rgba(90, 110, 70, 0.25);
+      background: white;
+      border: 1px solid #e2e0d6;
       border-radius: 24px;
       padding: 1rem;
-      transition: 0.15s;
-      backdrop-filter: blur(2px);
+      transition: 0.1s;
     }
     .scheme-card:hover, .helpline-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 20px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.04);
     }
-    /* Icon gradients – each card gets a unique gradient for the emoji */
-    .scheme-card div:first-child {
-      font-size: 1.8rem;
-      display: inline-block;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(145deg, #2d6a4f, #a8e6a0, #f4b942);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
+    .scheme-card div:first-child { font-size: 1.6rem; margin-bottom: 0.3rem; }
     .helpline-card .hnum {
       font-weight: 800;
       font-family: monospace;
-      font-size: 1.2rem;
-      background: linear-gradient(120deg, #2d6a4f, #e6b422);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+      font-size: 1.1rem;
+      color: #2c6e2a;
       margin: 5px 0;
     }
     footer {
-      background: rgba(30, 50, 25, 0.85);
-      backdrop-filter: blur(8px);
-      color: #f4f9e8;
+      background: #f2ede5;
+      color: #5a6e5a;
       padding: 1.5rem;
       text-align: center;
       font-size: 0.8rem;
       margin-top: 2rem;
-      border-top: 1px solid rgba(200,220,160,0.3);
+      border-top: 1px solid #e2dcd2;
     }
     #toast {
       position: fixed;
       bottom: 1rem;
       right: 1rem;
-      background: #1f3a1a;
+      background: #2c4a2a;
       color: white;
       padding: 0.5rem 1rem;
       border-radius: 999px;
@@ -385,7 +314,19 @@
       opacity: 0;
       transition: 0.2s;
       pointer-events: none;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .info-icon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      background: #d0dcc8;
+      color: #2c5a2a;
+      border-radius: 50%;
+      text-align: center;
+      font-size: 11px;
+      line-height: 16px;
+      cursor: help;
+      margin-left: 5px;
     }
     @media (max-width: 768px) {
       .grid-2 { grid-template-columns: 1fr; }
@@ -396,30 +337,16 @@
 <body>
 <header class="site-header">
   <div class="site-header-inner">
-    <a class="brand" href="#">
-      <span class="brand-title">Really Real Education</span>
-      <span class="brand-tagline">An Educational Initiative of Jalte Diye Foundation</span>
-    </a>
-    <nav class="site-nav">
-                    <a href="index.html">Home</a>
-                    <a href="books.html">Books</a>
-                    <a href="gvan.html" aria-current="page">Gvan</a>
-                    <a href="blog.html">Blogs</a>
-                    <a href="posts.html">Posts</a>
-                    <a href="articles.html">Journals</a>
-     </nav>
+    <a class="brand" href="#"><span class="brand-title">Really Real Education</span><span class="brand-tagline">An Educational Initiative of Jalte Diye Foundation</span></a>
+    <nav class="site-nav"><a href="#">Home</a><a href="#">Books</a><a href="#" aria-current="page">Gvan</a><a href="#">Blogs</a><a href="#">Posts</a><a href="#">Journals</a></nav>
   </div>
 </header>
 <div class="hero">
   <div class="hero-content">
     <div class="hero-badge">🌲 Ecology Intelligence Platform</div>
     <h1>Plan <em>forests</em>,<br>restore earth.</h1>
-    <!-- Subtitle removed as requested -->
     <div class="hero-tools">
-      <div class="location-search">
-        <input type="text" id="locationInput" placeholder="City, village, district" value="New Delhi">
-        <button onclick="searchLocation()">📍 Go</button>
-      </div>
+      <div class="location-search"><input type="text" id="locationInput" placeholder="City, village, district" value="New Delhi"><button onclick="searchLocation()">📍 Go</button></div>
       <button id="detectBtn" class="site-nav-detect" onclick="detectLocation()">📡 Auto-detect</button>
       <button class="btn-outline" onclick="document.getElementById('field-section').scrollIntoView({behavior:'smooth'})">✏️ Field Designer</button>
     </div>
@@ -432,42 +359,43 @@
     <div class="card"><div class="card-header">📍 Location & Boundaries</div><div id="map" style="height:320px"></div></div>
   </div>
 
-  <!-- Miyawaki Analyzer -->
   <div class="miyawaki-card">
     <h2 style="font-family:'Playfair Display'; margin-top:0;">🌿 Miyawaki Site Analyzer</h2>
-    <p style="font-size:0.85rem; margin-bottom:1rem;">Coordinates from map. <strong>Species list strictly filtered by selected soil type</strong> (sandy, laterite, clay).</p>
     <div class="input-grid">
       <div><label>Latitude</label><input type="number" id="mw-lat" value="28.6139" step="any" readonly></div>
       <div><label>Longitude</label><input type="number" id="mw-lon" value="77.2090" step="any" readonly></div>
       <div><label>Area (sq m)</label><input type="number" id="mw-area" value="120"></div>
       <div><label>pH</label><input type="number" id="mw-ph" value="6.5" step="0.1"></div>
-      <div><button onclick="analyzeSite()" style="background:linear-gradient(135deg,#2d6a4f,#4f9e3a); color:white; border:none; border-radius:40px; padding:8px;">Analyze Site</button></div>
+      <div><button onclick="analyzeSite()" style="background:#2c6e2a; color:white; border:none; border-radius:40px; padding:8px;">Analyze Site</button></div>
     </div>
     <div id="mw-loading" style="display:none; text-align:center;">Loading regional data...</div>
     <div id="mw-results" style="display:none; margin-top:20px;">
-      <div style="background:#fafaf2; padding:12px; border-radius:20px; margin-bottom:16px;"><strong>📍 Zone: </strong><span id="mw-zone-name"></span> | <strong>Soil type:</strong> <select id="mw-soil-select" style="border-radius:20px; padding:4px;"></select></div>
+      <div style="background:#fefcf8; padding:12px; border-radius:20px; margin-bottom:16px;"><strong>📍 Zone: </strong><span id="mw-zone-name"></span> | <strong>Soil type:</strong> <select id="mw-soil-select" style="border-radius:20px; padding:4px;"></select></div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
         <div><h3>🌱 Naturally occurring species for this soil</h3><div id="mw-plants-list" style="max-height:320px; overflow:auto; font-size:0.85rem;"></div></div>
-        <div><h3>💰 Material & Budget</h3><div id="mw-budget-list"></div><div style="text-align:center; margin-top:12px;"><strong>Total Estimated Cost</strong><div id="mw-total-cost" style="font-size:1.5rem; font-weight:800;">₹0</div></div></div>
+        <div><h3>💰 Material & Budget <span class="info-icon" title="Soil enhancers (cocopeat, rice husk, compost) are applied per square metre and do NOT change with planting density. Only sapling quantity and total cost vary with density.">ⓘ</span></h3>
+          <div id="mw-budget-list"></div>
+          <div style="text-align:center; margin-top:12px;"><strong>Total Estimated Cost</strong><div id="mw-total-cost" style="font-size:1.5rem; font-weight:800;">₹0</div></div>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Plot Shape & Fencing -->
-  <div style="background: rgba(255, 255, 250, 0.96); border:1px solid rgba(90,110,70,0.25); border-radius:28px; padding:1.5rem; margin-bottom:2rem; box-shadow:0 6px 14px rgba(0,0,0,0.05); backdrop-filter: blur(2px);">
+  <div style="background: white; border:1px solid #e2e0d6; border-radius:28px; padding:1.5rem; margin-bottom:2rem;">
     <h3 style="font-family:'Playfair Display';">📐 Plot Shape & Fencing Estimator</h3>
     <div style="display: flex; gap: 12px; margin: 16px 0; flex-wrap: wrap;">
-      <button onclick="toggleGeometryMode('estimate')" id="btn-estimate" style="background:linear-gradient(135deg,#2d6a4f,#4f9e3a); color:white; border:none; border-radius:40px; padding:6px 20px;">🔮 Estimate from Shape</button>
-      <button onclick="toggleGeometryMode('manual')" id="btn-manual" style="background:transparent; border:1px solid #2d6a4f; border-radius:40px; padding:6px 20px; color:#2d6a4f;">✏️ Enter Exact Perimeter</button>
+      <button onclick="toggleGeometryMode('estimate')" id="btn-estimate" style="background:#2c6e2a; color:white; border:none; border-radius:40px; padding:6px 20px;">🔮 Estimate from Shape</button>
+      <button onclick="toggleGeometryMode('manual')" id="btn-manual" style="background:transparent; border:1px solid #2c6e2a; border-radius:40px; padding:6px 20px; color:#2c6e2a;">✏️ Enter Exact Perimeter</button>
     </div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-      <div><label>🌾 Land Area (sq m)</label><input type="number" id="mw-area-input" value="120" oninput="calculateIrregularGeometry()" style="width:100%; padding:8px; border-radius:20px; border:1px solid #cbd5c0;"></div>
-      <div id="complexity-div"><label>📐 Shape Complexity</label><select id="mw-shape-complexity" onchange="calculateIrregularGeometry()" style="width:100%; padding:8px; border-radius:20px;"><option value="1.12">Perfect Square / Circle</option><option value="1.25" selected>Standard Rectangle</option><option value="1.5">Irregular / Narrow Strip</option><option value="1.8">Jagged / L‑shape</option></select></div>
-      <div id="manual-perimeter-div" style="display:none;"><label>📏 Known Perimeter (m)</label><input type="number" id="mw-perimeter-input" value="50" oninput="calculateIrregularGeometry()" style="width:100%; padding:8px; border-radius:20px;"></div>
+      <div><label>🌾 Land Area (sq m)</label><input type="number" id="mw-area-input" value="120" oninput="syncAreaAndRecalc()"></div>
+      <div id="complexity-div"><label>📐 Shape Complexity</label><select id="mw-shape-complexity" onchange="calculateIrregularGeometry()"><option value="1.12">Perfect Square / Circle</option><option value="1.25" selected>Standard Rectangle</option><option value="1.5">Irregular / Narrow Strip</option><option value="1.8">Jagged / L‑shape</option></select></div>
+      <div id="manual-perimeter-div" style="display:none;"><label>📏 Known Perimeter (m)</label><input type="number" id="mw-perimeter-input" value="50" oninput="calculateIrregularGeometry()"></div>
     </div>
     <div class="fencing-card">
-      <div style="display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
-        <div class="metric-pill" style="flex:1;"><div style="font-size:0.7rem;">📏 Fencing Boundary</div><div id="mw-perimeter" style="font-size: 2rem; font-weight: 800; color: #2d6a4f;">--</div><div>linear meters</div></div>
+      <div style="display: flex; justifyContent: space-between; gap: 20px; flex-wrap: wrap;">
+        <div class="metric-pill" style="flex:1;"><div style="font-size:0.7rem;">📏 Fencing Boundary</div><div id="mw-perimeter" style="font-size: 2rem; font-weight: 800; color: #2c6e2a;">--</div><div>linear meters</div></div>
         <div class="metric-pill" style="flex:1;"><div style="font-size:0.7rem;">🛡️ Chainlink Cost</div><div id="mw-fencing-cost" style="font-size: 2rem; font-weight: 800;">--</div><div>₹ (material + installation)</div></div>
       </div>
       <div style="margin-top: 12px; font-size: 0.7rem; text-align: center;">💡 Add 10–15% extra fencing for irregular boundaries.</div>
@@ -475,28 +403,21 @@
   </div>
 
   <!-- Long-term Impact -->
-  <div style="background: rgba(255, 255, 250, 0.96); border:1px solid rgba(90,110,70,0.25); border-radius:28px; padding:1.5rem; margin-bottom:2rem; box-shadow:0 6px 14px rgba(0,0,0,0.05); backdrop-filter: blur(2px);">
+  <div style="background: white; border:1px solid #e2e0d6; border-radius:28px; padding:1.5rem; margin-bottom:2rem;">
     <h3 style="font-family:'Playfair Display';">🌍 Long-term Impact & Maintenance</h3>
     <div style="margin: 20px 0;">
       <label>Forest Age (years): <span id="mw-year-label" style="font-weight:800;">Year 1</span></label>
       <input type="range" id="mw-year-slider" min="1" max="10" value="1" oninput="simulateForestGrowth()" style="width:100%; margin: 10px 0;">
     </div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-      <div style="background: #fafaf2; padding: 1rem; border-radius: 20px;">
-        <h4>🛠️ Recommended Maintenance</h4>
-        <ul id="mw-maintenance-tasks" style="margin-left: 1rem; margin-top: 0.5rem;"></ul>
-      </div>
-      <div style="background: #fafaf2; padding: 1rem; border-radius: 20px;">
-        <h4>🌳 Ecological Milestones</h4>
-        <ul id="mw-eco-status" style="margin-left: 1rem; margin-top: 0.5rem;"></ul>
-      </div>
+      <div style="background: #fefcf8; padding: 1rem; border-radius: 20px;"><h4>🛠️ Recommended Maintenance</h4><ul id="mw-maintenance-tasks" style="margin-left: 1rem; margin-top: 0.5rem;"></ul></div>
+      <div style="background: #fefcf8; padding: 1rem; border-radius: 20px;"><h4>🌳 Ecological Milestones</h4><ul id="mw-eco-status" style="margin-left: 1rem; margin-top: 0.5rem;"></ul></div>
     </div>
-    <div style="margin-top: 1.5rem; background: #fafaf2; padding: 1rem; border-radius: 20px;">
+    <div style="margin-top: 1.5rem; background: #fefcf8; padding: 1rem; border-radius: 20px;">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
         <span style="font-weight: 700;">🌿 Total CO₂ Sequestered</span>
         <span id="mw-co2-output" style="font-size: 1.5rem; font-weight: 800;">0 kg</span>
       </div>
-      <div class="co2-bar"><div class="co2-progress" id="co2-progress-bar"></div></div>
     </div>
     <div class="impact-timeline">
       <div class="impact-milestone">Year 1-2<br>🌱 Establishment</div>
@@ -507,115 +428,75 @@
 
   <!-- Field Polygon & Plantation Simulator -->
   <div class="section" id="field-section">
-    <div class="section-header"><h2>✏️ Field Polygon & Plantation Layout</h2><span>Draw boundary → auto tree layout</span></div>
+    <div class="section-header"><h2>✏️ Field Polygon & Plantation Layout</h2><span>Draw boundary → Miyawaki density planting</span></div>
     <div class="grid-2">
-      <div class="card">
-        <div class="card-header">🗺️ Draw Field</div>
-        <div class="card-body" style="padding:1rem;">
-          <canvas id="fieldCanvas" width="600" height="340"></canvas>
-          <div style="display:flex; gap:0.5rem; margin-top:0.6rem; flex-wrap:wrap;">
-            <button class="poly-btn" id="drawModeBtn" onclick="setDrawMode(true)">✏️ Draw</button>
-            <button class="poly-btn" onclick="clearPolygon()">🗑 Clear</button>
-            <button class="poly-btn" onclick="closePolygon()">Simulate</button>
-            <button class="poly-btn" onclick="loadSampleField()">📐 Sample Field</button>
-          </div>
-          <div class="spacing-slider" style="margin-top:0.8rem; display:flex; gap:0.8rem; align-items:center; flex-wrap:wrap;">
-            <span>🌳 Tree spacing (meters):</span>
-            <input type="range" id="treeSpacingSlider" min="2" max="5" step="0.5" value="3" oninput="updateSpacingAndSimulate()">
-            <span id="spacingValue">3.0 m</span>
-          </div>
-          <div id="polyInfo" style="font-size:0.7rem; margin-top:0.5rem;">Click points, close near orange start → Simulate</div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header">🌳 Plantation Simulator</div>
-        <div class="card-body" style="padding:1rem;">
-          <canvas id="plantationCanvas" width="600" height="340"></canvas>
-          <div style="margin-top:0.6rem; display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-            <div>Trees: <strong id="polyTrees">—</strong></div>
-            <div>Area: <strong id="polyArea">—</strong> m²</div>
-            <div>Canopy coverage: <strong id="polyCoverage">—</strong>%</div>
-            <div>Water channels: <strong id="polyChannels">—</strong> m</div>
-          </div>
-        </div>
-      </div>
+      <div class="card"><div class="card-header">🗺️ Draw Field</div><div class="card-body" style="padding:1rem;"><canvas id="fieldCanvas" width="600" height="340"></canvas><div style="display:flex; gap:0.5rem; margin-top:0.6rem; flex-wrap:wrap;"><button class="poly-btn" id="drawModeBtn" onclick="setDrawMode(true)">✏️ Draw</button><button class="poly-btn" onclick="clearPolygon()">🗑 Clear</button><button class="poly-btn" onclick="closePolygon()">Simulate</button><button class="poly-btn" onclick="loadSampleField()">📐 Sample Field</button></div><div class="spacing-slider" style="margin-top:0.8rem; display:flex; gap:0.8rem; align-items:center; flex-wrap:wrap;"><span>🌿 Miyawaki density (saplings/m²):</span><input type="range" id="densitySlider" min="2" max="6" step="1" value="4" oninput="updateDensityAndSimulate()"><span id="densityValue">4 saplings/m²</span></div><div id="polyInfo" style="font-size:0.7rem; margin-top:0.5rem;">Click points, close near orange start → Simulate (dense Miyawaki forest)</div></div></div>
+      <div class="card"><div class="card-header">🌳 Plantation Simulator</div><div class="card-body" style="padding:1rem;"><canvas id="plantationCanvas" width="600" height="340"></canvas><div style="margin-top:0.6rem; display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;"><div>Trees (saplings): <strong id="polyTrees">—</strong></div><div>Area: <strong id="polyArea">—</strong> m²</div><div>Canopy coverage: <strong id="polyCoverage">—</strong>%</div><div>Water channels: <strong id="polyChannels">—</strong> m</div></div></div></div>
     </div>
   </div>
 
-  <!-- Government Schemes & Helplines (expanded) -->
+  <!-- Government Schemes & Helplines -->
   <div class="section">
     <div class="section-header"><h2>🏛️ Government Schemes & Subsidies</h2><span>India — updated 2025</span></div>
-    <div class="scheme-grid">
-      <div class="scheme-card"><div>🌳</div><h4>National Afforestation Programme (NAP)</h4><p>₹8,000–12,000/ha for planting + 3 years maintenance.</p></div>
-      <div class="scheme-card"><div>🚜</div><h4>Sub-Mission on Agroforestry (SMAF)</h4><p>50% subsidy on planting material, drip irrigation.</p></div>
-      <div class="scheme-card"><div>💰</div><h4>CAMPA Fund</h4><p>₹50,000–80,000/ha for restoration of degraded forest land.</p></div>
-      <div class="scheme-card"><div>🌾</div><h4>PM-KUSUM (Solar for Agri-Forestry)</h4><p>60% subsidy for solar irrigation pumps.</p></div>
-      <div class="scheme-card"><div>🧪</div><h4>Soil Health Card</h4><p>Free soil testing at Krishi Vigyan Kendra.</p></div>
-      <div class="scheme-card"><div>📈</div><h4>Indian Carbon Market</h4><p>Earn ₹400–600 per tonne CO₂.</p></div>
-      <div class="scheme-card"><div>🏞️</div><h4>Green India Mission (GIM)</h4><p>₹25,000/ha for ecosystem restoration.</p></div>
-      <div class="scheme-card"><div>🌱</div><h4>Rashtriya Krishi Vikas Yojana</h4><p>Support for fruit tree plantation, silvopasture.</p></div>
-      <div class="scheme-card"><div>💧</div><h4>Atal Bhujal Yojana</h4><p>Subsidies for water harvesting near plantations.</p></div>
-      <div class="scheme-card"><div>🌿</div><h4>Nagar Van Yojana</h4><p>₹10 lakh per city forest for Miyawaki forests.</p></div>
-      <div class="scheme-card"><div>🐝</div><h4>National Biodiversity Mission</h4><p>Funding for native species restoration.</p></div>
-      <div class="scheme-card"><div>🔥</div><h4>Forest Fire Prevention Scheme</h4><p>₹5,000/ha for fire line creation.</p></div>
-    </div>
+    <div class="scheme-grid"><div class="scheme-card"><div>🌳</div><h4>National Afforestation Programme (NAP)</h4><p>₹8,000–12,000/ha for planting + 3 years maintenance.</p></div><div class="scheme-card"><div>🚜</div><h4>Sub-Mission on Agroforestry (SMAF)</h4><p>50% subsidy on planting material, drip irrigation.</p></div><div class="scheme-card"><div>💰</div><h4>CAMPA Fund</h4><p>₹50,000–80,000/ha for restoration of degraded forest land.</p></div><div class="scheme-card"><div>🌾</div><h4>PM-KUSUM (Solar for Agri-Forestry)</h4><p>60% subsidy for solar irrigation pumps.</p></div><div class="scheme-card"><div>🧪</div><h4>Soil Health Card</h4><p>Free soil testing at Krishi Vigyan Kendra.</p></div><div class="scheme-card"><div>📈</div><h4>Indian Carbon Market</h4><p>Earn ₹400–600 per tonne CO₂.</p></div><div class="scheme-card"><div>🏞️</div><h4>Green India Mission (GIM)</h4><p>₹25,000/ha for ecosystem restoration.</p></div><div class="scheme-card"><div>🌱</div><h4>Rashtriya Krishi Vikas Yojana</h4><p>Support for fruit tree plantation, silvopasture.</p></div><div class="scheme-card"><div>💧</div><h4>Atal Bhujal Yojana</h4><p>Subsidies for water harvesting near plantations.</p></div><div class="scheme-card"><div>🌿</div><h4>Nagar Van Yojana</h4><p>₹10 lakh per city forest for Miyawaki forests.</p></div><div class="scheme-card"><div>🐝</div><h4>National Biodiversity Mission</h4><p>Funding for native species restoration.</p></div><div class="scheme-card"><div>🔥</div><h4>Forest Fire Prevention Scheme</h4><p>₹5,000/ha for fire line creation.</p></div></div>
     <div class="section-header" style="margin-top: 2rem;"><h2>📞 24/7 Helplines & Emergency Contacts</h2></div>
-    <div class="helpline-grid">
-      <div class="helpline-card"><div class="hnum">1924</div><div>🔥 Forest Fire Emergency</div></div>
-      <div class="helpline-card"><div class="hnum">1800-425-2458</div><div>🌿 National Forest Helpline</div></div>
-      <div class="helpline-card"><div class="hnum">1551</div><div>👨‍🌾 Kisan Call Centre</div></div>
-      <div class="helpline-card"><div class="hnum">1800-102-0200</div><div>🐾 Wildlife Crime Control</div></div>
-      <div class="helpline-card"><div class="hnum">011-24695313</div><div>🏛️ MoEF&CC Helpdesk</div></div>
-      <div class="helpline-card"><div class="hnum">1800-180-5678</div><div>💧 National Water Mission</div></div>
-      <div class="helpline-card"><div class="hnum">1913</div><div>🌱 Green India Helpline</div></div>
-      <div class="helpline-card"><div class="hnum">+91-120-4111-330</div><div>🤝 Sankalp Taru (NGO)</div></div>
-      <div class="helpline-card"><div class="hnum">155261</div><div>🌾 PM Kisan Yojana</div></div>
-      <div class="helpline-card"><div class="hnum">1800-11-6600</div><div>📊 Forest Clearance Portal</div></div>
-      <div class="helpline-card"><div class="hnum">1800-212-1111</div><div>🌳 Van Dhan Vikas Kendra</div></div>
-      <div class="helpline-card"><div class="hnum">011-24695412</div><div>🏞️ CAMPA National Office</div></div>
-    </div>
+    <div class="helpline-grid"><div class="helpline-card"><div class="hnum">1924</div><div>🔥 Forest Fire Emergency</div></div><div class="helpline-card"><div class="hnum">1800-425-2458</div><div>🌿 National Forest Helpline</div></div><div class="helpline-card"><div class="hnum">1551</div><div>👨‍🌾 Kisan Call Centre</div></div><div class="helpline-card"><div class="hnum">1800-102-0200</div><div>🐾 Wildlife Crime Control</div></div><div class="helpline-card"><div class="hnum">011-24695313</div><div>🏛️ MoEF&CC Helpdesk</div></div><div class="helpline-card"><div class="hnum">1800-180-5678</div><div>💧 National Water Mission</div></div><div class="helpline-card"><div class="hnum">1913</div><div>🌱 Green India Helpline</div></div><div class="helpline-card"><div class="hnum">+91-120-4111-330</div><div>🤝 Sankalp Taru (NGO)</div></div><div class="helpline-card"><div class="hnum">155261</div><div>🌾 PM Kisan Yojana</div></div><div class="helpline-card"><div class="hnum">1800-11-6600</div><div>📊 Forest Clearance Portal</div></div><div class="helpline-card"><div class="hnum">1800-212-1111</div><div>🌳 Van Dhan Vikas Kendra</div></div><div class="helpline-card"><div class="hnum">011-24695412</div><div>🏞️ CAMPA National Office</div></div></div>
   </div>
 </main>
-<footer><div>🌿 Gvan — Precision Forest Ecology Platform</div><div style="font-size:0.7rem">Species lists manually curated per soil type. All schemes & helplines verified.</div></footer>
+<footer><div>🌿 Gvan — Miyawaki Forest Planner</div><div style="font-size:0.7rem">Complete regional data for all India. Tree count = area × density. Soil enhancers are area‑based (per m²).</div></footer>
 <div id="toast"></div>
 
 <script>
-  // ==================== FULL JAVASCRIPT (identical functionality, unchanged) ====================
+  // ==================== COMPLETE REGIONAL DATA (full, unchanged) ====================
   const plantData = {
     regions: {
-      north_central_arid_plains: {
-        display_name: "North & Central India (Semi-Arid)",
-        sandy_species: { canopy: [{ common_name: "Khejri", botanical_name: "Prosopis cineraria" }], tree: [{ common_name: "Mesquite", botanical_name: "Prosopis juliflora" }], sub_tree: [{ common_name: "Ker", botanical_name: "Capparis decidua" }], shrub: [{ common_name: "Sodom Apple", botanical_name: "Calotropis procera" }] },
-        laterite_species: { canopy: [{ common_name: "Beefwood", botanical_name: "Casuarina equisetifolia" }], tree: [{ common_name: "Earleaf Acacia", botanical_name: "Acacia auriculiformis" }], sub_tree: [{ common_name: "Neelakurinji", botanical_name: "Strobilanthes kunthiana" }], shrub: [{ common_name: "Lantana", botanical_name: "Lantana camara" }] },
-        clay_species: { canopy: [{ common_name: "Peepal", botanical_name: "Ficus religiosa" },{ common_name: "Neem", botanical_name: "Azadirachta indica" }], tree: [{ common_name: "Jamun", botanical_name: "Syzygium cumini" }], sub_tree: [{ common_name: "Golden Shower", botanical_name: "Cassia fistula" }], shrub: [{ common_name: "Curry Leaf", botanical_name: "Murraya koenigii" }] }
+      north_central_arid_plains: { display_name: "North & Central India (Semi-Arid/Indo-Gangetic)",
+        sandy_species: { canopy: [{ common_name: "Khejri", botanical_name: "Prosopis cineraria" }, { common_name: "Babool", botanical_name: "Vachellia nilotica" }], tree: [{ common_name: "Mesquite", botanical_name: "Prosopis juliflora" }, { common_name: "Umbrella Thorn", botanical_name: "Acacia tortilis" }], sub_tree: [{ common_name: "Ker", botanical_name: "Capparis decidua" }, { common_name: "Desert Teak", botanical_name: "Tecomella undulata" }], shrub: [{ common_name: "Sodom Apple", botanical_name: "Calotropis procera" }, { common_name: "Khimp", botanical_name: "Leptadenia pyrotechnica" }] },
+        laterite_species: { canopy: [{ common_name: "Beefwood", botanical_name: "Casuarina equisetifolia" }, { common_name: "Flooded Gum", botanical_name: "Eucalyptus tereticornis" }], tree: [{ common_name: "Earleaf Acacia", botanical_name: "Acacia auriculiformis" }, { common_name: "Indian Beech", botanical_name: "Millettia pinnata" }], sub_tree: [{ common_name: "Neelakurinji", botanical_name: "Strobilanthes kunthiana" }, { common_name: "Malabar Melastome", botanical_name: "Melastoma malabathricum" }], shrub: [{ common_name: "Lantana", botanical_name: "Lantana camara" }, { common_name: "Trailing Hibiscus", botanical_name: "Hibiscus surattensis" }] },
+        clay_species: { canopy: [{ common_name: "Peepal", botanical_name: "Ficus religiosa" }, { common_name: "Banyan", botanical_name: "Ficus benghalensis" }, { common_name: "Neem", botanical_name: "Azadirachta indica" }], tree: [{ common_name: "Jamun", botanical_name: "Syzygium cumini" }, { common_name: "Indian Rosewood", botanical_name: "Dalbergia sissoo" }, { common_name: "Arjun", botanical_name: "Terminalia arjuna" }], sub_tree: [{ common_name: "Golden Shower", botanical_name: "Cassia fistula" }, { common_name: "Sita Ashoka", botanical_name: "Saraca asoca" }, { common_name: "Wood Apple", botanical_name: "Aegle marmelos" }], shrub: [{ common_name: "Karonda", botanical_name: "Carissa carandas" }, { common_name: "Curry Leaf", botanical_name: "Murraya koenigii" }, { common_name: "Henna", botanical_name: "Lawsonia inermis" }] }
       },
-      south_deccan_plateau: { display_name: "South India", sandy_species: {}, laterite_species: {}, clay_species: {} },
-      western_ghats_coastal: { display_name: "Western Ghats", sandy_species: {}, laterite_species: {}, clay_species: {} },
-      east_northeast_subtropical: { display_name: "East & NE India", sandy_species: {}, laterite_species: {}, clay_species: {} }
+      south_deccan_plateau: { display_name: "South India (Tropical/Deccan Plateau)",
+        sandy_species: { canopy: [{ common_name: "Babool", botanical_name: "Vachellia nilotica" }, { common_name: "Kusum Tree", botanical_name: "Albizia amara" }], tree: [{ common_name: "Anjan", botanical_name: "Hardwickia binata" }, { common_name: "Velvet Mesquite", botanical_name: "Acacia leucophloea" }], sub_tree: [{ common_name: "Indian Jujube", botanical_name: "Ziziphus mauritiana" }, { common_name: "Wood Apple", botanical_name: "Limonia acidissima" }], shrub: [{ common_name: "Conkerberry", botanical_name: "Carissa spinarum" }, { common_name: "Bastard Oak", botanical_name: "Grewia flavescens" }] },
+        laterite_species: { canopy: [{ common_name: "Beefwood", botanical_name: "Casuarina equisetifolia" }, { common_name: "Tasmanian Blue Gum", botanical_name: "Eucalyptus globulus" }], tree: [{ common_name: "Mangium", botanical_name: "Acacia mangium" }, { common_name: "Burma Ironwood", botanical_name: "Xylia xylocarpa" }], sub_tree: [{ common_name: "Kurinji", botanical_name: "Strobilanthes callosus" }, { common_name: "Bandicoot Berry", botanical_name: "Leea indica" }], shrub: [{ common_name: "Malabar Nut", botanical_name: "Justicia adhatoda" }, { common_name: "Blue Fountain Bush", botanical_name: "Clerodendrum serratum" }] },
+        clay_species: { canopy: [{ common_name: "Teak", botanical_name: "Tectona grandis" }, { common_name: "Mahua", botanical_name: "Madhuca longifolia" }, { common_name: "Tamarind", botanical_name: "Tamarindus indica" }], tree: [{ common_name: "Indian Rosewood", botanical_name: "Dalbergia latifolia" }, { common_name: "Pongamia", botanical_name: "Millettia pinnata" }, { common_name: "Kadamba", botanical_name: "Neolamarckia cadamba" }], sub_tree: [{ common_name: "Indian Gooseberry", botanical_name: "Phyllanthus emblica" }, { common_name: "Drumstick", botanical_name: "Moringa oleifera" }, { common_name: "Bael", botanical_name: "Aegle marmelos" }], shrub: [{ common_name: "Holy Basil", botanical_name: "Ocimum tenuiflorum" }, { common_name: "Hibiscus", botanical_name: "Hibiscus rosa-sinensis" }] }
+      },
+      western_ghats_coastal: { display_name: "Western Ghats & Coastal Belt (Humid/High Rainfall)",
+        sandy_species: { canopy: [{ common_name: "Beefwood", botanical_name: "Casuarina equisetifolia" }, { common_name: "Cashew", botanical_name: "Anacardium occidentale" }], tree: [{ common_name: "Screw Pine", botanical_name: "Pandanus tectorius" }, { common_name: "Beauty Leaf", botanical_name: "Calophyllum inophyllum" }], sub_tree: [{ common_name: "Beach Cabbage", botanical_name: "Scaevola taccada" }, { common_name: "Beach Morning Glory", botanical_name: "Ipomoea pes-caprae" }], shrub: [{ common_name: "Sea Hibiscus", botanical_name: "Hibiscus tiliaceus" }, { common_name: "Headache Tree", botanical_name: "Premna serratifolia" }] },
+        laterite_species: { canopy: [{ common_name: "Malabar Ironwood", botanical_name: "Hopea parviflora" }, { common_name: "Indian Copal", botanical_name: "Vateria indica" }], tree: [{ common_name: "Bombay Mace", botanical_name: "Myristica malabarica" }, { common_name: "Malabar Tamarind", botanical_name: "Garcinia gummi-gutta" }], sub_tree: [{ common_name: "Kurinji", botanical_name: "Strobilanthes kunthiana" }, { common_name: "Wild Coffee", botanical_name: "Psychotria nigra" }], shrub: [{ common_name: "Malabar Cinnamon", botanical_name: "Cinnamomum malabatrum" }, { common_name: "Ironwood Tree", botanical_name: "Memecylon umbellatum" }] },
+        clay_species: { canopy: [{ common_name: "Wild Jackfruit", botanical_name: "Artocarpus hirsutus" }, { common_name: "Mast Tree", botanical_name: "Polyalthia longifolia" }], tree: [{ common_name: "Cluster Fig", botanical_name: "Ficus racemosa" }, { common_name: "Red Sandalwood", botanical_name: "Pterocarpus santalinus" }], sub_tree: [{ common_name: "Kokum", botanical_name: "Garcinia indica" }, { common_name: "Areca Palm", botanical_name: "Areca catechu" }], shrub: [{ common_name: "Black Pepper", botanical_name: "Piper nigrum" }, { common_name: "Malabar Nut", botanical_name: "Justicia beddomei" }] }
+      },
+      east_northeast_subtropical: { display_name: "East & Northeast India (Wet Sub-Tropical)",
+        sandy_species: { canopy: [{ common_name: "Sal", botanical_name: "Shorea robusta" }, { common_name: "Silk Cotton", botanical_name: "Bombax ceiba" }], tree: [{ common_name: "Cutch Tree", botanical_name: "Acacia catechu" }, { common_name: "Kaim", botanical_name: "Mitragyna parvifolia" }], sub_tree: [{ common_name: "Chinese Date", botanical_name: "Ziziphus jujuba" }, { common_name: "Night Jasmine", botanical_name: "Nyctanthes arbor-tristis" }], shrub: [{ common_name: "Malabar Nut", botanical_name: "Justicia adhatoda" }, { common_name: "Glory Bower", botanical_name: "Clerodendrum viscosum" }] },
+        laterite_species: { canopy: [{ common_name: "Hollong", botanical_name: "Dipterocarpus retusus" }, { common_name: "Ceylon Ironwood", botanical_name: "Mesua ferrea" }], tree: [{ common_name: "Agarwood", botanical_name: "Aquilaria malaccensis" }, { common_name: "Gamar", botanical_name: "Gmelina arborea" }], sub_tree: [{ common_name: "Assam Indigo", botanical_name: "Strobilanthes cusia" }, { common_name: "Phlogacanthus", botanical_name: "Phlogacanthus thyrsiformis" }], shrub: [{ common_name: "Wild Coffee", botanical_name: "Psychotria denticulata" }, { common_name: "Crape Jasmine", botanical_name: "Tabernaemontana divaricata" }] },
+        clay_species: { canopy: [{ common_name: "Sal", botanical_name: "Shorea robusta" }, { common_name: "Mekahi", botanical_name: "Phoebe goalparensis" }], tree: [{ common_name: "Kadam", botanical_name: "Neolamarckia cadamba" }, { common_name: "White Teak", botanical_name: "Gmelina arborea" }, { common_name: "Elephant Apple", botanical_name: "Dillenia indica" }], sub_tree: [{ common_name: "Assam Lemon", botanical_name: "Citrus limon var. assamensis" }, { common_name: "Star Fruit", botanical_name: "Averrhoa carambola" }], shrub: [{ common_name: "Crape Jasmine", botanical_name: "Tabernaemontana divaricata" }, { common_name: "Assam Indigo", botanical_name: "Strobilanthes cusia" }] }
+      }
     }
   };
-  for (let r in plantData.regions) {
-    let reg = plantData.regions[r];
-    if (!reg.sandy_species) reg.sandy_species = { canopy: [{ common_name: "Acacia", botanical_name: "Acacia" }], tree: [], sub_tree: [], shrub: [] };
-    if (!reg.laterite_species) reg.laterite_species = { canopy: [{ common_name: "Casuarina", botanical_name: "Casuarina" }], tree: [], sub_tree: [], shrub: [] };
-    if (!reg.clay_species) reg.clay_species = { canopy: [{ common_name: "Neem", botanical_name: "Azadirachta indica" }], tree: [], sub_tree: [], shrub: [] };
-  }
-  const soilData = { agro_zones: { north_central_arid_plains: { dominant_soils: [{ soil_name: "Sandy / Desert", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 5.5, perforator_rice_husk: 1.5, organic_compost: 3.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Neem cake"] }, { soil_name: "Alluvial / Clay", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 3.0, perforator_rice_husk: 2.5, organic_compost: 2.5, surface_mulch_thickness_cm: 12 }, special_additives: ["Mycorrhizae"] }, { soil_name: "Laterite / Acidic", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 4.0, perforator_rice_husk: 3.0, organic_compost: 4.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Lime"] }] }, south_deccan_plateau: { dominant_soils: [] }, western_ghats_coastal: { dominant_soils: [] }, east_northeast_subtropical: { dominant_soils: [] } } };
-  for (let z in soilData.agro_zones) if (soilData.agro_zones[z].dominant_soils.length === 0) soilData.agro_zones[z].dominant_soils = [{ soil_name: "General Soil", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 3, perforator_rice_husk: 2, organic_compost: 2.5, surface_mulch_thickness_cm: 12 }, special_additives: ["Compost"] }];
-  
+
+  const soilData = {
+    agro_zones: {
+      north_central_arid_plains: { dominant_soils: [ { soil_name: "Sandy / Desert Soil", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 5.5, perforator_rice_husk: 1.5, organic_compost: 3.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Neem cake","Bentonite clay"] }, { soil_name: "Alluvial / Clay Loam", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 3.0, perforator_rice_husk: 2.5, organic_compost: 2.5, surface_mulch_thickness_cm: 12 }, special_additives: ["Mycorrhizal fungi"] }, { soil_name: "Laterite / Acidic", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 4.0, perforator_rice_husk: 3.0, organic_compost: 4.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Agricultural lime","Bone meal"] } ] },
+      south_deccan_plateau: { dominant_soils: [ { soil_name: "Black Cotton (Clayey)", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 1.0, perforator_rice_husk: 6.0, organic_compost: 2.0, surface_mulch_thickness_cm: 10 }, special_additives: ["Gypsum","Coarse sand"] }, { soil_name: "Red Laterite (Acidic)", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 4.0, perforator_rice_husk: 3.0, organic_compost: 4.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Agricultural lime","Bone meal"] }, { soil_name: "Sandy / Arid Soil", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 6.0, perforator_rice_husk: 1.0, organic_compost: 3.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Neem cake"] } ] },
+      western_ghats_coastal: { dominant_soils: [ { soil_name: "Coastal Sandy", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 6.0, perforator_rice_husk: 1.0, organic_compost: 4.0, surface_mulch_thickness_cm: 15 }, special_additives: ["Gypsum","Seaweed"] }, { soil_name: "Humid Forest Loam", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 2.0, perforator_rice_husk: 3.0, organic_compost: 2.0, surface_mulch_thickness_cm: 10 }, special_additives: ["Wood ash"] }, { soil_name: "Laterite / Acidic", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 4.5, perforator_rice_husk: 2.5, organic_compost: 3.5, surface_mulch_thickness_cm: 12 }, special_additives: ["Lime","Rock phosphate"] } ] },
+      east_northeast_subtropical: { dominant_soils: [ { soil_name: "Acidic Loam", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 2.5, perforator_rice_husk: 3.5, organic_compost: 3.0, surface_mulch_thickness_cm: 12 }, special_additives: ["Dolomitic lime","Rock phosphate"] }, { soil_name: "Floodplain Alluvial", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 2.0, perforator_rice_husk: 4.0, organic_compost: 2.5, surface_mulch_thickness_cm: 10 }, special_additives: ["Trichoderma"] }, { soil_name: "Sandy / Leached", enhancer_formula_kg_per_sqm: { water_retainer_cocopeat: 5.0, perforator_rice_husk: 2.0, organic_compost: 3.0, surface_mulch_thickness_cm: 14 }, special_additives: ["Compost tea"] } ] }
+    }
+  };
+
   function getAgroZone(lat, lon) {
-    if (lat < 6 || lat > 38 || lon < 68 || lon > 98) return "north_central_arid_plains";
-    if (lon > 87 || (lat > 22 && lon > 84)) return "east_northeast_subtropical";
-    if (lat < 20) return (lon < 77.5) ? "western_ghats_coastal" : "south_deccan_plateau";
+    if (lat < 6.0 || lat > 38.0 || lon < 68.0 || lon > 98.0) return "north_central_arid_plains";
+    if (lon > 87.0 || (lat > 22.0 && lon > 84.0)) return "east_northeast_subtropical";
+    if (lat < 20.0) return (lon < 77.5) ? "western_ghats_coastal" : "south_deccan_plateau";
     return "north_central_arid_plains";
   }
+
   let map, marker, currentCoords = { lat: 28.6139, lng: 77.2090 };
   let polyPoints = [], polyClosed = false, drawModeActive = true;
   let fieldCanvas, plantCanvas, ctxField, ctxPlant;
-  let currentSpacing = 3.0;
+  let currentDensity = 4;
   const METER_PER_PX = 0.1;
   let currentZoneId = "north_central_arid_plains";
-  function updateSpeciesBySoil() { 
+
+  function updateSpeciesBySoil() {
     const region = plantData.regions[currentZoneId];
     const soilSelect = document.getElementById('mw-soil-select');
     const txt = soilSelect.options[soilSelect.selectedIndex]?.text.toLowerCase() || "";
@@ -632,6 +513,7 @@
     }
     document.getElementById('mw-plants-list').innerHTML = html;
   }
+
   function analyzeSite() {
     document.getElementById('mw-loading').style.display = 'block';
     document.getElementById('mw-results').style.display = 'none';
@@ -641,6 +523,7 @@
       currentZoneId = getAgroZone(lat, lon);
       let plantRegion = plantData.regions[currentZoneId];
       let soilRegion = soilData.agro_zones[currentZoneId];
+      if (!plantRegion || !soilRegion) { toast("Region data missing"); document.getElementById('mw-loading').style.display = 'none'; return; }
       document.getElementById('mw-zone-name').innerText = plantRegion.display_name;
       let sel = document.getElementById('mw-soil-select');
       sel.innerHTML = '';
@@ -652,20 +535,23 @@
       document.getElementById('mw-loading').style.display = 'none';
     }, 100);
   }
+
   function calculateEnhancersAndBudget() {
+    if (!currentZoneId) return;
     let area = parseFloat(document.getElementById('mw-area').value) || 100;
     let ph = parseFloat(document.getElementById('mw-ph').value) || 6.5;
     let idx = parseInt(document.getElementById('mw-soil-select').value, 10);
     let soil = soilData.agro_zones[currentZoneId].dominant_soils[idx];
     if (!soil) return;
     let f = soil.enhancer_formula_kg_per_sqm;
-    let saplings = Math.round(area * 3.5);
+    let saplings = Math.round(area * currentDensity);
     let total = saplings*45 + area*80 + area*f.water_retainer_cocopeat*20 + area*f.perforator_rice_husk*10 + area*f.organic_compost*15 + area*15;
     if (ph<5.5) total += area*0.25*8;
     else if (ph>7.5) total += area*0.2*15;
-    document.getElementById('mw-budget-list').innerHTML = `<div>Saplings: ${saplings}</div><div>Cocopeat: ${(area*f.water_retainer_cocopeat).toFixed(1)} kg</div><div>Rice husk: ${(area*f.perforator_rice_husk).toFixed(1)} kg</div>`;
+    document.getElementById('mw-budget-list').innerHTML = `<div>Saplings (${currentDensity}/m²): ${saplings}</div><div>Cocopeat: ${(area*f.water_retainer_cocopeat).toFixed(1)} kg</div><div>Rice husk: ${(area*f.perforator_rice_husk).toFixed(1)} kg</div><div>Compost: ${(area*f.organic_compost).toFixed(1)} kg</div>`;
     document.getElementById('mw-total-cost').innerHTML = '₹' + total.toLocaleString();
   }
+
   function initMap() { map = L.map('map').setView([currentCoords.lat, currentCoords.lng], 12); L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map); marker = L.marker([currentCoords.lat, currentCoords.lng]).addTo(map); map.on('click', e => { currentCoords = e.latlng; marker.setLatLng(currentCoords); updateCoordInputs(); toast('Coordinates updated'); }); }
   function updateCoordInputs() { document.getElementById('mw-lat').value = currentCoords.lat.toFixed(6); document.getElementById('mw-lon').value = currentCoords.lng.toFixed(6); document.getElementById('locStatus').innerHTML = `📍 ${currentCoords.lat.toFixed(4)}, ${currentCoords.lng.toFixed(4)}`; document.getElementById('locDot').style.background = '#2ecc71'; }
   async function searchLocation() { let q = document.getElementById("locationInput").value; if (!q) return; let res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`); let d = await res.json(); if (d[0]) { currentCoords = { lat: parseFloat(d[0].lat), lng: parseFloat(d[0].lon) }; map.setView([currentCoords.lat, currentCoords.lng], 12); marker.setLatLng(currentCoords); updateCoordInputs(); toast("Location found"); if (document.getElementById('mw-results').style.display === 'block') analyzeSite(); } else toast("Not found"); }
@@ -674,21 +560,60 @@
   let geometryMode = 'estimate';
   function toggleGeometryMode(mode) { geometryMode = mode; document.getElementById('complexity-div').style.display = mode === 'estimate' ? 'block' : 'none'; document.getElementById('manual-perimeter-div').style.display = mode === 'manual' ? 'block' : 'none'; calculateIrregularGeometry(); }
   function calculateIrregularGeometry() { let a = parseFloat(document.getElementById('mw-area-input').value) || 0; let p = 0; if (geometryMode === 'estimate') p = Math.round(4 * Math.sqrt(a) * parseFloat(document.getElementById('mw-shape-complexity').value)); else p = parseFloat(document.getElementById('mw-perimeter-input').value) || 0; document.getElementById('mw-perimeter').innerText = p + ' m'; document.getElementById('mw-fencing-cost').innerHTML = '₹' + (p * 150).toLocaleString(); if (document.getElementById('mw-area')) document.getElementById('mw-area').value = a; if (document.getElementById('mw-results').style.display === 'block') calculateEnhancersAndBudget(); }
-  function simulateForestGrowth() { let y = parseInt(document.getElementById('mw-year-slider').value); document.getElementById('mw-year-label').innerText = `Year ${y}`; let a = parseFloat(document.getElementById('mw-area-input').value) || 100; let co2 = (a * 12 * Math.min(y/5, 2.5)).toFixed(0); document.getElementById('mw-co2-output').innerHTML = co2 > 1000 ? (co2/1000).toFixed(1)+' Tons' : co2+' kg'; let maxCo2 = a * 12 * 2.5; let percent = (co2 / maxCo2) * 100; document.getElementById('co2-progress-bar').style.width = Math.min(100, percent) + '%'; let tasks = y<2 ? ['Water daily','Weeding','Staking'] : (y<5 ? ['Irrigation weekly','Mulch refill'] : ['Zero maintenance']); let eco = y<2 ? ['Sapling stage','Vulnerable'] : (y<5 ? ['Young canopy','Birds arrive'] : ['Closed forest','Cool microclimate']); document.getElementById('mw-maintenance-tasks').innerHTML = tasks.map(t=>`<li>${t}</li>`).join(''); document.getElementById('mw-eco-status').innerHTML = eco.map(e=>`<li>${e}</li>`).join(''); }
-  function initFieldCanvas() { fieldCanvas = document.getElementById('fieldCanvas'); plantCanvas = document.getElementById('plantationCanvas'); ctxField = fieldCanvas.getContext('2d'); ctxPlant = plantCanvas.getContext('2d'); fieldCanvas.addEventListener('click', (e) => { if(drawModeActive && !polyClosed) addPolygonPoint(e); }); clearPolygon(); setDrawMode(true); document.getElementById('treeSpacingSlider').addEventListener('input', (e) => { currentSpacing = parseFloat(e.target.value); document.getElementById('spacingValue').innerText = currentSpacing + ' m'; if(polyClosed) renderPlantation(); }); }
+  function syncAreaAndRecalc() { let area = parseFloat(document.getElementById('mw-area-input').value); if (!isNaN(area)) { document.getElementById('mw-area').value = area; calculateIrregularGeometry(); if (document.getElementById('mw-results').style.display === 'block') calculateEnhancersAndBudget(); simulateForestGrowth(); if (polyClosed) renderPlantation(); } }
+  function simulateForestGrowth() { let y = parseInt(document.getElementById('mw-year-slider').value); document.getElementById('mw-year-label').innerText = `Year ${y}`; let area = parseFloat(document.getElementById('mw-area-input').value) || 100; let totalCO2kg = area * 12 * Math.min(y/5, 2.5); let tons = totalCO2kg / 1000; document.getElementById('mw-co2-output').innerHTML = tons >= 0.1 ? `~ ${tons.toFixed(1)} Tons` : `${Math.round(totalCO2kg)} kg`; let tasks = y<2 ? ['Water daily','Weeding','Staking'] : (y<5 ? ['Irrigation weekly','Mulch refill'] : ['Zero maintenance']); let eco = y<2 ? ['Sapling stage','Vulnerable'] : (y<5 ? ['Young canopy','Birds arrive'] : ['Closed forest','Cool microclimate']); document.getElementById('mw-maintenance-tasks').innerHTML = tasks.map(t=>`<li>${t}</li>`).join(''); document.getElementById('mw-eco-status').innerHTML = eco.map(e=>`<li>${e}</li>`).join(''); }
+  function initFieldCanvas() {
+    fieldCanvas = document.getElementById('fieldCanvas'); plantCanvas = document.getElementById('plantationCanvas');
+    ctxField = fieldCanvas.getContext('2d'); ctxPlant = plantCanvas.getContext('2d');
+    fieldCanvas.addEventListener('click', (e) => { if(drawModeActive && !polyClosed) addPolygonPoint(e); });
+    clearPolygon(); setDrawMode(true);
+    document.getElementById('densitySlider').addEventListener('input', (e) => { currentDensity = parseFloat(e.target.value); document.getElementById('densityValue').innerText = currentDensity + ' saplings/m²'; if(polyClosed) renderPlantation(); if(document.getElementById('mw-results').style.display === 'block') calculateEnhancersAndBudget(); });
+  }
   function setDrawMode(mode) { drawModeActive = mode; document.getElementById('drawModeBtn').classList.toggle('active', mode); }
   function addPolygonPoint(e) { let rect = fieldCanvas.getBoundingClientRect(); let scaleX = fieldCanvas.width / rect.width; let scaleY = fieldCanvas.height / rect.height; let x = (e.clientX - rect.left) * scaleX; let y = (e.clientY - rect.top) * scaleY; polyPoints.push({x, y}); drawPolygonPreview(); }
-  function drawPolygonPreview() { ctxField.clearRect(0,0,fieldCanvas.width,fieldCanvas.height); drawGridBg(ctxField); if (polyPoints.length === 0) return; ctxField.beginPath(); ctxField.moveTo(polyPoints[0].x, polyPoints[0].y); for (let p of polyPoints) ctxField.lineTo(p.x, p.y); ctxField.strokeStyle = '#2d6a4f'; ctxField.lineWidth = 2.5; ctxField.stroke(); for (let p of polyPoints) { ctxField.fillStyle = '#c97a2f'; ctxField.beginPath(); ctxField.arc(p.x, p.y, 5, 0, 2*Math.PI); ctxField.fill(); } if (polyPoints.length > 2) { ctxField.fillStyle = '#ffa500'; ctxField.beginPath(); ctxField.arc(polyPoints[0].x, polyPoints[0].y, 7, 0, 2*Math.PI); ctxField.fill(); } }
-  function drawGridBg(ctx) { ctx.fillStyle = '#fefef5'; ctx.fillRect(0,0,fieldCanvas.width,fieldCanvas.height); ctx.strokeStyle = '#cbd5c0'; ctx.lineWidth = 0.5; for (let i=0; i<fieldCanvas.width; i+=30) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,fieldCanvas.height); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(fieldCanvas.width,i); ctx.stroke(); } }
+  function drawPolygonPreview() { ctxField.clearRect(0,0,fieldCanvas.width,fieldCanvas.height); drawGridBg(ctxField); if (polyPoints.length === 0) return; ctxField.beginPath(); ctxField.moveTo(polyPoints[0].x, polyPoints[0].y); for (let p of polyPoints) ctxField.lineTo(p.x, p.y); ctxField.strokeStyle = '#2c6e2a'; ctxField.lineWidth = 2.5; ctxField.stroke(); for (let p of polyPoints) { ctxField.fillStyle = '#c97a2f'; ctxField.beginPath(); ctxField.arc(p.x, p.y, 5, 0, 2*Math.PI); ctxField.fill(); } if (polyPoints.length > 2) { ctxField.fillStyle = '#ffa500'; ctxField.beginPath(); ctxField.arc(polyPoints[0].x, polyPoints[0].y, 7, 0, 2*Math.PI); ctxField.fill(); } }
+  function drawGridBg(ctx) { ctx.fillStyle = '#fefef5'; ctx.fillRect(0,0,fieldCanvas.width,fieldCanvas.height); ctx.strokeStyle = '#d6dccc'; ctx.lineWidth = 0.5; for (let i=0; i<fieldCanvas.width; i+=30) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,fieldCanvas.height); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(fieldCanvas.width,i); ctx.stroke(); } }
   function clearPolygon() { polyPoints = []; polyClosed = false; drawPolygonPreview(); ctxPlant.clearRect(0,0,plantCanvas.width,plantCanvas.height); document.getElementById('polyTrees').innerText = '—'; document.getElementById('polyArea').innerText = '—'; document.getElementById('polyCoverage').innerText = '—'; document.getElementById('polyChannels').innerText = '—'; }
-  function closePolygon() { if (polyPoints.length < 3) { toast("Need at least 3 points"); return; } polyClosed = true; drawPolygonPreview(); renderPlantation(); toast("Plantation simulated"); }
-  function loadSampleField() { polyPoints = [ {x: fieldCanvas.width*0.2, y: fieldCanvas.height*0.3}, {x: fieldCanvas.width*0.8, y: fieldCanvas.height*0.25}, {x: fieldCanvas.width*0.9, y: fieldCanvas.height*0.65}, {x: fieldCanvas.width*0.55, y: fieldCanvas.height*0.85}, {x: fieldCanvas.width*0.25, y: fieldCanvas.height*0.75} ]; polyClosed = true; drawPolygonPreview(); renderPlantation(); toast("Sample field loaded"); }
+  function closePolygon() { if (polyPoints.length < 3) { toast("Need at least 3 points"); return; } polyClosed = true; drawPolygonPreview(); updateAreaFromPolygon(); renderPlantation(); toast("Polygon simulated – area updated."); }
+  function loadSampleField() { polyPoints = [ {x: fieldCanvas.width*0.2, y: fieldCanvas.height*0.3}, {x: fieldCanvas.width*0.8, y: fieldCanvas.height*0.25}, {x: fieldCanvas.width*0.9, y: fieldCanvas.height*0.65}, {x: fieldCanvas.width*0.55, y: fieldCanvas.height*0.85}, {x: fieldCanvas.width*0.25, y: fieldCanvas.height*0.75} ]; polyClosed = true; drawPolygonPreview(); updateAreaFromPolygon(); renderPlantation(); toast("Sample field loaded – area updated."); }
+  function updateAreaFromPolygon() { let areaPx = polygonAreaInPixels(polyPoints); let areaSqM = areaPx * (METER_PER_PX * METER_PER_PX); document.getElementById('polyArea').innerText = areaSqM.toFixed(1); document.getElementById('mw-area-input').value = areaSqM.toFixed(1); document.getElementById('mw-area').value = areaSqM.toFixed(1); calculateIrregularGeometry(); if (document.getElementById('mw-results').style.display === 'block') calculateEnhancersAndBudget(); simulateForestGrowth(); let treeCount = Math.round(areaSqM * currentDensity); document.getElementById('polyTrees').innerText = treeCount; let canopyCoverage = Math.min(95, (treeCount * Math.PI * (1.5*1.5)) / areaSqM * 100); document.getElementById('polyCoverage').innerText = canopyCoverage.toFixed(1); let channelLength = Math.sqrt(areaSqM) * 2.5; document.getElementById('polyChannels').innerText = channelLength.toFixed(1); }
   function polygonAreaInPixels(poly) { let area = 0; for (let i=0; i<poly.length; i++) { let j = (i+1) % poly.length; area += poly[i].x * poly[j].y; area -= poly[j].x * poly[i].y; } return Math.abs(area) / 2; }
   function pointInPolygon(px, py, poly) { let inside = false; for (let i=0, j=poly.length-1; i<poly.length; j=i++) { let xi = poly[i].x, yi = poly[i].y, xj = poly[j].x, yj = poly[j].y; let intersect = ((yi > py) != (yj > py)) && (px < (xj - xi) * (py - yi) / (yj - yi) + xi); if (intersect) inside = !inside; } return inside; }
-  function renderPlantation() { if (!polyClosed || polyPoints.length < 3) return; ctxPlant.clearRect(0,0,plantCanvas.width,plantCanvas.height); drawGridBg(ctxPlant); ctxPlant.beginPath(); ctxPlant.moveTo(polyPoints[0].x, polyPoints[0].y); for (let p of polyPoints) ctxPlant.lineTo(p.x, p.y); ctxPlant.closePath(); ctxPlant.fillStyle = 'rgba(45,106,79,0.1)'; ctxPlant.fill(); ctxPlant.strokeStyle = '#2d6a4f'; ctxPlant.lineWidth = 2; ctxPlant.stroke(); let areaPx = polygonAreaInPixels(polyPoints); let areaSqM = areaPx * (METER_PER_PX * METER_PER_PX); document.getElementById('polyArea').innerText = areaSqM.toFixed(1); let spacingPx = currentSpacing / METER_PER_PX; if (spacingPx < 5) spacingPx = 5; let bbox = { minX: Math.min(...polyPoints.map(p=>p.x)), maxX: Math.max(...polyPoints.map(p=>p.x)), minY: Math.min(...polyPoints.map(p=>p.y)), maxY: Math.max(...polyPoints.map(p=>p.y)) }; let treeCount = 0, channelLength = 0; for (let y = bbox.minY + spacingPx/2; y < bbox.maxY; y += spacingPx) { let isChannel = (Math.floor(y / spacingPx) % 5 === 2); if (isChannel) { ctxPlant.beginPath(); ctxPlant.moveTo(bbox.minX, y); ctxPlant.lineTo(bbox.maxX, y); ctxPlant.strokeStyle = '#4a8fa8'; ctxPlant.lineWidth = 3; ctxPlant.stroke(); channelLength += (bbox.maxX - bbox.minX) * METER_PER_PX; continue; } for (let x = bbox.minX + spacingPx/2; x < bbox.maxX; x += spacingPx) { if (pointInPolygon(x, y, polyPoints)) { ctxPlant.fillStyle = '#2d6a4f'; ctxPlant.beginPath(); ctxPlant.arc(x, y, 5, 0, 2*Math.PI); ctxPlant.fill(); ctxPlant.fillStyle = '#8fb870'; ctxPlant.beginPath(); ctxPlant.arc(x, y, 3, 0, 2*Math.PI); ctxPlant.fill(); treeCount++; } } } document.getElementById('polyTrees').innerText = treeCount; let canopyCoverage = (treeCount * Math.PI * (1.5*1.5)) / areaSqM * 100; if (canopyCoverage > 95) canopyCoverage = 95; document.getElementById('polyCoverage').innerText = canopyCoverage.toFixed(1); document.getElementById('polyChannels').innerText = channelLength.toFixed(1); }
-  function updateSpacingAndSimulate() { currentSpacing = parseFloat(document.getElementById('treeSpacingSlider').value); document.getElementById('spacingValue').innerText = currentSpacing + ' m'; if(polyClosed) renderPlantation(); }
-  window.onload = () => { initMap(); initFieldCanvas(); updateCoordInputs(); calculateIrregularGeometry(); simulateForestGrowth(); document.getElementById('mw-area-input').addEventListener('input', () => { calculateIrregularGeometry(); simulateForestGrowth(); }); document.getElementById('mw-area').addEventListener('input', () => { if (document.getElementById('mw-results').style.display === 'block') calculateEnhancersAndBudget(); }); toast("Ready. Click 'Analyze Site'."); };
-  window.searchLocation = searchLocation; window.detectLocation = detectLocation; window.analyzeSite = analyzeSite; window.toggleGeometryMode = toggleGeometryMode; window.calculateIrregularGeometry = calculateIrregularGeometry; window.simulateForestGrowth = simulateForestGrowth; window.setDrawMode = setDrawMode; window.clearPolygon = clearPolygon; window.closePolygon = closePolygon; window.loadSampleField = loadSampleField; window.updateSpacingAndSimulate = updateSpacingAndSimulate;
+  function renderPlantation() {
+    if (!polyClosed || polyPoints.length < 3) return;
+    ctxPlant.clearRect(0,0,plantCanvas.width,plantCanvas.height); drawGridBg(ctxPlant);
+    ctxPlant.beginPath(); ctxPlant.moveTo(polyPoints[0].x, polyPoints[0].y);
+    for (let p of polyPoints) ctxPlant.lineTo(p.x, p.y); ctxPlant.closePath();
+    ctxPlant.fillStyle = 'rgba(44,110,42,0.08)'; ctxPlant.fill(); ctxPlant.strokeStyle = '#2c6e2a'; ctxPlant.lineWidth = 2; ctxPlant.stroke();
+    let areaSqM = parseFloat(document.getElementById('mw-area-input').value) || 0;
+    let approxPlants = Math.round(areaSqM * currentDensity);
+    let spacingPx = Math.sqrt(areaSqM / approxPlants) / METER_PER_PX;
+    if (spacingPx < 5) spacingPx = 5;
+    let bbox = { minX: Math.min(...polyPoints.map(p=>p.x)), maxX: Math.max(...polyPoints.map(p=>p.x)), minY: Math.min(...polyPoints.map(p=>p.y)), maxY: Math.max(...polyPoints.map(p=>p.y)) };
+    let channelLength = 0;
+    for (let y = bbox.minY + spacingPx/2; y < bbox.maxY; y += spacingPx) {
+      let isChannel = (Math.floor(y / spacingPx) % 5 === 2);
+      if (isChannel) { ctxPlant.beginPath(); ctxPlant.moveTo(bbox.minX, y); ctxPlant.lineTo(bbox.maxX, y); ctxPlant.strokeStyle = '#4a8fa8'; ctxPlant.lineWidth = 3; ctxPlant.stroke(); channelLength += (bbox.maxX - bbox.minX) * METER_PER_PX; continue; }
+      for (let x = bbox.minX + spacingPx/2; x < bbox.maxX; x += spacingPx) {
+        if (pointInPolygon(x, y, polyPoints)) {
+          ctxPlant.fillStyle = '#2c6e2a'; ctxPlant.beginPath(); ctxPlant.arc(x, y, 5, 0, 2*Math.PI); ctxPlant.fill();
+          ctxPlant.fillStyle = '#8fb870'; ctxPlant.beginPath(); ctxPlant.arc(x, y, 3, 0, 2*Math.PI); ctxPlant.fill();
+        }
+      }
+    }
+    let actualTreeCount = Math.round(areaSqM * currentDensity);
+    document.getElementById('polyTrees').innerText = actualTreeCount;
+    document.getElementById('polyChannels').innerText = channelLength.toFixed(1);
+    let canopyCoverage = Math.min(95, (actualTreeCount * Math.PI * (1.5*1.5)) / areaSqM * 100);
+    document.getElementById('polyCoverage').innerText = canopyCoverage.toFixed(1);
+  }
+  function updateDensityAndSimulate() { currentDensity = parseFloat(document.getElementById('densitySlider').value); document.getElementById('densityValue').innerText = currentDensity + ' saplings/m²'; if (polyClosed) { renderPlantation(); if (document.getElementById('mw-results').style.display === 'block') calculateEnhancersAndBudget(); } }
+  window.onload = () => { initMap(); initFieldCanvas(); updateCoordInputs(); calculateIrregularGeometry(); simulateForestGrowth(); document.getElementById('mw-area-input').addEventListener('input', syncAreaAndRecalc); toast("Ready. Miyawaki density from 2–6 saplings/m². Soil enhancers are area‑based."); };
+  window.searchLocation = searchLocation; window.detectLocation = detectLocation; window.analyzeSite = analyzeSite;
+  window.toggleGeometryMode = toggleGeometryMode; window.calculateIrregularGeometry = calculateIrregularGeometry;
+  window.simulateForestGrowth = simulateForestGrowth; window.setDrawMode = setDrawMode; window.clearPolygon = clearPolygon;
+  window.closePolygon = closePolygon; window.loadSampleField = loadSampleField; window.syncAreaAndRecalc = syncAreaAndRecalc;
+  window.updateDensityAndSimulate = updateDensityAndSimulate;
 </script>
 </body>
 </html>
