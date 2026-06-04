@@ -126,7 +126,7 @@
 </header>
 <div class="hero">
   <div class="hero-content">
-    <div class="hero-badge">🌲 Ecology Intelligence Platform</div>
+    <div class="hero-badge">Ecology Intelligence Platform</div>
     <h1>Plan <em>forests</em>,<br>restore earth.</h1>
     <div class="hero-tools">
       <div class="location-search"><input type="text" id="locationInput" placeholder="City, village, district" value="New Delhi"><button onclick="searchLocation()">📍 Go</button></div>
@@ -156,13 +156,13 @@
       <div style="background:#fefcf8; padding:12px; border-radius:20px; margin-bottom:16px;"><strong>📍 Zone: </strong><span id="mw-zone-name"></span> | <strong>Soil type:</strong> <select id="mw-soil-select" style="border-radius:20px; padding:4px;"></select></div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
         <!-- Left column: species list -->
-        <div><h3>🌱 Naturally occurring species for this soil</h3><div id="mw-plants-list" style="max-height:320px; overflow:auto; font-size:0.85rem;"></div></div>
+        <div><h3>Naturally occurring species for this soil</h3><div id="mw-plants-list" style="max-height:320px; overflow:auto; font-size:0.85rem;"></div></div>
         <!-- Right column: soil additives + layer distribution -->
         <div>
-          <h3>🌿 Soil characteristics & recommended additives</h3>
+          <h3>Soil characteristics & recommended additives</h3>
           <div id="soil-additives" style="font-size:0.85rem; margin-bottom:1rem;"></div>
           <div class="layer-stats">
-            <strong>📊 Miyawaki layer distribution (dense planting)</strong><br>
+            <strong>Miyawaki layer distribution (dense planting)</strong><br>
             • Canopy (25%) – tallest native trees<br>
             • Tree (25%) – secondary canopy<br>
             • Sub‑tree (25%) – understorey trees<br>
@@ -198,11 +198,11 @@
 
       <!-- Right column: Material Budget + Water Requirement -->
       <div class="sub-card">
-        <h4>🌿 Miyawaki Inputs</h4>
+        <h4>Miyawaki Inputs</h4>
         <div id="mw-budget-list" style="margin-bottom: 12px;"></div>
         <div id="mw-total-cost" style="font-size: 1.3rem; font-weight: 800; margin-bottom: 12px;">₹0</div>
         <hr style="margin: 12px 0;">
-        <h4>💧 Water Requirement <span class="info-icon" title="Based on evapotranspiration, soil type, and climate zone. Daily watering for first 2 years (establishment phase).">ⓘ</span></h4>
+        <h4>Water Requirement <span class="info-icon" title="Based on evapotranspiration, soil type, and climate zone. Daily watering for first 2 years (establishment phase).">ⓘ</span></h4>
         <div id="water-requirement" style="font-size: 0.9rem;"></div>
         <div class="water-detail" id="water-detail"></div>
       </div>
@@ -217,12 +217,12 @@
       <input type="range" id="mw-year-slider" min="1" max="10" value="1" oninput="simulateForestGrowth()" style="width:100%; margin: 10px 0;">
     </div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-      <div style="background: #fefcf8; padding: 1rem; border-radius: 20px;"><h4>🛠️ Recommended Maintenance</h4><ul id="mw-maintenance-tasks" style="margin-left: 1rem; margin-top: 0.5rem;"></ul></div>
-      <div style="background: #fefcf8; padding: 1rem; border-radius: 20px;"><h4>🌳 Ecological Milestones</h4><ul id="mw-eco-status" style="margin-left: 1rem; margin-top: 0.5rem;"></ul></div>
+      <div style="background: #fefcf8; padding: 1rem; border-radius: 20px;"><h4>Recommended Maintenance</h4><ul id="mw-maintenance-tasks" style="margin-left: 1rem; margin-top: 0.5rem;"></ul></div>
+      <div style="background: #fefcf8; padding: 1rem; border-radius: 20px;"><h4>Ecological Milestones</h4><ul id="mw-eco-status" style="margin-left: 1rem; margin-top: 0.5rem;"></ul></div>
     </div>
     <div style="margin-top: 1.5rem; background: #fefcf8; padding: 1rem; border-radius: 20px;">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-        <span style="font-weight: 700;">🌿 Total CO₂ Sequestered</span>
+        <span style="font-weight: 700;">Total CO₂ Sequestered</span>
         <span id="mw-co2-output" style="font-size: 1.5rem; font-weight: 800;">0 kg</span>
       </div>
     </div>
@@ -237,7 +237,7 @@
   <div class="section" id="field-section">
     <div class="section-header"><h2>Field Polygon & Plantation Layout</h2><span>Draw boundary → Miyawaki density planting</span></div>
     <div class="grid-2">
-      <div class="card"><div class="card-header">Draw Field</div><div class="card-body" style="padding:1rem;"><canvas id="fieldCanvas" width="600" height="340"></canvas><div class="canvas-scale">Grid squares = 30px × 30px → 3m × 3m &nbsp; | &nbsp; Scale: 10px ≈ 1m</div><div style="display:flex; gap:0.5rem; margin-top:0.6rem; flex-wrap:wrap;"><button class="poly-btn" id="drawModeBtn" onclick="setDrawMode(true)">✏️ Draw</button><button class="poly-btn" onclick="clearPolygon()">🗑 Clear</button><button class="poly-btn" onclick="closePolygon()">Simulate</button><button class="poly-btn" onclick="loadSampleField()">📐 Sample Field</button></div><div class="spacing-slider" style="margin-top:0.8rem; display:flex; gap:0.8rem; align-items:center; flex-wrap:wrap;"><span>🌿 Miyawaki density (saplings/m²):</span><input type="range" id="densitySlider" min="2" max="6" step="1" value="4" oninput="updateDensityAndSimulate()"><span id="densityValue">4 saplings/m²</span></div><div id="polyInfo" style="font-size:0.7rem; margin-top:0.5rem;">Click points, close near orange start → Simulate (dense Miyawaki forest)</div></div></div>
+      <div class="card"><div class="card-header">Draw Field</div><div class="card-body" style="padding:1rem;"><canvas id="fieldCanvas" width="600" height="340"></canvas><div class="canvas-scale">Grid squares = 30px × 30px → 3m × 3m &nbsp; | &nbsp; Scale: 10px ≈ 1m</div><div style="display:flex; gap:0.5rem; margin-top:0.6rem; flex-wrap:wrap;"><button class="poly-btn" id="drawModeBtn" onclick="setDrawMode(true)">✏️ Draw</button><button class="poly-btn" onclick="clearPolygon()">🗑 Clear</button><button class="poly-btn" onclick="closePolygon()">Simulate</button><button class="poly-btn" onclick="loadSampleField()">📐 Sample Field</button></div><div class="spacing-slider" style="margin-top:0.8rem; display:flex; gap:0.8rem; align-items:center; flex-wrap:wrap;"><span>Miyawaki density (saplings/m²):</span><input type="range" id="densitySlider" min="2" max="6" step="1" value="4" oninput="updateDensityAndSimulate()"><span id="densityValue">4 saplings/m²</span></div><div id="polyInfo" style="font-size:0.7rem; margin-top:0.5rem;">Click points, close near orange start → Simulate (dense Miyawaki forest)</div></div></div>
       <div class="card"><div class="card-header">Plantation Simulator</div><div class="card-body" style="padding:1rem;"><canvas id="plantationCanvas" width="600" height="340"></canvas><div style="margin-top:0.6rem; display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;"><div>Trees (saplings): <strong id="polyTrees">—</strong></div><div>Area: <strong id="polyArea">—</strong> m²</div><div>Canopy coverage: <strong id="polyCoverage">—</strong>%</div></div></div></div>
     </div>
   </div>
@@ -250,7 +250,7 @@
     <div class="helpline-grid"><div class="helpline-card"><div class="hnum">1924</div><div>🔥 Forest Fire Emergency</div></div><div class="helpline-card"><div class="hnum">1800-425-2458</div><div>🌿 National Forest Helpline</div></div><div class="helpline-card"><div class="hnum">1551</div><div>👨‍🌾 Kisan Call Centre</div></div><div class="helpline-card"><div class="hnum">1800-102-0200</div><div>🐾 Wildlife Crime Control</div></div><div class="helpline-card"><div class="hnum">011-24695313</div><div>🏛️ MoEF&CC Helpdesk</div></div><div class="helpline-card"><div class="hnum">1800-180-5678</div><div>💧 National Water Mission</div></div><div class="helpline-card"><div class="hnum">1913</div><div>🌱 Green India Helpline</div></div><div class="helpline-card"><div class="hnum">+91-120-4111-330</div><div>🤝 Sankalp Taru (NGO)</div></div><div class="helpline-card"><div class="hnum">155261</div><div>🌾 PM Kisan Yojana</div></div><div class="helpline-card"><div class="hnum">1800-11-6600</div><div>📊 Forest Clearance Portal</div></div><div class="helpline-card"><div class="hnum">1800-212-1111</div><div>🌳 Van Dhan Vikas Kendra</div></div><div class="helpline-card"><div class="hnum">011-24695412</div><div>🏞️ CAMPA National Office</div></div></div>
   </div>
 </main>
-<footer><div>🌿 Gvan — Integrated Resource Hub</div><div style="font-size:0.7rem">Tree count = area × density. Water requirement based on climate, soil, and 2‑year establishment. Shape complexity removed for simplicity.</div></footer>
+<footer><div>🌿 Gvan — Integrated Resource Hub</div><div style="font-size:0.7rem">Tree count = area × density. Water requirement based on climate, soil, and 2‑year establishment.</div></footer>
 <div id="toast"></div>
 
 <script>
@@ -388,11 +388,11 @@
     let totalWaterTwoYears = dailyWaterL * 365 * 2;
     let waterCost = (totalWaterTwoYears / 1000) * 5;
     document.getElementById('water-requirement').innerHTML = `
-      <div>💧 Daily water need: <strong>${Math.round(dailyWaterL)} L/day</strong></div>
-      <div>📅 Weekly: ${Math.round(dailyWaterL*7)} L/week</div>
-      <div>📆 Monthly: ${Math.round(dailyWaterL*30)} L/month</div>
+      <div>Daily water need: <strong>${Math.round(dailyWaterL)} L/day</strong></div>
+      <div>Weekly: ${Math.round(dailyWaterL*7)} L/week</div>
+      <div>Monthly: ${Math.round(dailyWaterL*30)} L/month</div>
     `;
-    document.getElementById('water-detail').innerHTML = `<div>🚰 Total water for 2‑year establishment: <strong>${Math.round(totalWaterTwoYears/1000)} m³</strong> (approx. ₹${Math.round(waterCost).toLocaleString()})</div><div style="font-size:0.7rem;">Based on climate zone, soil type, and daily irrigation for 2 years.</div>`;
+    document.getElementById('water-detail').innerHTML = `<div>Total water for 2‑year establishment: <strong>${Math.round(totalWaterTwoYears/1000)} m³</strong> (approx. ₹${Math.round(waterCost).toLocaleString()})</div><div style="font-size:0.7rem;">Based on climate zone, soil type, and daily irrigation for 2 years.</div>`;
   }
 
   function initMap() { map = L.map('map').setView([currentCoords.lat, currentCoords.lng], 12); L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map); marker = L.marker([currentCoords.lat, currentCoords.lng]).addTo(map); map.on('click', e => { currentCoords = e.latlng; marker.setLatLng(currentCoords); updateCoordInputs(); toast('Coordinates updated'); if(document.getElementById('mw-results').style.display === 'block') analyzeSite(); }); }
