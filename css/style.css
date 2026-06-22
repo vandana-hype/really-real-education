@@ -132,15 +132,17 @@ a {
   font-weight: 500;
 }
 
+/* Navbar spacing increased: gap 12px -> 20px */
 .site-nav {
   display: flex;
-  gap: 12px;
+  gap: 20px;
   flex-wrap: wrap;
 }
 
+/* Navbar spacing increased: padding 10px 18px -> 12px 24px */
 .site-nav a {
   font-weight: 500;
-  padding: 10px 18px;
+  padding: 12px 24px;
   border-radius: 999px;
   border: 1px solid rgba(31, 41, 51, 0.12);
   background: rgba(255, 255, 255, 0.7);
@@ -156,6 +158,83 @@ a {
   background: linear-gradient(135deg, rgba(102, 183, 160, 0.9), rgba(102, 125, 183, 0.9));
   color: #ffffff;
   border-color: transparent;
+}
+
+/* "Our Projects" sub-navigation bar — sits directly below the main header,
+   holds Gvan / Quote of the Day / Nurolab as requested by sir */
+.projects-bar {
+  background: rgba(102, 183, 160, 0.07);
+  border-bottom: 1px solid rgba(31, 41, 51, 0.08);
+}
+
+.projects-bar-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 13px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.projects-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.projects-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.projects-links a {
+  font-weight: 500;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(31, 41, 51, 0.12);
+  background: rgba(255, 255, 255, 0.8);
+  transition: var(--transition);
+}
+
+.projects-links a:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Nurolab shown as "coming soon" since the page isn't built yet —
+   same pill shape/size as the other project links, but dashed border,
+   muted color, and not clickable, plus a small status tag */
+.project-coming-soon {
+  font-weight: 500;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px dashed rgba(31, 41, 51, 0.2);
+  background: rgba(255, 255, 255, 0.4);
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: default;
+}
+
+.soon-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(102, 125, 183, 0.15);
+  color: var(--blue);
 }
 
 .container {
@@ -243,6 +322,13 @@ a {
 
 .section-title {
   font-size: 2.1rem;
+}
+
+/* Centers the title only on the Quote of the Day / posts feed page,
+   without affecting section headers on other pages */
+.posts-section-head {
+  justify-content: center;
+  text-align: center;
 }
 
 .section-desc {
@@ -486,6 +572,8 @@ a {
 .posts-feed {
   display: grid;
   gap: 20px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .post-card {
@@ -496,13 +584,13 @@ a {
   overflow: hidden;
 }
 
+/* Card now matches image width closely (LinkedIn-style); a small even
+   margin is added per sir's request instead of full edge-to-edge */
 .post-image {
   display: block;
-  width: 92%;
-  max-height: none;
+  width: calc(100% - 24px);
   height: auto;
-  object-fit: contain;
-  margin: 4% auto;
+  margin: 12px;
   background: #f1f3f5;
 }
 
@@ -778,6 +866,18 @@ a {
     padding: 8px 14px;
   }
 
+  /* keep the Our Projects bar comfortable on small screens */
+  .projects-bar-inner {
+    padding: 10px 16px;
+    gap: 10px;
+  }
+
+  .projects-links a,
+  .project-coming-soon {
+    padding: 7px 14px;
+    font-size: 0.8rem;
+  }
+
   .hero {
     grid-template-columns: 1fr;
     gap: 1.5rem;
@@ -796,14 +896,18 @@ a {
     padding: 20px;
   }
 
+  .posts-feed {
+    max-width: 100%;
+  }
+
   .post-body {
     padding: 18px;
   }
 
+  /* Same small-margin approach as desktop on mobile */
   .post-image {
-    width: 100%;
-    max-height: 75vh;
-    margin-top: 0;
+    width: calc(100% - 16px);
+    margin: 8px;
   }
 }
 
