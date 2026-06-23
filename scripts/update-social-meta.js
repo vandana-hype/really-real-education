@@ -2,7 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const POSTS_PATH = path.join(__dirname, "..", "data", "posts.json");
-const POSTS_HTML_PATH = path.join(__dirname, "..", "posts.html");
+const POSTS_HTML_PATH = path.join(__dirname, "..", "Cogentic.html");
 const SITE_URL = process.env.SITE_URL || "https://reallyrealeducation.org";
 
 function readJson(filePath) {
