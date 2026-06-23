@@ -47,10 +47,10 @@
 }
 
 :root {
-  --green: #66B7A0;
-  --magenta: #B7667D;
-  --brown: #B7A066;
-  --blue: #667DB7;
+  --green: #66b7a0;
+  --magenta: #b7667d;
+  --brown: #b7a066;
+  --blue: #667db7;
   --ink: #1f2933;
   --muted: #5b6572;
   --paper: #f8f9fa;
@@ -73,15 +73,35 @@ body {
   color: var(--ink);
   background-color: var(--paper);
   background-image:
-    radial-gradient(circle at 15% 20%, rgba(102, 183, 160, 0.1) 0%, rgba(102, 183, 160, 0) 55%),
-    radial-gradient(circle at 85% 15%, rgba(183, 102, 125, 0.1) 0%, rgba(183, 102, 125, 0) 55%),
-    radial-gradient(circle at 20% 80%, rgba(183, 160, 102, 0.1) 0%, rgba(183, 160, 102, 0) 55%),
-    radial-gradient(circle at 90% 80%, rgba(102, 125, 183, 0.1) 0%, rgba(102, 125, 183, 0) 55%);
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(102, 183, 160, 0.1) 0%,
+      rgba(102, 183, 160, 0) 55%
+    ),
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(183, 102, 125, 0.1) 0%,
+      rgba(183, 102, 125, 0) 55%
+    ),
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(183, 160, 102, 0.1) 0%,
+      rgba(183, 160, 102, 0) 55%
+    ),
+    radial-gradient(
+      circle at 90% 80%,
+      rgba(102, 125, 183, 0.1) 0%,
+      rgba(102, 125, 183, 0) 55%
+    );
   line-height: 1.7;
   min-height: 100vh;
 }
 
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
   font-family: "Poppins", "Segoe UI", sans-serif;
   font-weight: 700;
   letter-spacing: -0.5px;
@@ -155,13 +175,17 @@ a {
 }
 
 .site-nav a[aria-current="page"] {
-  background: linear-gradient(135deg, rgba(102, 183, 160, 0.9), rgba(102, 125, 183, 0.9));
+  background: linear-gradient(
+    135deg,
+    rgba(102, 183, 160, 0.9),
+    rgba(102, 125, 183, 0.9)
+  );
   color: #ffffff;
   border-color: transparent;
 }
 
 /* "Our Projects" sub-navigation bar — sits directly below the main header,
-   holds Gvan / Quote of the Day / Nurolab as requested by sir */
+   holds GVan / Quote of the Day / Nurolab as requested by sir */
 .projects-bar {
   background: rgba(102, 183, 160, 0.07);
   border-bottom: 1px solid rgba(31, 41, 51, 0.08);
@@ -173,7 +197,6 @@ a {
   padding: 13px 24px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 16px;
   flex-wrap: wrap;
 }
@@ -207,6 +230,16 @@ a {
 .projects-links a:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-soft);
+}
+
+.projects-links a[aria-current="page"] {
+  background: linear-gradient(
+    135deg,
+    rgba(102, 183, 160, 0.9),
+    rgba(102, 125, 183, 0.9)
+  );
+  color: #ffffff;
+  border-color: transparent;
 }
 
 /* Nurolab shown as "coming soon" since the page isn't built yet —
@@ -444,7 +477,11 @@ a {
   line-height: 1.2;
   text-align: center;
   appearance: none;
-  background: linear-gradient(135deg, rgba(102, 183, 160, 0.95), rgba(183, 102, 125, 0.95));
+  background: linear-gradient(
+    135deg,
+    rgba(102, 183, 160, 0.95),
+    rgba(183, 102, 125, 0.95)
+  );
   color: #ffffff;
   cursor: pointer;
   transition: var(--transition);
@@ -465,7 +502,11 @@ a {
 }
 
 .btn.secondary.active {
-  background: linear-gradient(135deg, rgba(102, 125, 183, 0.95), rgba(183, 160, 102, 0.95));
+  background: linear-gradient(
+    135deg,
+    rgba(102, 125, 183, 0.95),
+    rgba(183, 160, 102, 0.95)
+  );
   color: #ffffff;
   border-color: transparent;
 }
@@ -514,7 +555,11 @@ a {
 }
 
 .blog-nav a.active {
-  background: linear-gradient(135deg, rgba(102, 125, 183, 0.95), rgba(183, 102, 125, 0.95));
+  background: linear-gradient(
+    135deg,
+    rgba(102, 125, 183, 0.95),
+    rgba(183, 102, 125, 0.95)
+  );
   color: #ffffff;
   border-color: transparent;
 }
@@ -530,7 +575,11 @@ a {
 }
 
 .blog-item.active {
-  background: linear-gradient(135deg, rgba(102, 125, 183, 0.9), rgba(183, 102, 125, 0.9));
+  background: linear-gradient(
+    135deg,
+    rgba(102, 125, 183, 0.9),
+    rgba(183, 102, 125, 0.9)
+  );
   color: #ffffff;
   border-color: transparent;
 }
@@ -540,7 +589,9 @@ a {
   overflow-wrap: anywhere;
 }
 
-.blog-content h1, .blog-content h2, .blog-content h3 {
+.blog-content h1,
+.blog-content h2,
+.blog-content h3 {
   margin-top: 18px;
   font-weight: 700;
 }
@@ -812,12 +863,24 @@ a {
   animation: fade-in-up 0.6s ease both;
 }
 
-.stagger > *:nth-child(1) { animation-delay: 0s; }
-.stagger > *:nth-child(2) { animation-delay: 0.08s; }
-.stagger > *:nth-child(3) { animation-delay: 0.16s; }
-.stagger > *:nth-child(4) { animation-delay: 0.24s; }
-.stagger > *:nth-child(5) { animation-delay: 0.32s; }
-.stagger > *:nth-child(6) { animation-delay: 0.4s; }
+.stagger > *:nth-child(1) {
+  animation-delay: 0s;
+}
+.stagger > *:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.stagger > *:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.stagger > *:nth-child(4) {
+  animation-delay: 0.24s;
+}
+.stagger > *:nth-child(5) {
+  animation-delay: 0.32s;
+}
+.stagger > *:nth-child(6) {
+  animation-delay: 0.4s;
+}
 
 @media (max-width: 1024px) {
   .container {
