@@ -82,7 +82,7 @@ function renderPostPage(post) {
                     <a href="../index.html">Home</a>
                     <a href="../books.html">Books</a>
                     <a href="../blog.html">Blogs</a>
-                    <a href="../posts.html" aria-current="page">Posts</a>
+                    <a href="../Cogentic.html" aria-current="page">Posts</a>
                     <a href="../articles.html">Journals</a>
                 </nav>
             </div>
@@ -95,7 +95,7 @@ function renderPostPage(post) {
                         <h1 class="section-title">Daily Quote</h1>
                         <p class="section-desc">Quote ${escapeHtml(String(post.imageNumber || ""))}</p>
                     </div>
-                    <a class="btn secondary" href="../posts.html">Back to all posts</a>
+                    <a class="btn secondary" href="../Cogentic.html">Back to all posts</a>
                 </div>
                 <article class="post-card" id="${escapeHtml(post.id)}">
                     <img class="post-image" src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" loading="eager">
