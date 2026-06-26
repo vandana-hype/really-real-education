@@ -25,6 +25,11 @@ jobs:
         env:
           SITE_URL: https://reallyrealeducation.org
 
+      - name: Sync Cogentic AI content
+        run: node scripts/sync-cogentic-content.js
+        env:
+          SITE_URL: https://reallyrealeducation.org
+
       - name: Generate RSS
         run: node scripts/generate-rss.js
         env:
