@@ -1,6 +1,8 @@
 (function () {
   const feedContainer = document.getElementById("posts-feed");
   const postsUrl = "data/posts.json";
+  const latestPoster =
+  "https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/website_assets/latest/poster.jpg";
   // Fallback post: day-of-year image shown when posts.json cannot be fetched.
   // Updated to day 101 = April 11 = quote_101.jpg
   const fallbackPosts = [
@@ -189,12 +191,16 @@
 
     // Update OG tags with the newest (first) post so page-level shares show today's image.
     updateOgTags(posts[0]);
+    posts[0].image = latestPoster;
 
     feedContainer.innerHTML = posts
       .map((post) => {
         return `
           <article class="post-card" id="${escapeHtml(post.id)}">
-            <img class="post-image" src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" loading="lazy">
+             <img class="post-image"
+src="${escapeHtml(
+  post === posts[0] ? latestPoster : post.image
+)}"alt="${escapeHtml(post.title)}" loading="lazy">
             <div class="post-body">
               <h2 class="post-title"><strong>Daily Quote</strong></h2>
               <p class="card-meta"><strong>Daily Quote ${escapeHtml(String(getQuoteNumber(post)))}</strong></p>
