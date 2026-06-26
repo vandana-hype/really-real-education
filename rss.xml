@@ -2,8 +2,35 @@
 <rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
     <title>Really Real Education Daily Posts</title>
-    <link>https://reallyrealeducation.org/posts.html</link>
+    <link>https://reallyrealeducation.org/Cogentic.html</link>
     <description>Automated daily quote posts feed.</description>
+    <item>
+      <title>Daily Quote 176</title>
+      <link>https://reallyrealeducation.org/posts/post-2026-06-25.html</link>
+      <guid>https://reallyrealeducation.org/posts/post-2026-06-25.html</guid>
+      <pubDate>Thu, 25 Jun 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[Daily learning quote post #176. <img src="https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_176.jpg" alt="Daily Quote 176">]]></description>
+      <enclosure url="https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_176.jpg" length="0" type="image/jpeg"/>
+      <media:content url="https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_176.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>Daily Quote 175</title>
+      <link>https://reallyrealeducation.org/posts/post-2026-06-24.html</link>
+      <guid>https://reallyrealeducation.org/posts/post-2026-06-24.html</guid>
+      <pubDate>Wed, 24 Jun 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[Daily learning quote post #175. <img src="https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_175.jpg" alt="Daily Quote 175">]]></description>
+      <enclosure url="https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_175.jpg" length="0" type="image/jpeg"/>
+      <media:content url="https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_175.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>Daily Quote 174</title>
+      <link>https://reallyrealeducation.org/posts/post-2026-06-23.html</link>
+      <guid>https://reallyrealeducation.org/posts/post-2026-06-23.html</guid>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 GMT</pubDate>
+      <description><![CDATA[Daily learning quote post #174. <img src="https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_174.jpg" alt="Daily Quote 174">]]></description>
+      <enclosure url="https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_174.jpg" length="0" type="image/jpeg"/>
+      <media:content url="https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_174.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>Daily Quote 173</title>
       <link>https://reallyrealeducation.org/posts/post-2026-06-22.html</link>

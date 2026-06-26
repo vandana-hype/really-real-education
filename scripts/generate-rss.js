@@ -47,7 +47,7 @@ function buildRss(posts) {
     '<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">',
     '  <channel>',
     '    <title>Really Real Education Daily Posts</title>',
-    `    <link>${SITE_URL}/posts.html</link>`,
+    `    <link>${SITE_URL}/Cogentic.html</link>`,
     '    <description>Automated daily quote posts feed.</description>',
     items,
     '  </channel>',
