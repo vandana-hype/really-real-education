@@ -99,9 +99,7 @@ function renderPostPage(post) {
                 </div>
                 <article class="post-card" id="${escapeHtml(post.id)}">
                     <img class="post-image"
-src="${escapeHtml(
-  post === posts[0] ? latestPoster : post.image
-)}" alt="${escapeHtml(post.title)}" loading="eager">
+src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" loading="eager">
                     <div class="post-body">
                         <h2 class="post-title"><strong>Daily Quote ${escapeHtml(String(post.imageNumber || ""))}</strong></h2>
                         <p class="card-meta">Last updated: ${escapeHtml(formatDate(post.date))}</p>
