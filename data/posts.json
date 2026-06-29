@@ -1,14 +1,23 @@
 [
   {
     "id": "post-cogentic-ai-daily",
-    "title": "The best time to plant a tree was twenty years ago. The second best time is now.",
+    "title": "A woman's voice isn't just an echo; it's the symphony that inspires generations, building a world where every dream finds its stage.",
     "date": "2026-06-28",
-    "excerpt": "Every small step we take today shapes the world we live in tomorrow.",
+    "excerpt": "Empowering women means recognizing their inherent strength and the profound impact their unique perspectives bring to society. When women are uplifted, their contributions create a ripple effect, fostering innovation, compassion, and progress for all.",
     "image": "https://raw.githubusercontent.com/vandana-hype/Cogentic/main/website_assets/latest/poster.jpg",
     "source": "Cogentic AI",
-    "theme": "Health & Mindfulness",
-    "hashtags": "#Cogentic #JalteDiyeFoundation",
+    "theme": "Women Empowerment",
+    "hashtags": "#Cogentic #JalteDiyeFoundation #WomenEmpowerment #Equality #Inspiration",
     "permalink": "https://reallyrealeducation.org/posts/post-cogentic-ai-daily.html"
+  },
+  {
+    "id": "post-2026-06-29",
+    "title": "Daily Quote 180",
+    "date": "2026-06-29",
+    "excerpt": "Daily learning quote post #180.",
+    "image": "https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_180.jpg",
+    "imageNumber": 180,
+    "permalink": "https://reallyrealeducation.org/posts/post-2026-06-29.html"
   },
   {
     "id": "post-2026-06-28",
