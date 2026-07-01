@@ -1,14 +1,23 @@
 [
   {
     "id": "post-cogentic-ai-daily",
-    "title": "Mindfulness is the compass that guides us to the shores of well-being, where every breath is a renewal and every thought a step towards inner peace.",
-    "date": "2026-06-29",
-    "excerpt": "Embrace the power of presence to nurture both your physical and mental health. By consciously tuning into the now, we unlock a profound sense of calm, resilience, and vitality that transforms our daily lives.",
+    "title": "The blueprint for a thriving future isn't etched in distant stars, but rooted in the soil beneath our feet and the air we breathe. Nurture them, and life will flourish.",
+    "date": "2026-06-30",
+    "excerpt": "Our collective destiny is intrinsically tied to the well-being of our planet's ecosystems. By embracing sustainable practices and advocating for environmental protection, we actively cultivate a resilient world where both nature and humanity can thrive for generations.",
     "image": "https://raw.githubusercontent.com/vandana-hype/Cogentic/main/website_assets/latest/poster.jpg",
     "source": "Cogentic AI",
-    "theme": "Health & Mindfulness",
-    "hashtags": "#Cogentic #JalteDiyeFoundation #Mindfulness #MentalWellbeing #HolisticHealth",
+    "theme": "Climate & Environment",
+    "hashtags": "#Cogentic #JalteDiyeFoundation #ClimateAction #Sustainability #EcoResponsibility",
     "permalink": "https://reallyrealeducation.org/posts/post-cogentic-ai-daily.html"
+  },
+  {
+    "id": "post-2026-07-01",
+    "title": "Daily Quote 182",
+    "date": "2026-07-01",
+    "excerpt": "Daily learning quote post #182.",
+    "image": "https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_182.jpg",
+    "imageNumber": 182,
+    "permalink": "https://reallyrealeducation.org/posts/post-2026-07-01.html"
   },
   {
     "id": "post-2026-06-30",
