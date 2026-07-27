@@ -1,15 +1,21 @@
 ﻿[
   {
     "id": "post-2026-07-24",
-    "title": "Different roots, one sky.",
+    "title": "She rises, not just for herself, but to lift every dream, every voice, and every future.",
     "date": "2026-07-24",
-    "excerpt": "The same moon that rises over your village rises over your enemy’s camp  that is not a coincidence, it is a reminder.",
-    "image": "https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/website_assets/latest/poster.jpg",
+    "excerpt": "Empowering women creates a ripple effect of progress and opportunity for all. Let's champion their journeys and celebrate their profound impact on society.",
+    "image": "https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/website_assets/archive/2026-07-24/poster.jpg",
     "imageNumber": 205,
     "permalink": "https://reallyrealeducation.org/posts/post-2026-07-24.html",
     "source": "Cogentic AI",
     "theme": "Women Empowerment",
-    "hashtags": "#Cogentic #JalteDiyeFoundation"
+    "hashtags": [
+      "#WomenEmpowerment",
+      "#JalteDiyeFoundation",
+      "#EmpowerHer",
+      "#SheLeads",
+      "#RiseAndShine"
+    ]
   },
   {
     "id": "ai-20260722",
@@ -45,15 +51,7 @@
     "hashtags": "#Cogentic #JalteDiyeFoundation",
     "permalink": "https://reallyrealeducation.org/posts/post-cogentic-ai-daily.html"
   },
-  {
-    "id": "post-2026-07-24",
-    "title": "Daily Quote 205",
-    "date": "2026-07-24",
-    "excerpt": "Daily learning quote post #205.",
-    "image": "https://raw.githubusercontent.com/Jalte-Diye-Foundation/Cogentic/main/Background1/quote_205.jpg",
-    "imageNumber": 205,
-    "permalink": "https://reallyrealeducation.org/posts/post-2026-07-24.html"
-  },
+  
   {
     "id": "post-2026-07-23",
     "title": "Daily Quote 204",

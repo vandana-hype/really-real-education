@@ -67,8 +67,15 @@
               </p>
 
               <div class="hero-buttons">
-                <a href="#architecture" class="btn">Explore Architecture</a>
-                <a href="#about" class="btn secondary">Learn More</a>
+                <a href="#signal-simulation" class="btn">Explore EEG Simulation</a>
+                <a href="https://github.com/Jalte-Diye-Foundation/NuroLab/tree/nurolab-restore/mobile"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="btn-outline">
+
+        Open Flutter App ↗
+
+    </a>
               </div>
 
               <div class="pill-list">
@@ -79,24 +86,234 @@
               </div>
             </div>
 
-            <div class="hero-right" data-reveal>
-              <div class="brain-wrapper">
-                <img src="assets/images/brain.png" alt="Illustration of a human brain" class="brain-img" />
-              </div>
+           <div class="hero-right" data-reveal>
+
+<div class="hero-card">
+
+    <div class="card-header">
+
+        <span class="card-label">
+            LIVE SESSION 
+        </span>
+
+        <span class="live-indicator">
+
+            <span class="live-dot"></span>
+
+            Processing
+
+        </span>
+
+    </div>
+
+    <div class="wave-wrap">
+
+        <svg viewBox="0 0 400 90">
+
+            <path
+                id="hero-wave"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2">
+            </path>
+
+        </svg>
+
+    </div>
+
+    <div class="bands">
+
+        <div class="band">
+
+            <span>Delta</span>
+
+            <div class="track">
+
+                <div class="fill delta"></div>
+
             </div>
+
+            <span>42%</span>
+
+        </div>
+
+        <div class="band">
+
+            <span>Theta</span>
+
+            <div class="track">
+
+                <div class="fill theta"></div>
+
+            </div>
+
+            <span>28%</span>
+
+        </div>
+
+        <div class="band">
+
+            <span>Alpha</span>
+
+            <div class="track">
+
+                <div class="fill alpha"></div>
+
+            </div>
+
+            <span>71%</span>
+
+        </div>
+
+        <div class="band">
+
+            <span>Beta</span>
+
+            <div class="track">
+
+                <div class="fill beta"></div>
+
+            </div>
+
+            <span>35%</span>
+
+        </div>
+
+        <div class="band">
+
+            <span>Gamma</span>
+
+            <div class="track">
+
+                <div class="fill gamma"></div>
+
+            </div>
+
+            <span>18%</span>
+
+        </div>
+
+    </div>
+
+    <div class="metrics">
+
+        <div class="metric">
+
+            <strong>0.82</strong>
+
+            <small>Relaxation</small>
+
+        </div>
+
+        <div class="metric">
+
+            <strong>0.43</strong>
+
+            <small>Engagement</small>
+
+        </div>
+
+        <div class="metric">
+
+            <strong class="warning">
+                Mild
+            </strong>
+
+            <small>Risk Tier</small>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
           </div>
+        </section>
+
+        <!-- ABOUT / PROBLEM (moved above Prototype) -->
+        <section class="section problem-section" id="about">
+
+    <div class="problem-header">
+
+        <span class="hero-eyebrow">
+            THE PROBLEM
+        </span>
+
+        <h2 class="section-title">
+            Mental health is usually assessed by asking, not measuring.
+        </h2>
+
+        <p class="section-desc">
+
+            Millions of people experience cognitive and mental-health
+            challenges. Today's tools rely heavily on self-reported symptoms
+            and clinical observation. Nurolab explores objective EEG-based
+            physiological evidence to complement-not replace-professional care.
+
+        </p>
+
+    </div>
+
+    <div class="problem-cards">
+
+        <div class="problem-card">
+
+            <h3>Self Reports</h3>
+
+            <p>
+
+                Low cost and widely used, but influenced by memory,
+                mood and personal perception.
+
+            </p>
+
+        </div>
+
+        <div class="problem-card">
+
+            <h3>Clinical Evaluation</h3>
+
+            <p>
+
+                Accurate and valuable, but dependent on trained
+                professionals and scheduled assessments.
+
+            </p>
+
+        </div>
+
+        <div class="problem-card active">
+
+            <h3>Nurolab's Approach</h3>
+
+            <p>
+
+                Continuous EEG monitoring combined with AI provides
+                objective physiological insights to support clinicians.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+        <!-- PROTOTYPE -->
+        <section class="section prototype-section" id="prototype">
 
           <div class="headset-showcase" data-reveal>
 
     <div class="headset-header">
 
-        <span class="hero-eyebrow">
+       <span class="hero-eyebrow">
             Our Prototype
         </span>
 
-        <h2 class="section-title">
-            Meet the Nurolab EEG Headset
-        </h2>
+       <h2 class="section-title">
+    Meet the headset that actually reads the signal.
+</h2>
 
         <p class="headset-desc">
             A lightweight AI-powered wearable designed for real-time EEG acquisition,
@@ -105,48 +322,167 @@
 
     </div>
 
+   <div class="prototype-layout">
+
+  <div class="prototype-image">
+
     <img
         src="assets/images/headset.PNG"
         alt="Nurolab EEG Headset"
         class="headset-img"
-    />
+        id="prototypeHeadset"
+    >
 
 </div>
+
+<div class="prototype-features">
+
+<h3>Key Features</h3>
+
+<div class="feature-item">
+
+    <span class="feature-number">01</span>
+
+    <div>
+
+        <strong>8-Channel Dry EEG Sensors</strong>
+
+        <p>
+            Dry electrodes for accurate real-time EEG recording.
+        </p>
+
+    </div>
+
+</div>
+
+<div class="feature-item">
+
+    <span class="feature-number">02</span>
+
+    <div>
+
+        <strong>ADS1299 Analog Front End</strong>
+
+        <p>
+            24-bit low-noise EEG signal acquisition.
+        </p>
+
+    </div>
+
+</div>
+
+<div class="feature-item">
+
+    <span class="feature-number">03</span>
+
+    <div>
+
+        <strong>ESP32 Edge Processor</strong>
+
+        <p>
+            Onboard processing and wireless data streaming.
+        </p>
+
+    </div>
+
+</div>
+
+<div class="feature-item">
+
+    <span class="feature-number">04</span>
+
+    <div>
+
+        <strong>Bluetooth & Wi-Fi</strong>
+
+        <p>
+            Fast wireless connection to the mobile app.
+        </p>
+
+    </div>
+
+</div>
+
+<div class="feature-item">
+
+    <span class="feature-number">05</span>
+
+    <div>
+
+        <strong>Lightweight Design</strong>
+
+        <p>
+            Comfortable for extended monitoring sessions.
+        </p>
+
+    </div>
+
+</div>
+
+<div class="feature-item">
+
+    <span class="feature-number">06</span>
+
+    <div>
+
+        <strong>Long Battery Life</strong>
+
+        <p>
+            Up to 10 hours of continuous operation.
+        </p>
+
+    </div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
         </section>
 
-        <!-- ABOUT -->
-        <section class="section" id="about">
-          <div class="section-head">
-            <div>
-              <span class="hero-tag">The Challenge</span>
-              <h2 class="section-title">Why Nurolab?</h2>
-              <p class="section-desc">
-                Millions of people experience cognitive and mental health
-                challenges every day. Current assessment methods mainly rely
-                on clinical observations, behavioural analysis, and
-                self-reported experiences. Nurolab explores how
-                Electroencephalography (EEG) and Artificial Intelligence can
-                provide objective physiological insights that support
-                neuroscience research and cognitive well-being.
-              </p>
-            </div>
-          </div>
+        <!-- MOBILE APP -->
+<section class="section" id="mobile-app">
+  <div class="section-head">
+    <div>
+      <span class="hero-eyebrow">Companion App</span>
+      <h2 class="section-title">NuroLab Mobile Application</h2>
+      <p class="section-desc">
+       A demo preview of the companion app, still early in development -
+  it shows how the headset will pair to stream EEG data, run AI
+  analysis, and let researchers review past sessions from a phone,
+  not a finished product yet.
+      </p>
+    </div>
+  </div>
 
-          <div class="cards" data-reveal>
-            <div class="card">
-              <h3>Self Reports</h3>
-              <p>Most assessments depend on questionnaires and personal experiences.</p>
-            </div>
-            <div class="card">
-              <h3> Clinical Evaluation</h3>
-              <p>Clinical interviews are valuable but require trained professionals.</p>
-            </div>
-            <div class="card">
-              <h3> EEG + AI</h3>
-              <p>Nurolab combines brain signals with AI to discover cognitive patterns.</p>
-            </div>
-          </div>
-        </section>
+  <div class="app-terminal" data-reveal>
+    <div class="app-terminal-header">NuroLab Mobile Application</div>
+
+    <div class="app-terminal-body">
+      <div class="app-terminal-phone">
+        <img src="assets/mobile-app/dashboard.png" alt="NuroLab app dashboard screenshot" />
+      </div>
+
+      <div class="app-terminal-features">
+        <span class="app-terminal-label">Features</span>
+        <p class="app-terminal-intro">
+          A single dashboard for the whole session - connect the headset,
+          watch your EEG bands live, and keep every reading on record.
+        </p>
+        <ul>
+          <li><span class="feature-check">✓</span> Live EEG Monitoring</li>
+          <li><span class="feature-check">✓</span> Bluetooth Connectivity</li>
+          <li><span class="feature-check">✓</span> AI Analysis</li>
+          <li><span class="feature-check">✓</span> Session History</li>
+        </ul>
+        <button class="play-demo-btn js-watch-demo">▶ Watch Demo</button>
+      </div>
+    </div>
+  </div>
+</section>
 
         <!-- RESEARCH AREAS -->
         <section class="section" id="features">
@@ -208,29 +544,6 @@
           </div>
         </section>
 
-        <!-- ARCHITECTURE -->
-        <section class="section" id="architecture">
-          <div class="section-head">
-            <div>
-              <span class="hero-eyebrow">System Design</span>
-              <h2 class="section-title">System Architecture</h2>
-              <p class="section-desc">
-                Raw EEG signals move through four stages before they reach a
-                researcher as an interpretable insight.
-              </p>
-            </div>
-          </div>
-
-          <div class="workflow-architecture" data-reveal>
-            <div class="flow-box">EEG Sensors</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-box">Signal Processing</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-box">AI Models</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-box">Dashboard</div>
-          </div>
-        </section>
 
         <!-- AI WORKFLOW -->
         <section class="section" id="workflow">
@@ -280,6 +593,147 @@
             </div>
           </div>
         </section>
+
+        <!-- VALIDATION -->
+        <section class="section" id="validation">
+          <div class="section-head">
+            <div>
+              <span class="hero-eyebrow">
+    RESEARCH VALIDATION
+</span>
+
+<h2 class="section-title">
+    Evidence Built on Real Research Data
+</h2>
+
+<p class="section-desc">
+Our algorithms are evaluated using benchmark EEG datasets and
+pilot studies to ensure transparent, measurable, and reproducible results.
+</p>
+            </div>
+          </div>
+
+          <div class="validation-grid" data-reveal>
+
+            <div class="validation-card">
+
+                <span class="validation-badge verified">
+                    ✓ Verified
+                </span>
+
+                <div class="validation-number">
+                    89.4%
+                </div>
+
+                <h3>Clinical Accuracy</h3>
+
+                <p>
+                    Validated using the Bonn University EEG benchmark dataset.
+                </p>
+
+            </div>
+
+            <div class="validation-card">
+
+                <span class="validation-badge verified">
+                    ✓ Verified
+                </span>
+
+                <div class="validation-number">
+                    320
+                </div>
+
+                <h3>Extracted Features</h3>
+
+                <p>
+                    Feature extraction across 8 EEG channels.
+                </p>
+
+            </div>
+
+            <div class="validation-card">
+
+                <span class="validation-badge verified">
+                    ✓ Verified
+                </span>
+
+                <div class="validation-number">
+                    &lt;150 ms
+                </div>
+
+                <h3>Processing Speed</h3>
+
+                <p>
+                    End-to-end EEG processing latency.
+                </p>
+
+            </div>
+
+            <div class="validation-card">
+
+                <span class="validation-badge warning">
+                    Preliminary
+                </span>
+
+                <div class="validation-number">
+                    37.8%
+                </div>
+
+                <h3>Pilot Study</h3>
+
+                <p>
+                    Current depression screening accuracy.
+                </p>
+
+            </div>
+
+          </div>
+
+          <div class="research-note" data-reveal>
+
+    <div class="note-left">
+
+        <span class="hero-eyebrow">
+            Research Transparency
+        </span>
+
+        <h3>37.8% Current Pilot Accuracy</h3>
+
+        <p>
+
+            Our current depression detection model has been evaluated on
+            seven pilot participants. These results are preliminary and
+            will continue to improve as more data is collected.
+
+        </p>
+
+    </div>
+
+    <div class="note-right">
+
+        <h4>Open Science</h4>
+
+        <p>
+
+            Our research code, signal-processing pipeline and model
+            development are openly documented.
+
+        </p>
+
+        <a href="https://github.com/Jalte-Diye-Foundation/NuroLab"
+   target="_blank"
+   rel="noopener noreferrer"
+   class="btn-primary">
+
+    View GitHub Repository →
+
+</a>
+
+    </div>
+
+</div>
+        </section>
+
       <section class="section" id="signal-simulation">
 
     <div class="section-head">
@@ -357,6 +811,8 @@
 
 </div>
 
+</section>
+
         <!-- TEAM -->
         <section class="section" id="team">
           <div class="section-head">
@@ -401,68 +857,142 @@
             UI/UX Design, Website Design & Visual Experience
         </p>
     </article>
+    <article class="card team-card">
+    <div class="card-title">Yashvi</div>
+    <p class="card-meta">
+        Website QA & Review, Backend Scripting - EEG Inspector, Test Server & Test WebSocket
+    </p>
+</article>
 
     <article class="card team-card">
         <div class="card-title">Hardware Team</div>
         <p class="card-meta">
-            Utkarsh , Risshit , Anjali
+            Utkarsh, Risshit, Anjali
         </p>
     </article>
 
     <article class="card team-card">
         <div class="card-title">Development Team</div>
         <p class="card-meta">
-            Soham , Yogita , Sweta , Saloni
+            Soham, Yogita, Sweta, Saloni
         </p>
     </article>
 
+
 </div>
+        </section>
+
         <!-- ROADMAP -->
         <section class="section" id="roadmap">
           <div class="section-head">
             <div>
-              <span class="hero-eyebrow">Future Vision</span>
-              <h2 class="section-title">Nurolab Roadmap</h2>
-              <p class="section-desc">
-                Our long-term vision is to build accessible neurotechnology
-                solutions that combine EEG, Artificial Intelligence and
-                Human-Centered Design for cognitive wellness research.
-              </p>
+              <span class="hero-eyebrow">Where We Are</span>
+
+<h2 class="section-title">Honest Progress</h2>
+
+<p class="section-desc">
+What is complete, what is in progress, and what comes next in the Nurolab project.
+</p>
             </div>
           </div>
 
-          <div class="roadmap-track" data-reveal>
-            <div class="roadmap-item done">
-              <span class="roadmap-tag">Phase 1</span>
-              <div class="roadmap-title">EEG Research Platform</div>
-              <p class="roadmap-desc">
-                Build the core research platform and establish EEG data
-                acquisition workflows.
+          <div class="roadmap-track">
+
+    <div class="roadmap-item done">
+
+        <span class="roadmap-tag">
+            Phase 1 • Complete
+        </span>
+
+        <div class="roadmap-title">
+            EEG Research Platform
+        </div>
+
+        <p class="roadmap-desc">
+            EEG acquisition, signal processing,
+            AI pipeline and web platform completed.
+        </p>
+
+    </div>
+
+    <div class="roadmap-item progress">
+
+        <span class="roadmap-tag">
+            Phase 2 • In Progress
+        </span>
+
+        <div class="roadmap-title">
+            AI Model Improvement
+        </div>
+
+        <p class="roadmap-desc">
+            Improving accuracy with larger EEG datasets
+            and advanced machine learning models.
+        </p>
+
+    </div>
+
+    <div class="roadmap-item planned">
+
+        <span class="roadmap-tag">
+            Phase 3 • Planned
+        </span>
+
+        <div class="roadmap-title">
+            Hardware Integration
+        </div>
+
+        <p class="roadmap-desc">
+            ADS1299 and ESP32 based wearable headset
+            integrated with the Nurolab platform.
+        </p>
+
+    </div>
+
+    <div class="roadmap-item future">
+
+        <span class="roadmap-tag">
+            Phase 4 • Future
+        </span>
+
+        <div class="roadmap-title">
+            Clinical Validation
+        </div>
+
+        <p class="roadmap-desc">
+            Collaborate with research institutions
+            for large-scale clinical validation.
+        </p>
+
+    </div>
+
+</div>
+        </section>
+
+        <!-- GET INVOLVED (new section, sits between Roadmap and the footer.
+             The nav already promotes "Apply to Volunteer" and the page links
+             to GitHub several times, but nothing on the page itself ever
+             invited a visitor to act on either — this closes that gap. -->
+        <section class="section" id="get-involved">
+          <div class="get-involved" data-reveal>
+            <div class="get-involved-text">
+              <h2>Help us build this further</h2>
+              <p>
+                Nurolab is an open, student-led research project. Whether you
+                want to contribute code, help with EEG research, or simply
+                follow along, there's a place for you here.
               </p>
             </div>
-            <div class="roadmap-item">
-              <span class="roadmap-tag">Phase 2</span>
-              <div class="roadmap-title">AI Cognitive Models</div>
-              <p class="roadmap-desc">
-                Develop Machine Learning models for cognitive state
-                estimation, stress detection and attention analysis.
-              </p>
-            </div>
-            <div class="roadmap-item">
-              <span class="roadmap-tag">Phase 3</span>
-              <div class="roadmap-title">Real-Time Dashboard</div>
-              <p class="roadmap-desc">
-                Design interactive dashboards for visualization, monitoring
-                and interpretable AI insights.
-              </p>
-            </div>
-            <div class="roadmap-item">
-              <span class="roadmap-tag">Future</span>
-              <div class="roadmap-title">Healthcare &amp; Research Collaboration</div>
-              <p class="roadmap-desc">
-                Collaborate with healthcare institutions and researchers to
-                expand clinical validation and wearable neurotechnology.
-              </p>
+            <div class="get-involved-actions">
+              <a href="waking-up.html" class="btn-light">Apply to Volunteer</a>
+              <a
+                href="https://github.com/Jalte-Diye-Foundation/NuroLab"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-ghost-light"
+              >
+                View on GitHub ↗
+              </a>
             </div>
           </div>
         </section>
@@ -496,6 +1026,16 @@
         </div>
         <div class="fine-print">You can subscribe to us on social media for updates.</div>
       </footer>
+    </div>
+
+    <!-- Demo video modal (triggered by any .js-watch-demo button) -->
+    <div class="video-modal" id="videoModal">
+      <div class="video-container">
+        <div class="close-video" id="closeVideoBtn">&times;</div>
+        <video id="demoVideo" controls>
+          <source src="assets/mobile-app/app-demo.mp4" type="video/mp4" />
+        </video>
+      </div>
     </div>
 
     <div id="toast"></div>

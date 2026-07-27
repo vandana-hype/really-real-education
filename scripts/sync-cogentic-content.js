@@ -46,7 +46,7 @@ function buildPost(metadata) {
 
   const archivedImageUrl = `${COGENTIC_REPO_RAW}/website_assets/archive/${dateStr}/poster.jpg`;
 
-  const postId =
+  const existingPostId =
     metadata.id ||
     `ai-${(metadata.date || new Date().toISOString().slice(0, 10)).replace(/-/g, "")}`;
 
@@ -77,17 +77,20 @@ async function main() {
     return;
   }
 
- const post = buildPost(metadata);
-const posts = readPosts();
-const existing = posts.find((p) => p.date === post.date);
+const post = buildPost(metadata);
+let posts = readPosts();
 
-if (existing) {
-  Object.assign(existing, post, { id: existing.id, permalink: existing.permalink });
-  console.log(`Merged Cogentic AI content into existing post for ${post.date}.`);
-} else {
-  posts.unshift(post);
-  console.log(`Synced Cogentic AI post for ${post.date}.`);
-}
+// Remove ALL duplicate entries for this date or id
+posts = posts.filter(
+  (p) => p.date !== post.date && p.id !== post.id
+);
+
+// Add the latest post at the top
+posts.unshift(post);
+// Sort newest posts first
+posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+console.log(`Synced Cogentic AI post for ${post.date}.`);
 
 writePosts(posts);
 }

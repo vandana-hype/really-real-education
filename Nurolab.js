@@ -2,8 +2,8 @@
 // Nurolab.js
 // Scroll-reveal animation + small interactive neuron diagram for the hero
 // + the interactive EEG signal-pipeline simulation in the Architecture
-// section. No external dependencies — plain DOM/SVG/canvas so it stays
-// light on classroom devices.
+// section + the demo-video modal. No external dependencies — plain
+// DOM/SVG/canvas so it stays light on classroom devices.
 // ==========================================================================
 
 (function () {
@@ -55,10 +55,6 @@
   }
 
   // ---------- Interactive neuron diagram (hero) ----------
-  // A tiny 4-node network: one input node feeds two hidden nodes which
-  // both feed one output node. Clicking any node sends a "signal" along
-  // its outgoing connections, animates a traveling dot, and lights up
-  // whatever it reaches.
   const NS = "http://www.w3.org/2000/svg";
 
   const nodes = [
@@ -84,7 +80,6 @@
     if (!svg) return;
     svg.setAttribute("aria-hidden", "true");
 
-    // Edges first so nodes draw on top
     edges.forEach((edge) => {
       const a = nodeById(edge.from);
       const b = nodeById(edge.to);
@@ -182,8 +177,6 @@
     outgoing.forEach((edge) => {
       travelSpike(edge.from, edge.to, () => {
         pulseNode(edge.to);
-        // Let a hidden node relay the signal onward automatically,
-        // so clicking the input node shows a full pass through the network.
         const downstream = edges.filter((e) => e.from === edge.to);
         downstream.forEach((d) =>
           travelSpike(d.from, d.to, () => pulseNode(d.to))
@@ -193,12 +186,9 @@
   }
 
   // ---------- EEG signal simulation (Architecture section) ----------
-  // Steps through what happens to a raw EEG waveform at each stage of the
-  // pipeline: raw → blink removal → bandpass filter → notch filter →
-  // feature extraction (band powers) → output (risk badge).
   function initEEGSimulation() {
     const canvas = document.getElementById("wave");
-    if (!canvas) return; // widget isn't on this page — nothing to do
+    if (!canvas) return;
 
     const stages = [
       {
@@ -337,21 +327,14 @@
     });
 
     /* waveform simulation */
-   function resize(){
-
-    const dpr = window.devicePixelRatio || 1;
-
-    canvas.width = canvas.offsetWidth * dpr;
-
-    canvas.height = 300 * dpr;
-
-    canvas.style.height = "300px";
-
-    ctx.setTransform(1,0,0,1,0,0);
-
-    ctx.scale(dpr,dpr);
-
-}
+    function resize() {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = canvas.offsetWidth * dpr;
+      canvas.height = 300 * dpr;
+      canvas.style.height = "300px";
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+    }
     if (document.getElementById("wave")) {
       resize();
     }
@@ -407,16 +390,186 @@
     }
   }
 
+  // ---------- Demo video modal ----------
+  // Triggered by any button carrying class "js-watch-demo" (or the legacy
+  // id "watchDemoBtn"). Opens a centered modal, autoplays the video, and
+  // can be closed via the × button, clicking the dark backdrop, or Escape.
+  function initVideoModal() {
+    const openBtns = document.querySelectorAll(".js-watch-demo, #watchDemoBtn");
+    const modal = document.getElementById("videoModal");
+    const closeBtn = document.getElementById("closeVideoBtn");
+    const video = document.getElementById("demoVideo");
+
+    if (!openBtns.length || !modal) return; // widget isn't on this page
+
+    function openModal() {
+      modal.style.display = "flex";
+      document.body.style.overflow = "hidden"; // prevent background scroll
+      if (video) {
+        video.currentTime = 0;
+        video.play().catch(() => {
+          /* autoplay can be blocked by the browser - user can hit play manually */
+        });
+      }
+    }
+
+    function closeModal() {
+      modal.style.display = "none";
+      document.body.style.overflow = "";
+      if (video) {
+        video.pause();
+        video.currentTime = 0;
+      }
+    }
+
+    openBtns.forEach((btn) => {
+      btn.addEventListener("click", openModal);
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", closeModal);
+    }
+
+    // Click on the dark backdrop (outside the video card) closes it
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // Escape key closes it, but only while it's actually open
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.style.display === "flex") {
+        closeModal();
+      }
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     buildNeuronSvg();
     initScrollReveal();
     initSmoothAnchors();
     toast("Nurolab loaded - click a node to fire a signal");
-
-    // Initialize EEG Signal Simulation
     initEEGSimulation();
+    initVideoModal();
   });
 
-  // Expose for debugging / future wiring
   window.NurolabFire = fireFrom;
 })();
+
+/* ==========================================
+   LIVE HERO EEG DASHBOARD
+========================================== */
+
+(function () {
+  const heroWave = document.getElementById("hero-wave");
+  if (!heroWave) return;
+
+  const bars = {
+    delta: document.querySelector(".fill.delta"),
+    theta: document.querySelector(".fill.theta"),
+    alpha: document.querySelector(".fill.alpha"),
+    beta: document.querySelector(".fill.beta"),
+    gamma: document.querySelector(".fill.gamma"),
+  };
+
+  const values = document.querySelectorAll(".metric strong");
+
+  let t = 0;
+  let spike = Math.random() * 250 + 120;
+
+  function random(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  function animate() {
+    t += 0.045;
+    const path = [];
+
+    for (let x = 0; x <= 400; x += 4) {
+      const p = x / 400;
+      let y =
+        45 +
+        10 * Math.sin(2 * Math.PI * 8 * p + t) +
+        5 * Math.sin(2 * Math.PI * 17 * p + t * 1.4) +
+        3 * Math.sin(2 * Math.PI * 4 * p + t * 0.8);
+
+      if (Math.abs(x - spike) < 4) {
+        y -= 24;
+      }
+
+      path.push((x === 0 ? "M" : "L") + x + "," + y.toFixed(1));
+    }
+
+    heroWave.setAttribute("d", path.join(" "));
+
+    spike -= 2;
+    if (spike < -10) {
+      spike = 420 + Math.random() * 100;
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  /* ==========================
+     Animated EEG Bands
+  =========================== */
+
+  setInterval(() => {
+    bars.delta.style.width = (38 + random(-5, 5)) + "%";
+    bars.theta.style.width = (28 + random(-4, 4)) + "%";
+    bars.alpha.style.width = (70 + random(-6, 6)) + "%";
+    bars.beta.style.width = (35 + random(-5, 5)) + "%";
+    bars.gamma.style.width = (18 + random(-3, 3)) + "%";
+  }, 700);
+
+  /* ==========================
+     Live Metrics
+  =========================== */
+
+  if (values.length >= 3) {
+    setInterval(() => {
+      values[0].innerHTML = (0.8 + Math.random() * 0.06).toFixed(2);
+      values[1].innerHTML = (0.4 + Math.random() * 0.08).toFixed(2);
+
+      const risk = values[2];
+      const level = Math.random();
+
+      if (level < 0.55) {
+        risk.innerHTML = "Low";
+        risk.style.color = "#2e8b57";
+      } else if (level < 0.85) {
+        risk.innerHTML = "Mild";
+        risk.style.color = "#d97706";
+      } else {
+        risk.innerHTML = "High";
+        risk.style.color = "#d33";
+      }
+    }, 2000);
+  }
+})();
+
+/* ==========================================
+   Prototype Section Animation
+========================================== */
+
+const prototype = document.getElementById("prototypeHeadset");
+
+if (prototype) {
+  prototype.addEventListener("mousemove", function (e) {
+    const rect = prototype.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const rotateY = (x / rect.width - 0.5) * 12;
+    const rotateX = (y / rect.height - 0.5) * -12;
+
+    prototype.style.transform = `perspective(1000px)
+             rotateX(${rotateX}deg)
+             rotateY(${rotateY}deg)
+             scale(1.03)`;
+  });
+
+  prototype.addEventListener("mouseleave", function () {
+    prototype.style.transform = "perspective(1000px) rotateX(0) rotateY(0) scale(1)";
+  });
+}
